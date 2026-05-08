@@ -1,0 +1,207 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#090909" />
+  <title>Centre Point Group</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: #0A0A0A;
+      color: #F0F0F0;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      min-height: 100dvh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    header {
+      padding: 20px 32px;
+      border-bottom: 1px solid #1a1a1a;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .logo {
+      width: 36px;
+      height: 36px;
+      background: #AACC33;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 900;
+      font-size: 11px;
+      color: #000;
+      letter-spacing: 0.02em;
+      flex-shrink: 0;
+      box-shadow: 0 0 16px rgba(170,204,51,0.18);
+    }
+
+    .brand {
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: #F0F0F0;
+    }
+
+    main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 48px 24px;
+      text-align: center;
+    }
+
+    .eyebrow {
+      font-size: 10px;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: #AACC33;
+      font-weight: 600;
+      margin-bottom: 16px;
+    }
+
+    h1 {
+      font-size: clamp(32px, 6vw, 56px);
+      font-weight: 900;
+      line-height: 1.08;
+      letter-spacing: -0.02em;
+      color: #F0F0F0;
+      max-width: 680px;
+      margin-bottom: 20px;
+    }
+
+    h1 span {
+      color: #AACC33;
+    }
+
+    .sub {
+      font-size: 15px;
+      color: #444;
+      max-width: 420px;
+      line-height: 1.65;
+      margin-bottom: 44px;
+    }
+
+    .apps {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      width: 100%;
+      max-width: 360px;
+    }
+
+    .app-card {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 18px 20px;
+      border: 1px solid #1e1e1e;
+      border-radius: 16px;
+      background: #0e0e0e;
+      text-decoration: none;
+      color: inherit;
+      transition: border-color 180ms, background 180ms, transform 120ms;
+      text-align: left;
+    }
+
+    .app-card:hover {
+      border-color: #AACC33/40;
+      border-color: rgba(170,204,51,0.35);
+      background: #111;
+      transform: translateY(-1px);
+    }
+
+    .app-card:active {
+      transform: translateY(0);
+    }
+
+    .app-icon {
+      width: 42px;
+      height: 42px;
+      background: #AACC33;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 900;
+      font-size: 11px;
+      color: #000;
+      flex-shrink: 0;
+      box-shadow: 0 0 14px rgba(170,204,51,0.2);
+    }
+
+    .app-info { flex: 1; min-width: 0; }
+
+    .app-name {
+      font-size: 14px;
+      font-weight: 700;
+      color: #F0F0F0;
+      margin-bottom: 2px;
+    }
+
+    .app-desc {
+      font-size: 11px;
+      color: #444;
+      letter-spacing: 0.02em;
+    }
+
+    .app-arrow {
+      color: #2a2a2a;
+      font-size: 16px;
+      transition: color 180ms, transform 180ms;
+    }
+
+    .app-card:hover .app-arrow {
+      color: #AACC33;
+      transform: translateX(3px);
+    }
+
+    footer {
+      padding: 20px 32px;
+      border-top: 1px solid #111;
+      text-align: center;
+      font-size: 10px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: #222;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="logo">CPG</div>
+    <span class="brand">Centre Point Group</span>
+  </header>
+
+  <main>
+    <p class="eyebrow">Internal Portal</p>
+    <h1>Tools that keep<br/>the team <span>moving</span></h1>
+    <p class="sub">Access your internal applications below. Log in with your assigned PIN.</p>
+
+    <div class="apps">
+      <a href="/meetingos/dashboard" class="app-card">
+        <div class="app-icon">MO</div>
+        <div class="app-info">
+          <div class="app-name">Meeting OS</div>
+          <div class="app-desc">Meetings · Tasks · People</div>
+        </div>
+        <span class="app-arrow">›</span>
+      </a>
+    </div>
+  </main>
+
+  <footer>
+    &copy; 2025 Centre Point Group &nbsp;·&nbsp; Internal use only
+  </footer>
+
+</body>
+</html>
