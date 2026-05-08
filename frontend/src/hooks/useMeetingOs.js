@@ -564,6 +564,7 @@ export function useMeetingOs(navigate, page) {
 
     setMeetings((current) => [{ ...meeting, noticeText, formText }, ...current])
     setCloseMeetingId(meeting.meetingId)
+    setMeetingForm(blankMeeting)
     setMeetingAttendeeIds([])
     setManualAttendees([])
     setManualAttendeeForm(blankManualAttendee)
