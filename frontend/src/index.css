@@ -1,0 +1,450 @@
+@import "tailwindcss";
+
+@theme {
+  --color-bg:      #0A0A0A;
+  --color-card:    #111111;
+  --color-border:  #222222;
+  --color-muted:   #555555;
+  --color-text:    #F0F0F0;
+  --color-accent:  #AACC33;
+  --color-danger:  #ff4444;
+  --color-success: #7de87d;
+  --color-warn:    #f5a623;
+}
+
+@layer base {
+  html,
+  body,
+  #root {
+    min-width: 320px;
+    min-height: 100%;
+  }
+
+  body {
+    margin: 0;
+    background: #0A0A0A;
+    font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  }
+
+  * {
+    box-sizing: border-box;
+  }
+
+  h1 {
+    margin: 0;
+    font-family: inherit;
+    font-size: clamp(1.35rem, 1.8vw, 1.85rem);
+    line-height: 1.15;
+    font-weight: 800;
+    color: #F0F0F0;
+  }
+
+  h3 {
+    margin: 0;
+    font-family: inherit;
+    font-size: 1rem;
+    line-height: 1.3;
+    color: #F0F0F0;
+  }
+
+  label {
+    display: grid;
+    gap: 0.45rem;
+    color: #555555;
+    font-size: 0.68rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  input,
+  select,
+  textarea {
+    width: 100%;
+    min-height: 44px;
+    border: 1px solid #2E2E2E;
+    border-radius: 0.5rem;
+    background: #1C1C1C;
+    color: #F0F0F0;
+    padding: 0.75rem 0.8rem;
+    font: inherit;
+    font-size: 0.875rem;
+    line-height: 1.4;
+    outline: none;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  }
+
+  textarea {
+    min-height: 96px;
+    resize: vertical;
+    line-height: 1.6;
+  }
+
+  input:focus,
+  select:focus,
+  textarea:focus {
+    border-color: rgba(170, 204, 51, 0.5);
+    box-shadow: 0 0 0 3px rgba(170, 204, 51, 0.07);
+  }
+
+  p {
+    line-height: 1.6;
+  }
+
+  ::-webkit-scrollbar {
+    width: 4px;
+    height: 4px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #2a2a2a;
+    border-radius: 2px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: #3a3a3a;
+  }
+}
+
+@layer utilities {
+  .scrollbar-none {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  .scrollbar-none::-webkit-scrollbar {
+    display: none;
+  }
+
+  .animate-fade-in {
+    animation: fadeIn 0.2s ease both;
+  }
+  .animate-slide-up {
+    animation: slideUp 0.25s ease both;
+  }
+  .animate-shake {
+    animation: shake 0.35s ease;
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  20%, 60%  { transform: translateX(-5px); }
+  40%, 80%  { transform: translateX(5px); }
+}
+
+@keyframes toastIn {
+  from { opacity: 0; transform: translate(-50%, 12px); }
+  to   { opacity: 1; transform: translate(-50%, 0); }
+}
+
+.animate-toast {
+  animation: toastIn 0.22s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+.document-preview-page {
+  width: min(100%, 210mm);
+  min-height: min(70dvh, 297mm);
+}
+
+.document-preview-edit {
+  height: min(70dvh, 297mm);
+}
+
+.document-preview-print-page {
+  display: none;
+}
+
+.agenda-form-page {
+  overflow: auto;
+  padding: 10mm 16mm 14mm;
+  border: 1px solid #181818;
+  border-radius: 0;
+  background: #ffffff;
+  color: #202020;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 12.5pt;
+  line-height: 1.35;
+}
+
+.agenda-print-brand {
+  display: block;
+  width: 62mm;
+  height: auto;
+  margin: 0 auto;
+}
+
+.agenda-meta {
+  margin-bottom: 5mm;
+  font-size: 11.5pt;
+  line-height: 1.25;
+}
+
+.agenda-topic {
+  margin-top: 6mm;
+  break-inside: auto;
+}
+
+.agenda-topic h3 {
+  margin: 0 0 4mm;
+  color: #202020;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 18pt;
+  font-weight: 700;
+  line-height: 1.2;
+  break-after: avoid;
+}
+
+.agenda-field {
+  margin: 0 0 2.6mm;
+}
+
+.agenda-field-label,
+.agenda-notes-label {
+  font-size: 13pt;
+  font-weight: 700;
+  letter-spacing: 0.015em;
+}
+
+.agenda-bullets {
+  display: grid;
+  gap: 2mm;
+  margin: 2mm 0 0 8mm;
+  padding: 0;
+}
+
+.agenda-bullet-item {
+  display: grid;
+  grid-template-columns: 4mm 1fr;
+  column-gap: 3mm;
+  align-items: start;
+  margin: 0;
+  padding: 0;
+  text-align: left;
+}
+
+.agenda-bullet-item > span:first-child {
+  font-size: 13pt;
+  line-height: 1.2;
+}
+
+.agenda-bullet-item > span:last-child {
+  line-height: 1.35;
+}
+
+.agenda-notes-label {
+  display: flex;
+  align-items: center;
+  margin-top: 3.5mm;
+}
+
+.agenda-lines {
+  display: grid;
+  gap: 2mm;
+  margin-top: 3mm;
+}
+
+.agenda-lines div {
+  height: 3.8mm;
+  border-bottom: 1px solid #777777;
+}
+
+.agenda-note-lines {
+  gap: 1.8mm;
+  margin-top: 4mm;
+}
+
+.agenda-print-pages,
+.agenda-print-header,
+.agenda-print-footer {
+  display: none;
+}
+
+.print-page-rule {
+  width: 100%;
+  height: 0;
+  border-top: 2px solid #000000;
+}
+
+@page {
+  size: A4;
+  margin: 8mm 16mm;
+}
+
+@media print {
+  html,
+  body {
+    background: #ffffff;
+    margin: 0 !important;
+    height: auto !important;
+    min-height: 0 !important;
+  }
+
+  /* Collapse the app root and hide everything except the print modal */
+  .app-root {
+    min-height: 0 !important;
+    height: auto !important;
+    background: #ffffff !important;
+  }
+
+  .app-root > *:not(.document-preview) {
+    display: none !important;
+  }
+
+  .document-preview {
+    position: static !important;
+    inset: auto !important;
+    display: block !important;
+    width: 100% !important;
+    padding: 0 !important;
+    background: #ffffff !important;
+    backdrop-filter: none !important;
+    transform: none !important;
+  }
+
+  .document-preview-shell {
+    display: block !important;
+    width: 100% !important;
+    max-width: none !important;
+    max-height: none !important;
+    padding: 0 !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    background: #ffffff !important;
+    box-shadow: none !important;
+  }
+
+  .document-preview-header,
+  .document-preview-actions,
+  .agenda-screen-page {
+    display: none !important;
+  }
+
+  .document-preview-page {
+    display: block !important;
+    width: 100% !important;
+    min-height: 0 !important;
+    height: auto !important;
+    overflow: visible !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    background: #ffffff !important;
+    color: #000000 !important;
+    font-size: 11pt !important;
+    line-height: 1.6 !important;
+    white-space: pre-wrap !important;
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
+  }
+
+  .document-preview-edit {
+    display: none !important;
+  }
+
+  .document-preview-print-page {
+    display: block !important;
+  }
+
+  .agenda-form-page {
+    padding: 0 !important;
+    font-size: 12pt !important;
+    line-height: 1.35 !important;
+    white-space: normal !important;
+    overflow: visible !important;
+  }
+
+  .document-preview-page.agenda-screen-page {
+    display: none !important;
+  }
+
+  .agenda-print-pages {
+    display: block !important;
+    visibility: visible !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    background: #ffffff !important;
+  }
+
+  .agenda-print-table {
+    display: table !important;
+    visibility: visible !important;
+    width: 100% !important;
+    border-collapse: collapse !important;
+    background: #ffffff;
+    color: #000000;
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 12pt;
+    line-height: 1.35;
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
+  }
+
+  .agenda-print-header,
+  .agenda-print-footer {
+    visibility: visible !important;
+    position: static !important;
+    display: table-row-group !important;
+    background: #ffffff;
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
+    break-inside: avoid;
+  }
+
+  .agenda-print-header {
+    display: table-header-group !important;
+  }
+
+  .agenda-print-footer {
+    display: table-footer-group !important;
+  }
+
+  .agenda-print-header {
+    height: auto;
+    padding-top: 2mm;
+    padding-bottom: 6mm;
+    border-bottom: 2px solid #000000;
+  }
+
+  .agenda-print-brand {
+    visibility: visible !important;
+    width: auto;
+    max-width: 72mm;
+    height: auto;
+    max-height: 24mm;
+    margin: 0 auto 6mm;
+  }
+
+  .agenda-print-footer {
+    height: auto;
+    padding: 0;
+    margin: 0;
+    overflow: visible;
+    border-top: 2px solid #000000;
+    padding-top: 3mm;
+    padding-bottom: 2mm;
+  }
+
+  .agenda-print-footer .print-page-rule {
+    display: none !important;
+  }
+
+  .agenda-print-body {
+    display: table-row-group !important;
+    position: static;
+    padding: 0;
+    break-inside: auto;
+  }
+
+  .agenda-print-body .agenda-meta {
+    margin-top: 7mm;
+  }
+}
