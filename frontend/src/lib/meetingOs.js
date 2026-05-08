@@ -1,4 +1,6 @@
-export const API = '/api'
+const API_BASE_URL = import.meta.env.VITE_API_URL?.replace(/\/+$/, '') || ''
+
+export const API = `${API_BASE_URL}/api`
 
 export const blankTopic = { topic: '', purpose: '', desiredOutcome: '', documents: '' }
 
