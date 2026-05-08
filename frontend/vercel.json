@@ -1,4 +1,7 @@
 {
-  "rewrites": [{ "source": "/meetingos/(.*)", "destination": "/index.html" }]
+  "rewrites": [
+    { "source": "/meetingos", "destination": "/index.html" },
+    { "source": "/meetingos/:path*", "destination": "/index.html" }
+  ]
 }
 
