@@ -11,10 +11,8 @@ const P = {
   card:     'p-4 grid gap-4 border border-[#1e1e1e] bg-[#0e0e0e] rounded-2xl',
   label:    'flex flex-col gap-[6px] text-[10px] tracking-[0.15em] uppercase text-[#444]',
   secHead:  'flex items-center gap-2 text-[10px] uppercase tracking-[0.18em] text-[#AACC33] font-semibold',
-  // pr-[44px] leaves room for the right-side calendar toggle button
+  // pr-[44px] leaves room for the right-side picker toggle button
   dateTime: 'bg-[#141414] border border-[#262626] rounded-xl text-[#F0F0F0] text-[14px] pl-[42px] pr-[44px] py-3 w-full outline-none min-h-[44px] appearance-none transition-[border-color,box-shadow] duration-150 [color-scheme:dark] focus:border-[#AACC33]/45 focus:[box-shadow:0_0_0_3px_rgba(170,204,51,0.06)] placeholder:text-[#2e2e2e] font-mono',
-  // Reuse dateTime for time field but with standard right padding
-  timeInput:'bg-[#141414] border border-[#262626] rounded-xl text-[#F0F0F0] text-[14px] pl-[42px] pr-[13px] py-3 w-full outline-none min-h-[44px] appearance-none transition-[border-color,box-shadow] duration-150 [color-scheme:dark] focus:border-[#AACC33]/45 focus:[box-shadow:0_0_0_3px_rgba(170,204,51,0.06)] cursor-pointer',
 }
 
 // ─── Date helpers ──────────────────────────────────────────────────────────────
@@ -45,6 +43,21 @@ function toReadableTime(timeString) {
   const h12 = h % 12 || 12
   return `${h12}:${String(m).padStart(2, '0')} ${ampm}`
 }
+
+function roundToNextQuarter(date = new Date()) {
+  const minutes = Math.ceil(date.getMinutes() / 15) * 15
+  const rounded = new Date(date)
+  rounded.setMinutes(minutes, 0, 0)
+  return `${String(rounded.getHours()).padStart(2, '0')}:${String(rounded.getMinutes()).padStart(2, '0')}`
+}
+
+const TIME_OPTIONS = Array.from({ length: 96 }, (_, index) => {
+  const total = index * 15
+  const hour = Math.floor(total / 60)
+  const minute = total % 60
+  const value = `${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}`
+  return { value, label: toReadableTime(value) }
+})
 
 function parseDMY(dmy) {
   if (!isValidDMY(dmy)) return null
@@ -79,6 +92,19 @@ function CalendarIcon({ active }) {
 }
 
 // ─── Calendar popup ────────────────────────────────────────────────────────────
+
+function ClockIcon({ active }) {
+  return (
+    <svg
+      width="16" height="16" viewBox="0 0 16 16" fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      style={{ color: active ? '#AACC33' : '#555', transition: 'color 150ms', display: 'block' }}
+    >
+      <circle cx="8" cy="8" r="6.5" stroke="currentColor" strokeWidth="1.25" />
+      <path d="M8 4.5V8l2.4 1.6" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  )
+}
 
 const DOW    = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa']
 const MONTHS = ['January','February','March','April','May','June',
@@ -321,6 +347,160 @@ function DateField({ value, onChange }) {
 
 // ─── Shared small components ───────────────────────────────────────────────────
 
+function TimePicker({ value, onChange, onClose }) {
+  const currentRef = useRef(null)
+
+  useEffect(() => {
+    currentRef.current?.scrollIntoView({ block: 'center' })
+  }, [])
+
+  return (
+    <div
+      onMouseDown={(e) => e.preventDefault()}
+      style={{
+        position: 'absolute',
+        zIndex: 50,
+        top: 'calc(100% + 6px)',
+        left: 0,
+        width: '276px',
+        background: '#111',
+        border: '1px solid #262626',
+        borderRadius: '16px',
+        boxShadow: '0 8px 40px rgba(0,0,0,0.65)',
+        overflow: 'hidden',
+      }}
+    >
+      <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', padding:'10px 14px', borderBottom:'1px solid #1e1e1e' }}>
+        <span style={{ color:'#F0F0F0', fontSize:13, fontWeight:600, letterSpacing:'0.02em' }}>Select time</span>
+        <button
+          type="button"
+          onClick={() => { onChange(roundToNextQuarter()); onClose() }}
+          style={{ background:'transparent', border:'none', color:'#444', fontSize:10, textTransform:'uppercase', letterSpacing:'0.1em', cursor:'pointer', padding:'4px 0', transition:'color 150ms' }}
+          onMouseEnter={e => e.currentTarget.style.color='#AACC33'}
+          onMouseLeave={e => e.currentTarget.style.color='#444'}
+        >
+          Now
+        </button>
+      </div>
+
+      <div style={{ maxHeight: 268, overflowY: 'auto', padding: '8px' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 6 }}>
+          {TIME_OPTIONS.map((time) => {
+            const selected = time.value === value
+            return (
+              <button
+                key={time.value}
+                ref={selected ? currentRef : null}
+                type="button"
+                onClick={() => { onChange(time.value); onClose() }}
+                style={{
+                  minHeight: 34,
+                  border: selected ? '1px solid rgba(170,204,51,0.45)' : '1px solid transparent',
+                  borderRadius: 9,
+                  background: selected ? 'rgba(170,204,51,0.12)' : 'transparent',
+                  color: selected ? '#AACC33' : '#777',
+                  fontSize: 12,
+                  fontFamily: 'monospace',
+                  cursor: 'pointer',
+                  transition: 'background 120ms, color 120ms, border-color 120ms',
+                }}
+                onMouseEnter={e => { if (!selected) { e.currentTarget.style.background='#1e1e1e'; e.currentTarget.style.color='#F0F0F0' } }}
+                onMouseLeave={e => { if (!selected) { e.currentTarget.style.background='transparent'; e.currentTarget.style.color='#777' } }}
+              >
+                {time.label}
+              </button>
+            )
+          })}
+        </div>
+      </div>
+    </div>
+  )
+}
+
+function TimeField({ value, onChange }) {
+  const [open, setOpen] = useState(false)
+  const wrapRef = useRef(null)
+  const active = open || Boolean(value)
+
+  useEffect(() => {
+    if (!open) return
+    function onDown(e) {
+      if (wrapRef.current && !wrapRef.current.contains(e.target)) setOpen(false)
+    }
+    document.addEventListener('mousedown', onDown)
+    return () => document.removeEventListener('mousedown', onDown)
+  }, [open])
+
+  return (
+    <div ref={wrapRef} style={{ position: 'relative' }}>
+      <button
+        type="button"
+        tabIndex={-1}
+        onClick={() => setOpen(o => !o)}
+        style={{
+          position: 'absolute', left: 13, top: '50%', transform: 'translateY(-50%)',
+          background: 'transparent', border: 'none', padding: 0, cursor: 'pointer',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          zIndex: 10, lineHeight: 1,
+        }}
+        aria-label="Open time picker"
+      >
+        <ClockIcon active={active} />
+      </button>
+
+      <input
+        type="text"
+        className={P.dateTime}
+        value={toReadableTime(value)}
+        placeholder="--:-- --"
+        onFocus={() => setOpen(true)}
+        onKeyDown={(e) => {
+          if (e.key === 'Escape') setOpen(false)
+          if (e.key === 'Backspace' || e.key === 'Delete') onChange('')
+        }}
+        readOnly
+        style={{ cursor: 'pointer' }}
+      />
+
+      <button
+        type="button"
+        tabIndex={-1}
+        onClick={() => setOpen(o => !o)}
+        style={{
+          position: 'absolute', right: 10, top: '50%', transform: 'translateY(-50%)',
+          width: 28, height: 28,
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          background: open ? 'rgba(170,204,51,0.12)' : 'transparent',
+          border: 'none',
+          borderRadius: 8,
+          color: open ? '#AACC33' : '#444',
+          cursor: 'pointer',
+          transition: 'background 150ms, color 150ms',
+          zIndex: 10,
+        }}
+        onMouseEnter={e => { if (!open) { e.currentTarget.style.background='#1e1e1e'; e.currentTarget.style.color='#888' } }}
+        onMouseLeave={e => { if (!open) { e.currentTarget.style.background='transparent'; e.currentTarget.style.color='#444' } }}
+        aria-label="Toggle time picker"
+      >
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+          <path
+            d={open ? 'M2 8l4-4 4 4' : 'M2 4l4 4 4-4'}
+            stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"
+          />
+        </svg>
+      </button>
+
+      {open && (
+        <TimePicker
+          value={value}
+          onChange={onChange}
+          onClose={() => setOpen(false)}
+        />
+      )}
+    </div>
+  )
+}
+
 function SecHead({ n, children }) {
   return (
     <div className={P.secHead}>
@@ -340,17 +520,6 @@ function Field({ label, children }) {
   )
 }
 
-function IconField({ icon, children }) {
-  return (
-    <div className="relative">
-      <span className="absolute left-[14px] top-1/2 -translate-y-1/2 text-[#444] text-[15px] pointer-events-none select-none z-10 leading-none">
-        {icon}
-      </span>
-      {children}
-    </div>
-  )
-}
-
 function CharCount({ value, max }) {
   const len = (value || '').length
   return (
@@ -367,9 +536,6 @@ export default function NewMeetingPage({ app }) {
   const [headerOpen, setHeaderOpen] = useState(false)
   const headerWrapRef = useRef(null)
 
-  const callerName   = app.contactPeople.find((p) => p.id === app.meetingForm.calledBy)?.name ?? app.user?.name ?? 'Organizer'
-  const callerPerson = app.contactPeople.find((p) => p.id === app.meetingForm.calledBy)
-
   const callerOptions = app.isManager
     ? app.contactPeople.filter((p) => p.email === app.user?.email || p.name === app.user?.name)
     : app.contactPeople
@@ -382,6 +548,8 @@ export default function NewMeetingPage({ app }) {
     : callerOptions
 
   const displayCallerOptions = app.isAdmin ? adminCallerOptions : callerOptions
+  const callerPerson = displayCallerOptions.find((p) => p.id === app.meetingForm.calledBy)
+  const callerName = callerPerson?.name ?? app.user?.name ?? 'Organizer'
   const meetingHeaders = useMemo(
     () => [...new Set(app.meetings.map((meeting) => meeting.meetingHeader).filter(Boolean))].sort((a, b) => a.localeCompare(b)),
     [app.meetings],
@@ -413,12 +581,12 @@ export default function NewMeetingPage({ app }) {
     return () => document.removeEventListener('mousedown', onDown)
   }, [headerOpen])
 
-  const selectedManagerAttendees = app.managers.filter((p) => app.meetingAttendeeIds.includes(p.id))
-  const selectedAttendees = [callerPerson, ...selectedManagerAttendees, ...app.manualAttendees].filter(Boolean)
+  const selectedInternalAttendees = app.contactPeople.filter((p) => p.id !== callerPerson?.id && app.meetingAttendeeIds.includes(p.id))
+  const selectedAttendees = [callerPerson, ...selectedInternalAttendees, ...app.manualAttendees].filter(Boolean)
 
-  const availableManagerAttendees = useMemo(
-    () => app.managers.filter((m) => !app.meetingAttendeeIds.includes(m.id)),
-    [app.managers, app.meetingAttendeeIds],
+  const availableAttendees = useMemo(
+    () => app.contactPeople.filter((person) => person.id !== callerPerson?.id && !app.meetingAttendeeIds.includes(person.id)),
+    [app.contactPeople, app.meetingAttendeeIds, callerPerson?.id],
   )
 
   const notice = buildNotice(
@@ -560,11 +728,11 @@ export default function NewMeetingPage({ app }) {
         <div className="h-px bg-[#1a1a1a]" />
         <SecHead>Attendees</SecHead>
 
-        {/* Add manager */}
+        {/* Add attendee */}
         <div className="grid gap-3 p-4 rounded-xl border border-[#1e1e1e] bg-[#080808]">
           <div>
-            <span className="uppercase tracking-[0.15em] text-[10px] text-[#AACC33]/70 font-semibold block">Add manager</span>
-            <span className="text-[#333] text-[11px]">Select from registered managers</span>
+            <span className="uppercase tracking-[0.15em] text-[10px] text-[#AACC33]/70 font-semibold block">Add attendee</span>
+            <span className="text-[#333] text-[11px]">Select any saved person</span>
           </div>
           <div className="grid gap-2 sm:grid-cols-[1fr_auto]">
             <select className={P.select}
@@ -575,16 +743,48 @@ export default function NewMeetingPage({ app }) {
                   cur.includes(e.target.value) ? cur : [...cur, e.target.value]
                 )
               }}>
-              <option value="">Select manager to add…</option>
-              {availableManagerAttendees.map((m) => (
-                <option key={m.id} value={m.id}>{m.name}{m.desig ? ` · ${m.desig}` : ''}</option>
+              <option value="">Select attendee to add...</option>
+              {availableAttendees.map((m) => (
+                <option key={m.id} value={m.id}>{m.name}{m.desig ? ` - ${m.desig}` : ''}</option>
               ))}
             </select>
           </div>
-          {availableManagerAttendees.length === 0 && (
-            <p className="m-0 text-[#2e2e2e] text-[11px]">All managers already added.</p>
+          {availableAttendees.length === 0 && (
+            <p className="m-0 text-[#2e2e2e] text-[11px]">All saved people already added.</p>
           )}
         </div>
+
+
+        {/* External attendee */}
+        <details className="grid gap-3 p-4 rounded-xl border border-[#1e1e1e] bg-[#080808]"
+          open={externalOpen} onToggle={(e) => setExternalOpen(e.currentTarget.open)}>
+          <summary className="list-none cursor-pointer select-none flex items-center justify-between gap-3">
+            <div>
+              <span className="uppercase tracking-[0.15em] text-[10px] text-[#AACC33]/70 font-semibold block">External attendee</span>
+              <span className="text-[#333] text-[11px]">Add guest not in the system</span>
+            </div>
+            <span className="text-[#333] text-[10px] uppercase tracking-[0.1em]">{externalOpen ? 'Collapse' : 'Expand'}</span>
+          </summary>
+          <div className="grid gap-3 pt-2 sm:grid-cols-2">
+            <Field label="Name">
+              <input className={P.input} value={app.manualAttendeeForm.name} placeholder="Guest name"
+                onChange={(e) => app.setManualAttendeeForm((c) => ({ ...c, name: e.target.value }))} />
+            </Field>
+            <Field label="Designation">
+              <input className={P.input} value={app.manualAttendeeForm.desig} placeholder="Guest role"
+                onChange={(e) => app.setManualAttendeeForm((c) => ({ ...c, desig: e.target.value }))} />
+            </Field>
+          </div>
+          <Field label="Email (optional)">
+            <input className={P.input} value={app.manualAttendeeForm.email} placeholder="guest@example.com"
+              onChange={(e) => app.setManualAttendeeForm((c) => ({ ...c, email: e.target.value }))} />
+          </Field>
+          <Field label="Mobile (optional)">
+            <input className={P.input} value={app.manualAttendeeForm.mobile} placeholder="+1 (555) 123-4567"
+              onChange={(e) => app.setManualAttendeeForm((c) => ({ ...c, mobile: e.target.value }))} />
+          </Field>
+          <button className={P.ghost} onClick={app.addManualAttendee}>+ Add external attendee</button>
+        </details>
 
         {/* Selected attendees */}
         <div className="grid gap-3 p-4 rounded-xl border border-[#1e1e1e] bg-[#080808]">
@@ -609,9 +809,9 @@ export default function NewMeetingPage({ app }) {
                     <div className="min-w-0 flex-1">
                       <div className="text-[#F0F0F0] text-[12px] truncate">{attendee.name}</div>
                       <div className="text-[#333] text-[10px] flex flex-wrap items-center gap-1 mt-[2px]">
-                        <span>{attendee.id === callerPerson?.id ? 'Caller' : attendee.desig || 'Manager'}</span>
-                        {attendee.source === 'manual' && <span>· external</span>}
-                        {attendee.mobile && <span>· {attendee.mobile}</span>}
+                        <span>{attendee.id === callerPerson?.id ? 'Caller' : attendee.desig || 'Attendee'}</span>
+                        {attendee.source === 'manual' && <span>- external</span>}
+                        {attendee.mobile && <span>- {attendee.mobile}</span>}
                       </div>
                     </div>
                   </div>
@@ -631,37 +831,6 @@ export default function NewMeetingPage({ app }) {
             </div>
           )}
         </div>
-
-        {/* External attendee */}
-        <details className="grid gap-3 p-4 rounded-xl border border-[#1e1e1e] bg-[#080808]"
-          open={externalOpen} onToggle={(e) => setExternalOpen(e.currentTarget.open)}>
-          <summary className="list-none cursor-pointer select-none flex items-center justify-between gap-3">
-            <div>
-              <span className="uppercase tracking-[0.15em] text-[10px] text-[#AACC33]/70 font-semibold block">External attendee</span>
-              <span className="text-[#333] text-[11px]">Add guest not in the system</span>
-            </div>
-            <span className="text-[#333] text-[10px] uppercase tracking-[0.1em]">{externalOpen ? '▲' : '▼'}</span>
-          </summary>
-          <div className="grid gap-3 pt-2 sm:grid-cols-2">
-            <Field label="Name">
-              <input className={P.input} value={app.manualAttendeeForm.name} placeholder="Guest name"
-                onChange={(e) => app.setManualAttendeeForm((c) => ({ ...c, name: e.target.value }))} />
-            </Field>
-            <Field label="Designation">
-              <input className={P.input} value={app.manualAttendeeForm.desig} placeholder="Guest role"
-                onChange={(e) => app.setManualAttendeeForm((c) => ({ ...c, desig: e.target.value }))} />
-            </Field>
-          </div>
-          <Field label="Email (optional)">
-            <input className={P.input} value={app.manualAttendeeForm.email} placeholder="guest@example.com"
-              onChange={(e) => app.setManualAttendeeForm((c) => ({ ...c, email: e.target.value }))} />
-          </Field>
-          <Field label="Mobile (optional)">
-            <input className={P.input} value={app.manualAttendeeForm.mobile} placeholder="+1 (555) 123-4567"
-              onChange={(e) => app.setManualAttendeeForm((c) => ({ ...c, mobile: e.target.value }))} />
-          </Field>
-          <button className={P.ghost} onClick={app.addManualAttendee}>+ Add external attendee</button>
-        </details>
       </div>
 
       {/* ── 02 Schedule ─────────────────────────────────────────── */}
@@ -678,16 +847,12 @@ export default function NewMeetingPage({ app }) {
             />
           </Field>
 
-          {/* Time — native picker */}
+          {/* Time - custom picker */}
           <Field label="Time *">
-            <IconField icon="🕐">
-              <input
-                type="time"
-                className={P.timeInput}
-                value={app.meetingForm.time}
-                onChange={(e) => app.setMeetingForm((c) => ({ ...c, time: e.target.value }))}
-              />
-            </IconField>
+            <TimeField
+              value={app.meetingForm.time}
+              onChange={(time) => app.setMeetingForm((c) => ({ ...c, time }))}
+            />
           </Field>
         </div>
 
