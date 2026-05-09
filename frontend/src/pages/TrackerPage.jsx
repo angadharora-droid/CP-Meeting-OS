@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { DateField } from '../components/DateTimePickers'
 
 const P = {
   primary: 'min-h-[40px] px-4 py-[9px] rounded-xl bg-[#AACC33] text-black font-bold text-[11px] tracking-[0.08em] uppercase cursor-pointer border-none transition-all hover:bg-[#BADA44] active:scale-[0.97] disabled:opacity-30 disabled:cursor-not-allowed',
@@ -159,19 +160,13 @@ export default function TrackerPage({ app }) {
       <div className="flex items-center gap-2 flex-wrap">
         <div className="flex items-center gap-2 flex-1 min-w-0">
           <span className="text-[10px] uppercase tracking-[0.12em] text-[#2e2e2e] shrink-0">From</span>
-          <input
-            type="date"
-            className="flex-1 min-w-0 bg-[#0e0e0e] border border-[#1e1e1e] rounded-xl text-[#666] text-[12px] px-3 py-2 outline-none [color-scheme:dark] transition-[border-color] focus:border-[#AACC33]/40 cursor-pointer"
-            value={fromDate}
-            onChange={e => setFromDate(e.target.value)}
-          />
+          <div className="flex-1 min-w-[180px]">
+            <DateField value={fromDate} onChange={setFromDate} />
+          </div>
           <span className="text-[#252525] shrink-0">→</span>
-          <input
-            type="date"
-            className="flex-1 min-w-0 bg-[#0e0e0e] border border-[#1e1e1e] rounded-xl text-[#666] text-[12px] px-3 py-2 outline-none [color-scheme:dark] transition-[border-color] focus:border-[#AACC33]/40 cursor-pointer"
-            value={toDate}
-            onChange={e => setToDate(e.target.value)}
-          />
+          <div className="flex-1 min-w-[180px]">
+            <DateField value={toDate} onChange={setToDate} />
+          </div>
           {(fromDate || toDate) && (
             <button
               className="text-[11px] text-[#333] hover:text-[#666] transition-colors shrink-0 cursor-pointer"

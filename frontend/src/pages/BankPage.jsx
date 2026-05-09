@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect, useMemo } from 'react'
+import { DateField } from '../components/DateTimePickers'
 import { buildNotice, getMeetingCallerLabel, getMeetingModeLabel, getMeetingVenue, toDateLabel } from '../lib/meetingOs'
 
 /* ─── Design tokens ──────────────────────────────────────────── */
@@ -797,17 +798,15 @@ function BankTab({ app }) {
   const hasFilters = app.bankQuery || app.bankFilter !== 'all' || app.callerFilter || app.bankDateFilter || hasDateFilter
 
   function exportMeetings() {
-    const headers = ['Title', 'Ref No', 'Header', 'Date', 'Time', 'Duration', 'Status', 'Called By', 'Mode', 'Venue', 'Unit', 'Attendees', 'Topics', 'Notes', 'Action Points']
+    const headers = ['Title', 'Ref No', 'Header', 'Date', 'Time', 'Status', 'Unit', 'Attendees', 'Topics', 'Action Points']
     const rows = meetings.map(m => {
       const attendees = m.attendeeDetails?.map(a => a.name).join('; ') || m.attendees || ''
       const topics = m.topics?.filter(t => t.topic || t.purpose).map(t => t.topic || t.purpose).join('; ') || m.purpose || ''
-      const notes = m.closingNotes || m.postponeReason || m.cancellationReason || ''
       const aps = m.actionPoints?.filter(p => p.task)
         .map(p => `${p.task} [${p.assignedTo || '?'}, Due: ${p.dueDate || '-'}, ${p.status || 'Open'}]`)
         .join(' | ') || ''
       return [m.title || '', m.refNo || '', m.meetingHeader || '', m.date || '', m.time || '',
-        m.duration || '', m.status || '', getMeetingCallerLabel(m, app.user), getMeetingModeLabel(m),
-        getMeetingVenue(m), m.unit || '', attendees, topics, notes, aps]
+        m.status || '', m.unit || '', attendees, topics, aps]
     })
     dlCSV(`meeting-bank-${new Date().toISOString().slice(0, 10)}.csv`, toCSV(headers, rows))
   }
@@ -852,9 +851,13 @@ function BankTab({ app }) {
       <div className="flex items-center gap-2 flex-wrap">
         <div className="flex items-center gap-2 flex-1 min-w-0">
           <span className="text-[10px] uppercase tracking-[0.12em] text-[#2e2e2e] shrink-0">From</span>
-          <DateFilterField value={fromDate} onChange={setFromDate} />
+          <div className="flex-1 min-w-[180px]">
+            <DateField value={fromDate} onChange={setFromDate} />
+          </div>
           <span className="text-[#252525] shrink-0">→</span>
-          <DateFilterField value={toDate} onChange={setToDate} />
+          <div className="flex-1 min-w-[180px]">
+            <DateField value={toDate} onChange={setToDate} />
+          </div>
         </div>
         <button
           onClick={exportMeetings}
