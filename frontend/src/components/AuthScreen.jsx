@@ -14,17 +14,12 @@ export default function AuthScreen({ pin, onDigit, onBack, pinResetForm, onPinRe
   }, [onDigit, onBack, showReset])
 
   return (
-    <main className="min-h-screen grid place-items-center p-4 bg-[#060606] relative overflow-hidden">
-      {/* Background ambient glow */}
-      <div className="fixed inset-0 pointer-events-none">
-        <div className="absolute top-[40%] left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] rounded-full bg-[#C8F55A]/[0.04] blur-[100px]" />
-      </div>
-
-      <section className="w-full max-w-[380px] grid gap-0 text-center relative z-10">
+    <main className="min-h-screen grid place-items-center p-4 relative overflow-hidden">
+      <section className="surface-panel w-full max-w-[410px] grid gap-0 text-center relative z-10 rounded-3xl p-5 sm:p-6">
 
         {/* Logo & brand */}
         <div className="flex flex-col items-center gap-4 mb-8">
-          <div className="w-[60px] h-[60px] grid place-items-center rounded-2xl bg-[#AACC33] text-black font-black text-[14px] tracking-wide shadow-[0_0_24px_rgba(170,204,51,0.22)]">
+          <div className="w-[58px] h-[58px] grid place-items-center rounded-2xl bg-[#AACC33] text-black font-black text-[14px] tracking-wide shadow-[0_0_24px_rgba(170,204,51,0.18)]">
             MO
           </div>
           <div>
@@ -73,7 +68,7 @@ export default function AuthScreen({ pin, onDigit, onBack, pinResetForm, onPinRe
             className="h-[62px] bg-[#131313] hover:bg-[#1a1a1a] active:bg-[#222] active:scale-[0.95] text-white/35 text-[11px] uppercase tracking-[0.12em] font-medium rounded-2xl border border-white/[0.06] hover:border-white/[0.1] transition-all duration-100 select-none"
             onClick={() => setShowReset((v) => !v)}
           >
-            {showReset ? '← Back' : 'Help'}
+            {showReset ? 'Back' : 'Help'}
           </button>
           <button
             className="h-[62px] bg-[#131313] hover:bg-[#1a1a1a] active:bg-[#222] active:scale-[0.95] text-white/80 text-xl font-light rounded-2xl border border-white/[0.06] hover:border-white/[0.1] transition-all duration-100 select-none"
@@ -85,11 +80,11 @@ export default function AuthScreen({ pin, onDigit, onBack, pinResetForm, onPinRe
             className="h-[62px] bg-[#131313] hover:bg-[#1a1a1a] active:bg-[#222] active:scale-[0.95] text-white/40 text-2xl rounded-2xl border border-white/[0.06] hover:border-white/[0.1] transition-all duration-100 select-none"
             onClick={onBack}
           >
-            ⌫
+            Del
           </button>
         </div>
 
-        {/* PIN reset section — collapsed by default */}
+        {/* PIN reset section */}
         {showReset && (
           <div className="grid gap-3 p-4 bg-[#0d0d0d] border border-white/[0.07] rounded-2xl text-left animate-slide-up">
             <div>
