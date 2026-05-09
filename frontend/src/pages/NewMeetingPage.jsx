@@ -360,15 +360,6 @@ function CharCount({ value, max }) {
   )
 }
 
-function Stat({ val, label }) {
-  return (
-    <div className="bg-[#0a0a0a] border border-[#1e1e1e] rounded-xl px-4 py-3 flex flex-col gap-[3px]">
-      <span className="text-[#F0F0F0] font-bold text-[22px] leading-none tabular-nums">{val}</span>
-      <span className="text-[#3a3a3a] text-[10px] mt-[3px] uppercase tracking-[0.1em]">{label}</span>
-    </div>
-  )
-}
-
 // ─── Main page ─────────────────────────────────────────────────────────────────
 
 export default function NewMeetingPage({ app }) {
@@ -471,12 +462,6 @@ export default function NewMeetingPage({ app }) {
     (app.meetingForm.calledBy || (app.isManager && callerOptions.length) || app.isAdmin) &&
     hasTopics
 
-  const steps = [
-    { n: '01', label: 'Identity', done: !!(app.meetingForm.title && app.meetingForm.calledBy) },
-    { n: '02', label: 'Schedule', done: !!(isValidDMY(app.meetingForm.date) && app.meetingForm.time) },
-    { n: '03', label: 'Topics',   done: hasTopics },
-  ]
-
   const dateLabel = toReadableDate(app.meetingForm.date)
   const timeLabel = app.meetingForm.time ? toReadableTime(app.meetingForm.time) : null
 
@@ -495,33 +480,6 @@ export default function NewMeetingPage({ app }) {
           </p>
         </div>
 
-        {/* Step progress */}
-        <div className="flex gap-2">
-          {steps.map((s, i) => (
-            <div key={s.n} className="flex items-center gap-2 flex-1">
-              <div className={`flex items-center gap-[6px] flex-1 px-3 py-[7px] rounded-lg border transition-colors ${
-                s.done ? 'border-[#AACC33]/25 bg-[#AACC33]/[0.06]' : 'border-[#1e1e1e] bg-transparent'
-              }`}>
-                <span className={`text-[9px] font-mono ${s.done ? 'text-[#AACC33]' : 'text-[#2a2a2a]'}`}>{s.n}</span>
-                <span className={`text-[10px] uppercase tracking-[0.1em] hidden sm:block ${s.done ? 'text-[#AACC33]/70' : 'text-[#2e2e2e]'}`}>{s.label}</span>
-                {s.done && <span className="ml-auto text-[#AACC33] text-[10px]">✓</span>}
-              </div>
-              {i < steps.length - 1 && <span className="text-[#1e1e1e] text-[10px]">›</span>}
-            </div>
-          ))}
-        </div>
-
-        {/* Stats */}
-        <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-          {[
-            [selectedAttendees.length, 'Attendees'],
-            [app.meetings.length,       'Total meetings'],
-            [app.openCount,             'Open tasks'],
-            [app.overdueCount,          'Overdue'],
-          ].map(([val, label]) => (
-            <Stat key={label} val={val} label={label} />
-          ))}
-        </div>
       </div>
 
       {/* 01 Identity */}
