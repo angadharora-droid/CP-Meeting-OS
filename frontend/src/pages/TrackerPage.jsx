@@ -39,6 +39,16 @@ function formatDateLabel(d) {
   return `${dd}/${mm}/${yyyy}`
 }
 
+function meetingPurposeFrom(meeting) {
+  if (!meeting) return ''
+  return meeting.purpose || meeting.topics?.map((topic) => topic?.purpose || topic?.topic).filter(Boolean).join('; ') || ''
+}
+
+function taskMeetingPurpose(task, meetings = []) {
+  const meeting = meetings.find((item) => item.meetingId === task.meetingId)
+  return task.meetingPurpose || meetingPurposeFrom(meeting) || 'Not recorded'
+}
+
 function Initials({ name }) {
   const letters = (name || '?')
     .split(' ')
@@ -53,10 +63,11 @@ function Initials({ name }) {
   )
 }
 
-function buildActionUpdateNotice(task) {
+function buildActionUpdateNotice(task, meetings = []) {
   const assignee = task.assignedTo || 'Team member'
   const meetingDate = formatDateLabel(task.meetingDate) || 'Not recorded'
   const dueDate = formatDateLabel(task.dueDate) || 'Not set'
+  const meetingPurpose = taskMeetingPurpose(task, meetings)
   return [
     'Action Point Follow-up',
     '',
@@ -64,7 +75,7 @@ function buildActionUpdateNotice(task) {
     '',
     'Please share an update on the action point assigned to you from the meeting below.',
     '',
-    `Meeting: ${task.meetingTitle || 'Meeting'}`,
+    `Meeting purpose: ${meetingPurpose}`,
     `Date of meeting: ${meetingDate}`,
     `Due date: ${dueDate}`,
     `Current status: ${task.status || 'Open'}`,
@@ -262,7 +273,7 @@ export default function TrackerPage({ app }) {
                         className={P.ghost}
                         onClick={() => app.setPreview({
                           title: 'Action Update Notice',
-                          content: buildActionUpdateNotice(task),
+                          content: buildActionUpdateNotice(task, app.meetings),
                         })}
                       >
                         Preview notice
@@ -278,7 +289,7 @@ export default function TrackerPage({ app }) {
                         className={P.ghost}
                         onClick={() => app.setPreview({
                           title: 'Action Update Notice',
-                          content: buildActionUpdateNotice(task),
+                          content: buildActionUpdateNotice(task, app.meetings),
                         })}
                       >
                         Preview notice

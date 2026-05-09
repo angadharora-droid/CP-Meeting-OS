@@ -624,10 +624,16 @@ export function useMeetingOs(navigate, page) {
     }
 
     if (points.length) {
+      const meetingPurpose = updateMeeting.purpose || (updateMeeting.topics || [])
+        .map((topic) => topic?.purpose || topic?.topic)
+        .filter(Boolean)
+        .join('; ')
+
       const taskResult = await apiPost({
         action: 'save_action_points',
         meetingId: closeMeetingId,
         meetingTitle: updateMeeting.title,
+        meetingPurpose,
         meetingDate: updateMeeting.date,
         points,
       })
@@ -642,6 +648,7 @@ export function useMeetingOs(navigate, page) {
       ...point,
       meetingId: closeMeetingId,
       meetingTitle: updateMeeting.title,
+      meetingPurpose: updateMeeting.purpose || (updateMeeting.topics || []).map((topic) => topic?.purpose || topic?.topic).filter(Boolean).join('; '),
       meetingDate: updateMeeting.date,
       status: 'Open',
     }))

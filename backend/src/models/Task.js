@@ -12,6 +12,7 @@ const taskSchema = new mongoose.Schema(
 
     meetingId: { type: String, default: '' },
     meetingTitle: { type: String, default: '' },
+    meetingPurpose: { type: String, default: '' },
     meetingDate: { type: String, default: '' },
 
     status: { type: String, enum: ['Open', 'Overdue', 'Done'], default: 'Open' },

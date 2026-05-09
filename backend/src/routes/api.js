@@ -604,6 +604,7 @@ router.post('/', async (req, res) => {
     if (action === 'save_action_points') {
       const meetingId = String(req.body?.meetingId || '').trim();
       const meetingTitle = String(req.body?.meetingTitle || '').trim();
+      const meetingPurpose = String(req.body?.meetingPurpose || '').trim();
       const meetingDate = String(req.body?.meetingDate || '').trim();
       const points = Array.isArray(req.body?.points) ? req.body.points : [];
 
@@ -628,6 +629,7 @@ router.post('/', async (req, res) => {
           ...p,
           meetingId,
           meetingTitle,
+          meetingPurpose,
           meetingDate,
           status: 'Open',
         }));
