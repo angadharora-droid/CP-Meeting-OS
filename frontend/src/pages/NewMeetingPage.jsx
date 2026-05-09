@@ -356,89 +356,76 @@ function DateField({ value, onChange }) {
 
 // ─── Shared small components ───────────────────────────────────────────────────
 
-function TimeColumn({ label, options, value, onChange }) {
-  const currentRef = useRef(null)
+function TimeColumn({ options, value, onChange, className = '', textAlign = 'center', btnPaddingClass = '' }) {
+  const selectedRef = useRef(null)
+  const scrollRef = useRef(null)
   const mountedRef = useRef(false)
 
   useEffect(() => {
-    const behavior = mountedRef.current ? 'smooth' : 'auto'
-    mountedRef.current = true
-    currentRef.current?.scrollIntoView({ block: 'center', behavior })
+    const el = selectedRef.current
+    const container = scrollRef.current
+    if (!el || !container) return
+    const cRect = container.getBoundingClientRect()
+    const eRect = el.getBoundingClientRect()
+    const targetTop = container.scrollTop + eRect.top - cRect.top - (cRect.height - eRect.height) / 2
+    if (mountedRef.current) {
+      container.scrollTo({ top: targetTop, behavior: 'smooth' })
+    } else {
+      container.scrollTop = targetTop
+      mountedRef.current = true
+    }
   }, [value])
 
   return (
-    <div className="grid gap-[6px] min-w-0">
-      <div className="text-[9px] uppercase tracking-[0.16em] text-[#3a3a3a] text-center font-semibold">{label}</div>
-      <div className="relative h-[176px] overflow-hidden rounded-xl border border-[#1e1e1e]">
-        <div className="absolute inset-0 bg-[#0c0c0c]" />
-        {/* Fade top/bottom */}
-        <div className="pointer-events-none absolute inset-x-0 top-0 h-[58px] z-20 bg-gradient-to-b from-[#0c0c0c] to-transparent" />
-        <div className="pointer-events-none absolute inset-x-0 bottom-0 h-[58px] z-20 bg-gradient-to-t from-[#0c0c0c] to-transparent" />
-        {/* Center selection ring */}
-        <div className="pointer-events-none absolute inset-x-1.5 top-1/2 -translate-y-1/2 h-[38px] z-10 rounded-lg border border-[#AACC33]/22 bg-[#AACC33]/[0.07]" />
-        {/* Scroll area — no scrollbar */}
-        <div className="absolute inset-0 overflow-y-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-          <div className="grid py-[69px] px-1">
-            {options.map((option) => {
-              const selected = option.value === value
-              return (
-                <button
-                  key={option.value}
-                  ref={selected ? currentRef : null}
-                  type="button"
-                  onClick={() => onChange(option.value)}
-                  className={`h-[38px] w-full rounded-lg font-mono transition-colors duration-100 relative z-30 ${
-                    selected
-                      ? 'text-[#AACC33] text-[15px] font-bold'
-                      : 'text-[#464646] text-[13px] hover:text-[#888] hover:bg-white/[0.03]'
-                  }`}
-                >
-                  {option.label}
-                </button>
-              )
-            })}
-          </div>
-        </div>
+    <div
+      ref={scrollRef}
+      className={`h-full overflow-y-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden ${className}`}
+    >
+      <div className="grid py-[69px]">
+        {options.map((option) => {
+          const sel = option.value === value
+          return (
+            <button
+              key={option.value}
+              ref={sel ? selectedRef : null}
+              type="button"
+              onClick={() => onChange(option.value)}
+              style={{ textAlign }}
+              className={`h-[38px] w-full font-mono transition-all duration-150 ${btnPaddingClass} ${
+                sel
+                  ? 'text-[#E8E8E8] text-[20px] font-bold'
+                  : 'text-[#353535] text-[15px] hover:text-[#555]'
+              }`}
+            >
+              {option.label}
+            </button>
+          )
+        })}
       </div>
     </div>
   )
 }
 
-const QUICK_TIMES = [
-  { label: '9 AM',  value: '09:00' },
-  { label: '10 AM', value: '10:00' },
-  { label: '12 PM', value: '12:00' },
-  { label: '2 PM',  value: '14:00' },
-  { label: '4 PM',  value: '16:00' },
-]
-
 function TimePicker({ value, onChange, onClose }) {
   const selected = splitTime(value)
-  const hourOptions = Array.from({ length: 12 }, (_, i) => ({ value: i + 1, label: String(i + 1).padStart(2, '0') }))
-  const minuteOptions = [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55].map((minute) => ({
-    value: minute,
-    label: String(minute).padStart(2, '0'),
+  const hourOptions   = Array.from({ length: 12 }, (_, i) => ({ value: i + 1, label: String(i + 1) }))
+  const minuteOptions = [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55].map((m) => ({
+    value: m, label: String(m).padStart(2, '0'),
   }))
-  const periodOptions = ['AM', 'PM'].map((period) => ({ value: period, label: period }))
+  const periodOptions = [
+    { value: 'AM', label: 'am' },
+    { value: 'PM', label: 'pm' },
+  ]
 
-  function update(part) {
-    onChange(composeTime({ ...selected, ...part }))
-  }
+  function update(part) { onChange(composeTime({ ...selected, ...part })) }
 
   return (
     <div
       onMouseDown={(e) => e.preventDefault()}
       style={{
-        position: 'absolute',
-        zIndex: 50,
-        top: 'calc(100% + 6px)',
-        left: 0,
-        width: '300px',
-        background: '#111',
-        border: '1px solid #242424',
-        borderRadius: '16px',
-        boxShadow: '0 12px 48px rgba(0,0,0,0.72)',
-        overflow: 'hidden',
+        position: 'absolute', zIndex: 50, top: 'calc(100% + 6px)', left: 0,
+        width: '280px', background: '#111', border: '1px solid #242424',
+        borderRadius: '16px', boxShadow: '0 12px 48px rgba(0,0,0,0.72)', overflow: 'hidden',
       }}
     >
       {/* Header */}
@@ -448,17 +435,10 @@ function TimePicker({ value, onChange, onClose }) {
           type="button"
           onClick={() => { onChange(roundToNextQuarter()); onClose() }}
           style={{
-            background: 'rgba(170,204,51,0.08)',
-            border: '1px solid rgba(170,204,51,0.22)',
-            color: '#AACC33',
-            fontSize: 9,
-            fontWeight: 700,
-            textTransform: 'uppercase',
-            letterSpacing: '0.12em',
-            cursor: 'pointer',
-            padding: '4px 10px',
-            borderRadius: 6,
-            transition: 'background 150ms',
+            background: 'rgba(170,204,51,0.08)', border: '1px solid rgba(170,204,51,0.22)',
+            color: '#AACC33', fontSize: 9, fontWeight: 700, textTransform: 'uppercase',
+            letterSpacing: '0.12em', cursor: 'pointer', padding: '4px 10px',
+            borderRadius: 6, transition: 'background 150ms',
           }}
           onMouseEnter={e => { e.currentTarget.style.background='rgba(170,204,51,0.15)' }}
           onMouseLeave={e => { e.currentTarget.style.background='rgba(170,204,51,0.08)' }}
@@ -467,66 +447,45 @@ function TimePicker({ value, onChange, onClose }) {
         </button>
       </div>
 
-      {/* Quick-select chips */}
-      <div style={{ display:'flex', gap:5, padding:'8px 12px', borderBottom:'1px solid #191919', overflowX:'auto', scrollbarWidth:'none' }}>
-        {QUICK_TIMES.map((qt) => {
-          const active = value === qt.value
-          return (
-            <button
-              key={qt.value}
-              type="button"
-              onClick={() => onChange(qt.value)}
-              style={{
-                flexShrink: 0,
-                padding: '4px 9px',
-                borderRadius: 7,
-                border: active ? '1px solid rgba(170,204,51,0.38)' : '1px solid #1e1e1e',
-                background: active ? 'rgba(170,204,51,0.1)' : 'transparent',
-                color: active ? '#AACC33' : '#484848',
-                fontSize: 10,
-                fontWeight: 600,
-                letterSpacing: '0.04em',
-                cursor: 'pointer',
-                transition: 'all 120ms',
-                whiteSpace: 'nowrap',
-                fontFamily: 'monospace',
-              }}
-              onMouseEnter={e => { if (!active) { e.currentTarget.style.borderColor='#2a2a2a'; e.currentTarget.style.color='#777' } }}
-              onMouseLeave={e => { if (!active) { e.currentTarget.style.borderColor='#1e1e1e'; e.currentTarget.style.color='#484848' } }}
-            >
-              {qt.label}
-            </button>
-          )
-        })}
-      </div>
-
-      {/* Columns */}
-      <div className="grid grid-cols-[1fr_1fr_0.72fr] gap-2 p-3">
-        <TimeColumn label="Hour" options={hourOptions} value={selected.hour} onChange={(hour) => update({ hour })} />
-        <TimeColumn label="Min" options={minuteOptions} value={selected.minute} onChange={(minute) => update({ minute })} />
-        <TimeColumn label="AM/PM" options={periodOptions} value={selected.period} onChange={(period) => update({ period })} />
+      {/* Wheel */}
+      <div className="relative" style={{ height: 196 }}>
+        {/* Shared selection pill spanning all columns */}
+        <div className="pointer-events-none absolute inset-x-3 top-1/2 -translate-y-1/2 h-[42px] rounded-2xl bg-white/[0.05]" />
+        {/* Edge fades */}
+        <div className="pointer-events-none absolute inset-x-0 top-0 h-[64px] z-10" style={{ background: 'linear-gradient(to bottom, #111 10%, transparent 100%)' }} />
+        <div className="pointer-events-none absolute inset-x-0 bottom-0 h-[64px] z-10" style={{ background: 'linear-gradient(to top, #111 10%, transparent 100%)' }} />
+        {/* Columns */}
+        <div className="flex h-full items-stretch">
+          <TimeColumn
+            options={hourOptions} value={selected.hour}
+            onChange={(hour) => update({ hour })}
+            className="flex-1" textAlign="right" btnPaddingClass="pr-2"
+          />
+          <div className="flex items-center justify-center w-5 shrink-0 text-[#444] text-[16px] font-bold pointer-events-none z-20 pb-px">:</div>
+          <TimeColumn
+            options={minuteOptions} value={selected.minute}
+            onChange={(minute) => update({ minute })}
+            className="flex-1" textAlign="left" btnPaddingClass="pl-1"
+          />
+          <TimeColumn
+            options={periodOptions} value={selected.period}
+            onChange={(period) => update({ period })}
+            className="w-[68px] shrink-0" textAlign="left" btnPaddingClass="pl-3"
+          />
+        </div>
       </div>
 
       {/* Footer */}
       <div className="flex items-center justify-between border-t border-[#1a1a1a] px-4 py-3 gap-3">
-        <span className="font-mono text-[18px] font-bold text-[#AACC33] tracking-wider">
+        <span className="font-mono text-[16px] font-bold text-[#AACC33] tracking-wider">
           {toReadableTime(value) || '--:-- --'}
         </span>
         <button
-          type="button"
-          onClick={onClose}
+          type="button" onClick={onClose}
           style={{
-            padding: '7px 18px',
-            borderRadius: 8,
-            background: '#AACC33',
-            border: 'none',
-            color: '#000',
-            fontSize: 10,
-            fontWeight: 700,
-            textTransform: 'uppercase',
-            letterSpacing: '0.1em',
-            cursor: 'pointer',
-            transition: 'background 150ms, transform 100ms',
+            padding: '7px 18px', borderRadius: 8, background: '#AACC33', border: 'none',
+            color: '#000', fontSize: 10, fontWeight: 700, textTransform: 'uppercase',
+            letterSpacing: '0.1em', cursor: 'pointer', transition: 'background 150ms, transform 100ms',
           }}
           onMouseEnter={e => { e.currentTarget.style.background='#BADA44' }}
           onMouseLeave={e => { e.currentTarget.style.background='#AACC33' }}
