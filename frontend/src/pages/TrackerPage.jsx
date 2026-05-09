@@ -54,24 +54,28 @@ function Initials({ name }) {
 }
 
 function buildActionUpdateNotice(task) {
+  const assignee = task.assignedTo || 'Team member'
+  const meetingDate = formatDateLabel(task.meetingDate) || 'Not recorded'
+  const dueDate = formatDateLabel(task.dueDate) || 'Not set'
   return [
-    'ACTION POINT UPDATE NOTICE',
+    'Action Point Follow-up',
     '',
-    `Assigned to: ${task.assignedTo || 'Unassigned'}`,
-    task.assignedToDesig ? `Designation: ${task.assignedToDesig}` : '',
-    task.assignedToMobile ? `Mobile: ${task.assignedToMobile}` : '',
+    `Dear ${assignee},`,
+    '',
+    'Please share an update on the action point assigned to you from the meeting below.',
     '',
     `Meeting: ${task.meetingTitle || 'Meeting'}`,
-    `Meeting date: ${formatDateLabel(task.meetingDate) || 'Not recorded'}`,
+    `Date of meeting: ${meetingDate}`,
+    `Due date: ${dueDate}`,
+    `Current status: ${task.status || 'Open'}`,
+    task.assignedToDesig ? `Designation: ${task.assignedToDesig}` : '',
+    task.assignedToMobile ? `Mobile no.: ${task.assignedToMobile}` : '',
     '',
-    'Action assigned:',
+    'Action point:',
     task.task || 'Not specified',
     '',
-    `Due date: ${formatDateLabel(task.dueDate) || 'Not set'}`,
-    `Current status: ${task.status || 'Open'}`,
-    '',
-    'Update requested:',
-    'Please share the latest progress, blockers if any, and expected completion date.',
+    'Requested update:',
+    'Please confirm the current progress, any blockers, and the expected completion date.',
   ].filter(Boolean).join('\n')
 }
 
