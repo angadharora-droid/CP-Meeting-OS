@@ -9,7 +9,7 @@ const P = {
   select:   'bg-[#141414] border border-[#262626] rounded-xl text-[#F0F0F0] text-[14px] px-[13px] py-3 w-full outline-none min-h-[44px] appearance-none cursor-pointer transition-[border-color] duration-150 focus:border-[#AACC33]/45 [background-image:url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'12\' height=\'8\' fill=\'none\'%3E%3Cpath d=\'M1 1l5 5 5-5\' stroke=\'%23555\' stroke-width=\'1.5\' stroke-linecap=\'round\'/%3E%3C/svg%3E")] bg-no-repeat [background-position:right_13px_center] pr-9 [color-scheme:dark]',
   textarea: 'bg-[#141414] border border-[#262626] rounded-xl text-[#F0F0F0] text-[14px] px-[13px] py-3 w-full outline-none appearance-none resize-y min-h-[80px] leading-[1.6] transition-[border-color,box-shadow] duration-150 placeholder:text-[#2e2e2e] focus:border-[#AACC33]/45 focus:[box-shadow:0_0_0_3px_rgba(170,204,51,0.06)]',
   card:     'p-4 grid gap-4 border border-[#1e1e1e] bg-[#0e0e0e] rounded-2xl',
-  label:    'flex flex-col gap-[6px] text-[10px] tracking-[0.15em] uppercase text-[#444]',
+  label:    'flex flex-col gap-[6px] text-[11px] tracking-[0.15em] uppercase text-[#555]',
   secHead:  'flex items-center gap-2 text-[10px] uppercase tracking-[0.18em] text-[#AACC33] font-semibold',
   // pr-[44px] leaves room for the right-side picker toggle button
   dateTime: 'bg-[#141414] border border-[#262626] rounded-xl text-[#F0F0F0] text-[14px] pl-[42px] pr-[44px] py-3 w-full outline-none min-h-[44px] appearance-none transition-[border-color,box-shadow] duration-150 [color-scheme:dark] focus:border-[#AACC33]/45 focus:[box-shadow:0_0_0_3px_rgba(170,204,51,0.06)] placeholder:text-[#2e2e2e] font-mono',
@@ -198,7 +198,7 @@ function CalendarPicker({ value, onChange, onClose }) {
       {/* Day-of-week headers */}
       <div style={{ display:'grid', gridTemplateColumns:'repeat(7,1fr)', padding:'10px 12px 4px' }}>
         {DOW.map(d => (
-          <div key={d} style={{ textAlign:'center', fontSize:10, color:'#333', textTransform:'uppercase', letterSpacing:'0.08em', fontWeight:600 }}>
+          <div key={d} style={{ textAlign:'center', fontSize:10, color:'#555', textTransform:'uppercase', letterSpacing:'0.08em', fontWeight:600 }}>
             {d}
           </div>
         ))}
@@ -635,7 +635,7 @@ function Field({ label, children }) {
 function CharCount({ value, max }) {
   const len = (value || '').length
   return (
-    <span className={`text-right text-[10px] tabular-nums ${len > max * 0.8 ? 'text-[#AACC33]/60' : 'text-[#2e2e2e]'}`}>
+    <span className={`text-right text-[10px] tabular-nums ${len > max * 0.8 ? 'text-[#AACC33]/60' : 'text-[#555]'}`}>
       {len}/{max}
     </span>
   )
@@ -750,11 +750,11 @@ export default function NewMeetingPage({ app }) {
       {/* Hero */}
       <div className={P.card} style={{ gap: '20px' }}>
         <div>
-          <p className="m-0 mb-[5px] uppercase tracking-[0.2em] text-[10px] text-[#333]">
+          <p className="m-0 mb-[5px] uppercase tracking-[0.2em] text-[10px] text-[#555]">
             {app.orgName || 'Organisation'}
           </p>
           <h1 className="m-0 font-black text-[22px] text-[#F0F0F0] leading-tight tracking-tight">New Meeting</h1>
-          <p className="m-0 mt-[6px] text-[#3a3a3a] text-[12px] leading-[1.6]">
+          <p className="m-0 mt-[6px] text-[#666] text-[13px] leading-[1.6]">
             Fill the details below. A notice and agenda form are generated automatically.
           </p>
         </div>
@@ -843,7 +843,7 @@ export default function NewMeetingPage({ app }) {
         <div className="grid gap-4 p-4 rounded-xl border border-[#1e1e1e] bg-[#080808]">
           <div>
             <span className="uppercase tracking-[0.15em] text-[10px] text-[#AACC33]/70 font-semibold block">Add attendee</span>
-            <span className="text-[#333] text-[11px]">Select a saved person or add an external attendee</span>
+            <span className="text-[#666] text-[11px]">Select a saved person or add an external attendee</span>
           </div>
 
           <Field label="Saved person">
@@ -862,7 +862,7 @@ export default function NewMeetingPage({ app }) {
             </select>
           </Field>
           {availableAttendees.length === 0 && (
-            <p className="m-0 text-[#2e2e2e] text-[11px]">All saved people already added.</p>
+            <p className="m-0 text-[#555] text-[11px]">All saved people already added.</p>
           )}
 
           <div className="h-px bg-[#1a1a1a]" />
@@ -894,7 +894,7 @@ export default function NewMeetingPage({ app }) {
           <div className="flex items-center justify-between gap-3">
             <div>
               <span className="uppercase tracking-[0.15em] text-[10px] text-[#AACC33]/70 font-semibold block">Selected attendees</span>
-              <span className="text-[#333] text-[11px]">Caller is included automatically</span>
+              <span className="text-[#666] text-[11px]">Caller is included automatically</span>
             </div>
             <span className="px-[10px] py-[4px] rounded-full bg-[#141414] border border-[#222] text-[10px] uppercase tracking-[0.1em] text-[#444]">
               {selectedAttendees.length}
@@ -911,7 +911,7 @@ export default function NewMeetingPage({ app }) {
                     </div>
                     <div className="min-w-0 flex-1">
                       <div className="text-[#F0F0F0] text-[12px] truncate">{attendee.name}</div>
-                      <div className="text-[#333] text-[10px] flex flex-wrap items-center gap-1 mt-[2px]">
+                      <div className="text-[#555] text-[10px] flex flex-wrap items-center gap-1 mt-[2px]">
                         <span>{attendee.id === callerPerson?.id ? 'Caller' : attendee.desig || 'Attendee'}</span>
                         {attendee.source === 'manual' && <span>- external</span>}
                         {attendee.mobile && <span>- {attendee.mobile}</span>}
@@ -929,7 +929,7 @@ export default function NewMeetingPage({ app }) {
               ))}
             </div>
           ) : (
-            <div className="py-4 border border-dashed border-[#1e1e1e] rounded-lg text-[#2e2e2e] text-[11px] text-center">
+            <div className="py-4 border border-dashed border-[#1e1e1e] rounded-lg text-[#555] text-[11px] text-center">
               No attendees selected yet
             </div>
           )}
@@ -1018,7 +1018,7 @@ export default function NewMeetingPage({ app }) {
           </button>
         </div>
 
-        <p className="m-0 text-[#333] text-[11px] leading-[1.5]">
+        <p className="m-0 text-[#666] text-[11px] leading-[1.5]">
           Add one or more purposes for this meeting. Each purpose can have its own desired outcome and documents.
         </p>
 
@@ -1031,7 +1031,7 @@ export default function NewMeetingPage({ app }) {
           />
           <span className="grid gap-[3px] normal-case tracking-normal">
             <span className="text-[#F0F0F0] text-[12px] font-semibold">Add additional points section</span>
-            <span className="text-[#333] text-[11px] leading-[1.45]">
+            <span className="text-[#666] text-[11px] leading-[1.45]">
               Include the blank Other Discussions area in the agenda form preview and print.
             </span>
           </span>
@@ -1109,7 +1109,7 @@ export default function NewMeetingPage({ app }) {
           Generate &amp; Save Meeting →
         </button>
         {!canGenerate && (
-          <p className="text-[10px] text-[#2e2e2e] text-center m-0">
+          <p className="text-[11px] text-[#555] text-center m-0">
             Name, date (dd/mm/yyyy), time, caller, and at least one purpose required
           </p>
         )}

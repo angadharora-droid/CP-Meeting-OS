@@ -11,7 +11,7 @@ function StatCard({ value, label, accent }) {
       <span className={`text-[28px] font-black leading-none tabular-nums font-mono tracking-tight ${accent || 'text-[#F0F0F0]'}`}>
         {value}
       </span>
-      <span className="text-[9.5px] text-white/30 uppercase tracking-[0.14em] mt-1">{label}</span>
+      <span className="text-[10.5px] text-white/55 uppercase tracking-[0.14em] mt-1">{label}</span>
     </div>
   )
 }
@@ -35,8 +35,8 @@ function StatusBadge({ status }) {
 function MetaChip({ label, value }) {
   return (
     <div className="p-[10px_12px] rounded-[10px] bg-white/[0.025] border border-white/[0.05]">
-      <div className="text-[9px] uppercase tracking-[0.14em] text-white/25 mb-[5px]">{label}</div>
-      <div className="text-[12px] text-white/65 leading-snug truncate">{value}</div>
+      <div className="text-[9px] uppercase tracking-[0.14em] text-white/40 mb-[5px]">{label}</div>
+      <div className="text-[12px] text-white/80 leading-snug truncate">{value}</div>
     </div>
   )
 }
@@ -69,7 +69,7 @@ function MeetingDetail({ meeting, onClose }) {
     return (
       <div className={`p-4 rounded-xl border ${variantCls[variant || 'default']}`}>
         <div className={`text-[9.5px] uppercase tracking-[0.16em] mb-2 ${labelCls[variant || 'default']}`}>{label}</div>
-        <p className="m-0 text-[12.5px] text-white/55 leading-[1.7] whitespace-pre-line">{value}</p>
+        <p className="m-0 text-[12.5px] text-white/70 leading-[1.7] whitespace-pre-line">{value}</p>
       </div>
     )
   }
@@ -91,9 +91,9 @@ function MeetingDetail({ meeting, onClose }) {
         {/* Header */}
         <div className="flex items-start gap-3 p-5 pb-4 border-b border-[#1a1a1a] shrink-0">
           <div className="flex-1 min-w-0">
-            <p className="m-0 mb-[5px] text-[9.5px] uppercase tracking-[0.18em] text-white/25">Meeting details</p>
+            <p className="m-0 mb-[5px] text-[9.5px] uppercase tracking-[0.18em] text-white/45">Meeting details</p>
             <h2 className="m-0 text-[1.1rem] font-extrabold leading-snug tracking-tight">{meeting.title}</h2>
-            <p className="m-0 mt-[3px] text-[11.5px] text-white/35">
+            <p className="m-0 mt-[3px] text-[11.5px] text-white/55">
               {meeting.date ? toDateLabel(meeting.date) : 'Date TBD'}
               {meeting.time ? ` · ${meeting.time}` : ''}
               {meeting.duration ? ` · ${meeting.duration}` : ''}
@@ -123,7 +123,7 @@ function MeetingDetail({ meeting, onClose }) {
           {/* Attendees */}
           {attendees.length > 0 && (
             <div className="p-4 rounded-xl bg-white/[0.025] border border-white/[0.05]">
-              <div className="text-[9.5px] uppercase tracking-[0.16em] text-white/25 mb-3">
+              <div className="text-[9.5px] uppercase tracking-[0.16em] text-white/45 mb-3">
                 Attendees · {attendees.length}
               </div>
               <div className="grid gap-0">
@@ -136,9 +136,9 @@ function MeetingDetail({ meeting, onClose }) {
                       {initials(a.name)}
                     </div>
                     <div className="flex-1 min-w-0">
-                      <div className="text-[12px] text-white/60">{a.name}</div>
+                      <div className="text-[12px] text-white/75">{a.name}</div>
                       {(a.desig || a.mobile) && (
-                        <div className="text-[10px] text-white/25 mt-[2px] flex flex-wrap gap-2">
+                        <div className="text-[10px] text-white/45 mt-[2px] flex flex-wrap gap-2">
                           {a.desig  && <span>{a.desig}</span>}
                           {a.mobile && <span>· {a.mobile}</span>}
                         </div>
@@ -153,7 +153,7 @@ function MeetingDetail({ meeting, onClose }) {
           {/* Purposes or legacy flat fields */}
           {meeting.topics?.filter((t) => t.purpose || t.topic).length > 0 ? (
             <div className="grid gap-2">
-              <div className="text-[9.5px] uppercase tracking-[0.16em] text-white/25">
+              <div className="text-[9.5px] uppercase tracking-[0.16em] text-white/45">
                 Purposes - {meeting.topics.filter((t) => t.purpose || t.topic).length}
               </div>
               {meeting.topics.filter((t) => t.purpose || t.topic).map((t, i) => (
@@ -182,8 +182,8 @@ function MeetingDetail({ meeting, onClose }) {
           {/* Footer meta */}
           {(meeting.unit || meeting.refNo) && (
             <div className="flex flex-wrap gap-4 pt-3 border-t border-[#1a1a1a]">
-              {meeting.unit  && <span className="text-[11px] text-white/25">Dept: <span className="text-white/40">{meeting.unit}</span></span>}
-              {meeting.refNo && <span className="text-[11px] text-white/25">Ref: <code className="text-white/40 font-mono text-[10.5px]">{meeting.refNo}</code></span>}
+              {meeting.unit  && <span className="text-[11px] text-white/45">Dept: <span className="text-white/60">{meeting.unit}</span></span>}
+              {meeting.refNo && <span className="text-[11px] text-white/45">Ref: <code className="text-white/60 font-mono text-[10.5px]">{meeting.refNo}</code></span>}
             </div>
           )}
         </div>
@@ -192,7 +192,7 @@ function MeetingDetail({ meeting, onClose }) {
         <div className="p-4 border-t border-[#1a1a1a] shrink-0">
           <button
             onClick={onClose}
-            className="w-full py-3 rounded-xl bg-white/[0.04] border border-white/[0.07] text-white/45 text-[12px] font-medium cursor-pointer hover:bg-white/[0.07] transition-colors"
+            className="w-full py-3 rounded-xl bg-white/[0.04] border border-white/[0.07] text-white/60 text-[12px] font-medium cursor-pointer hover:bg-white/[0.07] transition-colors"
           >
             Close
           </button>
@@ -219,11 +219,11 @@ export default function DashboardPage({ app }) {
         {/* Subtle accent glow */}
         <div className="pointer-events-none absolute -top-10 -right-10 w-40 h-40 rounded-full bg-[radial-gradient(circle,rgba(170,204,51,0.08)_0%,transparent_70%)]" />
         <div className="relative">
-          <p className="m-0 mb-[6px] uppercase tracking-[0.2em] text-[10px] text-white/30">
+          <p className="m-0 mb-[6px] uppercase tracking-[0.2em] text-[10px] text-white/50">
             {toDateLabel(today)}
           </p>
           <h1 className="text-[26px] font-black tracking-tight leading-none">Dashboard</h1>
-          <p className="m-0 mt-[10px] text-white/50 text-[12.5px] leading-snug flex items-center gap-[6px]">
+          <p className="m-0 mt-[10px] text-white/65 text-[13px] leading-snug flex items-center gap-[6px]">
             {app.todayMeetings.length > 0 && (
               <span className="inline-block w-[6px] h-[6px] rounded-full bg-[#AACC33] shrink-0" />
             )}
@@ -253,7 +253,7 @@ export default function DashboardPage({ app }) {
       {app.todayMeetings.length > 0 && (
         <div>
           <div className="flex items-center gap-2 mb-3">
-            <p className="m-0 text-[10px] uppercase tracking-[0.18em] text-white/28 shrink-0">Today's schedule · tap to expand</p>
+            <p className="m-0 text-[10px] uppercase tracking-[0.18em] text-white/50 shrink-0">Today's schedule · tap to expand</p>
             <div className="flex-1 h-px bg-white/[0.07]" />
           </div>
           <div className="grid gap-2">
@@ -268,7 +268,7 @@ export default function DashboardPage({ app }) {
                   <div className="text-[14px] font-bold font-mono tracking-tight text-[#F0F0F0]">
                     {meeting.time ? meeting.time.slice(0, 5) : '--:--'}
                   </div>
-                  <div className="text-[9px] text-white/25 mt-[3px] uppercase tracking-[0.06em] text-center">
+                  <div className="text-[9px] text-white/45 mt-[3px] uppercase tracking-[0.06em] text-center">
                     {(meeting.duration || '').replace(' minutes', 'min').replace(' hours', 'hr').replace(' hour', 'hr')}
                   </div>
                 </div>
@@ -282,7 +282,7 @@ export default function DashboardPage({ app }) {
                     <h3 className="text-[13.5px] font-semibold truncate">{meeting.title}</h3>
                     <StatusBadge status={meeting.status} />
                   </div>
-                  <div className="text-[11px] text-white/35 flex flex-wrap gap-[5px] items-center">
+                  <div className="text-[11px] text-white/55 flex flex-wrap gap-[5px] items-center">
                     <span>{getMeetingCallerLabel(meeting, app.user)}</span>
                     <span className="text-white/15">·</span>
                     <span>{getMeetingModeLabel(meeting)}</span>
@@ -290,7 +290,7 @@ export default function DashboardPage({ app }) {
                     <span>{getMeetingVenue(meeting) || 'TBD'}</span>
                   </div>
                   {meeting.purpose && (
-                    <p className="m-0 mt-2 text-[11px] text-white/25 line-clamp-1 leading-[1.6]">
+                    <p className="m-0 mt-2 text-[11px] text-white/45 line-clamp-1 leading-[1.6]">
                       {meeting.purpose}
                     </p>
                   )}
@@ -303,7 +303,7 @@ export default function DashboardPage({ app }) {
 
       {/* ── Empty state ── */}
       {!app.todayMeetings.length && (
-        <div className="py-14 px-4 border border-dashed border-white/[0.07] rounded-3xl text-white/20 text-[13px] text-center">
+        <div className="py-14 px-4 border border-dashed border-white/[0.07] rounded-3xl text-white/40 text-[13px] text-center">
           <div className="text-[36px] mb-3 select-none opacity-40">?</div>
           No meetings scheduled for today.
         </div>
@@ -312,7 +312,7 @@ export default function DashboardPage({ app }) {
       {/* ── Quick actions ── */}
       <div>
         <div className="flex items-center gap-2 mb-3">
-          <p className="m-0 text-[10px] uppercase tracking-[0.18em] text-white/28 shrink-0">Quick actions</p>
+          <p className="m-0 text-[10px] uppercase tracking-[0.18em] text-white/50 shrink-0">Quick actions</p>
           <div className="flex-1 h-px bg-white/[0.07]" />
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
@@ -329,16 +329,16 @@ export default function DashboardPage({ app }) {
             onClick={() => navigate('/close-meeting')}
           >
             <div className="text-white/50 text-[20px] mb-[10px] leading-none">✓</div>
-            <div className="text-white/70 text-[12.5px] font-bold mb-[3px]">Close Meeting</div>
-            <div className="text-white/30 text-[10.5px]">Log notes & action points</div>
+            <div className="text-white/80 text-[12.5px] font-bold mb-[3px]">Close Meeting</div>
+            <div className="text-white/50 text-[10.5px]">Log notes & action points</div>
           </button>
           <button
             className="p-4 rounded-2xl bg-white/[0.025] border border-white/[0.07] text-left hover:bg-white/[0.04] active:scale-[0.97] transition-all cursor-pointer"
             onClick={() => navigate('/tracker')}
           >
             <div className="text-white/50 text-[20px] mb-[10px] leading-none">◎</div>
-            <div className="text-white/70 text-[12.5px] font-bold mb-[3px]">View Tasks</div>
-            <div className="text-white/30 text-[10.5px]">
+            <div className="text-white/80 text-[12.5px] font-bold mb-[3px]">View Tasks</div>
+            <div className="text-white/50 text-[10.5px]">
               {app.openCount > 0 ? `${app.openCount} open action point${app.openCount !== 1 ? 's' : ''}` : 'All clear'}
             </div>
           </button>

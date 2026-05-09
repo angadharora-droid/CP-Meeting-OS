@@ -118,7 +118,7 @@ function CalendarPicker({ value, onChange, onClose }) {
         <button type="button" className="h-7 w-7 rounded-lg text-[#555] hover:bg-[#1e1e1e] hover:text-[#F0F0F0]" onClick={() => viewMonth === 11 ? (setViewMonth(0), setViewYear((y) => y + 1)) : setViewMonth((m) => m + 1)}>›</button>
       </div>
       <div className="grid grid-cols-7 px-3 pb-1 pt-2.5">
-        {DOW.map((d) => <div key={d} className="text-center text-[10px] font-semibold uppercase tracking-[0.08em] text-[#333]">{d}</div>)}
+        {DOW.map((d) => <div key={d} className="text-center text-[10px] font-semibold uppercase tracking-[0.08em] text-[#555]">{d}</div>)}
       </div>
       <div className="grid grid-cols-7 gap-y-0.5 px-3 pb-3">
         {cells.map((d, i) => {

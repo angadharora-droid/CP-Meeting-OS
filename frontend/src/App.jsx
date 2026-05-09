@@ -258,16 +258,16 @@ function App() {
         <div className="flex gap-2 items-center">
           <button
             onClick={() => app.setSearchOpen(true)}
-            className="flex items-center gap-2 bg-[#111] border border-[#222] text-[#555] rounded-lg px-3 py-[7px] text-[11px] cursor-pointer hover:border-[#333] hover:text-[#888] transition-all"
+            className="flex items-center gap-2 bg-[#111] border border-[#222] text-[#777] rounded-lg px-3 py-[7px] text-[11px] cursor-pointer hover:border-[#333] hover:text-[#aaa] transition-all"
           >
             <span className="text-base leading-none">⌕</span>
             <span className="hidden sm:block">Search</span>
-            <kbd className="hidden sm:flex items-center px-[6px] py-[2px] rounded bg-[#1a1a1a] border border-[#2a2a2a] text-[9px] text-[#444] font-mono tracking-wider">⌘K</kbd>
+            <kbd className="hidden sm:flex items-center px-[6px] py-[2px] rounded bg-[#1a1a1a] border border-[#2a2a2a] text-[9px] text-[#666] font-mono tracking-wider">⌘K</kbd>
           </button>
 
           <div className="hidden sm:grid text-right leading-tight">
             <span className="text-[11px] text-[#F0F0F0] font-medium">{app.user?.name}</span>
-            <span className="text-[10px] text-[#444] uppercase tracking-[0.12em]">{app.user?.role}</span>
+            <span className="text-[10px] text-[#666] uppercase tracking-[0.12em]">{app.user?.role}</span>
           </div>
 
           <button
@@ -293,7 +293,7 @@ function App() {
             key={key}
             onClick={() => navigate(`/${key}`)}
             className={`relative px-4 py-[13px] text-[11px] tracking-[0.08em] uppercase cursor-pointer border-none bg-transparent whitespace-nowrap shrink-0 transition-colors ${
-              page === key ? 'text-[#AACC33]' : 'text-[#444] hover:text-[#777]'
+              page === key ? 'text-[#AACC33]' : 'text-[#666] hover:text-[#999]'
             }`}
           >
             {label}
@@ -349,7 +349,7 @@ function App() {
           <div className="document-preview-shell w-full max-w-[780px] max-h-[88dvh] grid grid-rows-[auto_1fr_auto] gap-3 border border-[#252525] bg-[#0d0d0d] rounded-2xl p-5 shadow-2xl">
             <div className="document-preview-header flex items-center justify-between gap-3">
               <div>
-                <p className="m-0 text-[10px] uppercase tracking-[0.18em] text-[#555] mb-[3px]">Document preview</p>
+                <p className="m-0 text-[10px] uppercase tracking-[0.18em] text-[#777] mb-[3px]">Document preview</p>
                 <h2 className="m-0 text-[16px] leading-tight">{app.preview.title}</h2>
               </div>
               <button
