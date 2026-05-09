@@ -356,38 +356,68 @@ function DateField({ value, onChange }) {
 
 // ─── Shared small components ───────────────────────────────────────────────────
 
+const ITEM_H = 38 // px — must match h-[38px] on buttons
+
 function TimeColumn({ options, value, onChange, className = '', textAlign = 'center', btnPaddingClass = '' }) {
-  const selectedRef = useRef(null)
   const scrollRef = useRef(null)
   const mountedRef = useRef(false)
+  const valueRef = useRef(value) // tracks current value without closure stale-ness
 
+  // Keep valueRef in sync so the snap listener always sees the latest value
+  useEffect(() => { valueRef.current = value }, [value])
+
+  // Scroll to the correct item whenever value changes externally (e.g. click)
   useEffect(() => {
-    const el = selectedRef.current
     const container = scrollRef.current
-    if (!el || !container) return
-    const cRect = container.getBoundingClientRect()
-    const eRect = el.getBoundingClientRect()
-    const targetTop = container.scrollTop + eRect.top - cRect.top - (cRect.height - eRect.height) / 2
+    if (!container) return
+    const idx = options.findIndex(o => o.value === value)
+    if (idx < 0) return
     if (mountedRef.current) {
-      container.scrollTo({ top: targetTop, behavior: 'smooth' })
+      container.scrollTo({ top: idx * ITEM_H, behavior: 'smooth' })
     } else {
-      container.scrollTop = targetTop
+      container.scrollTop = idx * ITEM_H
       mountedRef.current = true
     }
-  }, [value])
+  }, [value, options])
+
+  // Auto-snap to nearest item when the user stops scrolling
+  useEffect(() => {
+    const container = scrollRef.current
+    if (!container) return
+
+    function snap() {
+      const idx = Math.max(0, Math.min(options.length - 1, Math.round(container.scrollTop / ITEM_H)))
+      container.scrollTo({ top: idx * ITEM_H, behavior: 'smooth' })
+      const next = options[idx].value
+      if (next !== valueRef.current) {
+        valueRef.current = next
+        onChange(next)
+      }
+    }
+
+    // Use scrollend where available; fall back to debounced scroll
+    if ('onscrollend' in container) {
+      container.addEventListener('scrollend', snap)
+      return () => container.removeEventListener('scrollend', snap)
+    }
+    let timer
+    function onScroll() { clearTimeout(timer); timer = setTimeout(snap, 150) }
+    container.addEventListener('scroll', onScroll, { passive: true })
+    return () => { container.removeEventListener('scroll', onScroll); clearTimeout(timer) }
+  }, [options, onChange])
 
   return (
     <div
       ref={scrollRef}
       className={`h-full overflow-y-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden ${className}`}
     >
-      <div className="grid py-[69px]">
+      {/* py-[79px] centres item 0 at scrollTop=0 for a 196px container: (196-38)/2 = 79 */}
+      <div className="grid py-[79px]">
         {options.map((option) => {
           const sel = option.value === value
           return (
             <button
               key={option.value}
-              ref={sel ? selectedRef : null}
               type="button"
               onClick={() => onChange(option.value)}
               style={{ textAlign }}
