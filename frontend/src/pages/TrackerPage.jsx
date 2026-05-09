@@ -1,3 +1,5 @@
+import { useState } from 'react'
+
 const P = {
   primary: 'min-h-[40px] px-4 py-[9px] rounded-xl bg-[#AACC33] text-black font-bold text-[11px] tracking-[0.08em] uppercase cursor-pointer border-none transition-all hover:bg-[#BADA44] active:scale-[0.97] disabled:opacity-30 disabled:cursor-not-allowed',
   ghost:   'min-h-[40px] px-4 py-[9px] rounded-xl bg-transparent text-[#F0F0F0] border border-[#222] text-[11px] tracking-[0.06em] cursor-pointer transition-colors hover:border-[#3a3a3a] hover:bg-white/[0.02]',
@@ -7,6 +9,26 @@ const STATUS_STYLE = {
   Overdue: { badge: 'text-[#FF5A5A] bg-[#FF5A5A]/10 border-[#FF5A5A]/20', bar: 'bg-[#FF5A5A]', text: 'text-[#FF5A5A]' },
   Done:    { badge: 'text-[#AACC33] bg-[#AACC33]/10 border-[#AACC33]/20', bar: 'bg-[#AACC33]', text: 'text-[#AACC33]' },
   Open:    { badge: 'text-white/30 bg-white/[0.04] border-white/[0.07]',   bar: 'bg-[#2a2a2a]', text: 'text-white/40' },
+}
+
+function toCSV(headers, rows) {
+  const esc = v => { const s = String(v ?? ''); return /[",\n\r]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s }
+  return [headers, ...rows].map(r => r.map(esc).join(',')).join('\r\n')
+}
+
+function dlCSV(name, csv) {
+  const a = document.createElement('a')
+  a.href = URL.createObjectURL(new Blob(['﻿' + csv], { type: 'text/csv;charset=utf-8' }))
+  a.download = name
+  document.body.appendChild(a); a.click(); document.body.removeChild(a)
+  URL.revokeObjectURL(a.href)
+}
+
+function toISODate(d) {
+  if (!d || typeof d !== 'string') return ''
+  if (/^\d{4}-\d{2}-\d{2}/.test(d)) return d.slice(0, 10)
+  if (/^\d{2}\/\d{2}\/\d{4}/.test(d)) { const [dd, mm, yyyy] = d.split('/'); return `${yyyy}-${mm}-${dd}` }
+  return ''
 }
 
 function Initials({ name }) {
@@ -46,6 +68,25 @@ function buildActionUpdateNotice(task) {
 }
 
 export default function TrackerPage({ app }) {
+  const [fromDate, setFromDate] = useState('')
+  const [toDate, setToDate]     = useState('')
+
+  const filteredTasks = (app.visibleTasks || []).filter(t => {
+    if (!fromDate && !toDate) return true
+    const d = toISODate(t.dueDate) || toISODate(t.meetingDate)
+    if (!d) return true
+    return (!fromDate || d >= fromDate) && (!toDate || d <= toDate)
+  })
+
+  function exportTasks() {
+    const headers = ['Task', 'Status', 'Assigned To', 'Designation', 'Mobile', 'Due Date', 'Meeting', 'Meeting Date']
+    const rows = filteredTasks.map(t => [
+      t.task || '', t.status || '', t.assignedTo || '', t.assignedToDesig || '',
+      t.assignedToMobile || '', t.dueDate || '', t.meetingTitle || '', t.meetingDate || '',
+    ])
+    dlCSV(`tracker-${new Date().toISOString().slice(0, 10)}.csv`, toCSV(headers, rows))
+  }
+
   const total    = app.tasks?.length || 0
   const doneCount = app.tasks?.filter((t) => t.status === 'Done').length || 0
   const overdue  = app.tasks?.filter((t) => t.status === 'Overdue').length || 0
@@ -114,10 +155,43 @@ export default function TrackerPage({ app }) {
         ))}
       </div>
 
+      {/* ── Date range + export ── */}
+      <div className="flex items-center gap-2 flex-wrap">
+        <div className="flex items-center gap-2 flex-1 min-w-0">
+          <span className="text-[10px] uppercase tracking-[0.12em] text-[#2e2e2e] shrink-0">From</span>
+          <input
+            type="date"
+            className="flex-1 min-w-0 bg-[#0e0e0e] border border-[#1e1e1e] rounded-xl text-[#666] text-[12px] px-3 py-2 outline-none [color-scheme:dark] transition-[border-color] focus:border-[#AACC33]/40 cursor-pointer"
+            value={fromDate}
+            onChange={e => setFromDate(e.target.value)}
+          />
+          <span className="text-[#252525] shrink-0">→</span>
+          <input
+            type="date"
+            className="flex-1 min-w-0 bg-[#0e0e0e] border border-[#1e1e1e] rounded-xl text-[#666] text-[12px] px-3 py-2 outline-none [color-scheme:dark] transition-[border-color] focus:border-[#AACC33]/40 cursor-pointer"
+            value={toDate}
+            onChange={e => setToDate(e.target.value)}
+          />
+          {(fromDate || toDate) && (
+            <button
+              className="text-[11px] text-[#333] hover:text-[#666] transition-colors shrink-0 cursor-pointer"
+              onClick={() => { setFromDate(''); setToDate('') }}
+            >✕</button>
+          )}
+        </div>
+        <button
+          onClick={exportTasks}
+          disabled={!filteredTasks.length}
+          className="shrink-0 min-h-[36px] px-4 py-[7px] rounded-xl bg-transparent text-[#AACC33]/60 border border-[#AACC33]/20 text-[10px] tracking-[0.08em] uppercase cursor-pointer transition-all hover:bg-[#AACC33]/[0.06] hover:text-[#AACC33] hover:border-[#AACC33]/30 disabled:opacity-30 disabled:cursor-not-allowed"
+        >
+          Export CSV
+        </button>
+      </div>
+
       {/* ── Task list ── */}
-      {app.visibleTasks.length ? (
+      {filteredTasks.length ? (
         <div className="grid gap-3">
-          {app.visibleTasks.map((task) => {
+          {filteredTasks.map((task) => {
             const s = STATUS_STYLE[task.status] || STATUS_STYLE.Open
             const isDone = task.status === 'Done'
             return (

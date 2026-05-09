@@ -755,14 +755,71 @@ function TabBar({ active, onChange, bankCount, headerCount }) {
   )
 }
 
+/* ─── CSV helpers ────────────────────────────────────────────── */
+function toCSV(headers, rows) {
+  const esc = v => { const s = String(v ?? ''); return /[",\n\r]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s }
+  return [headers, ...rows].map(r => r.map(esc).join(',')).join('\r\n')
+}
+
+function dlCSV(name, csv) {
+  const a = document.createElement('a')
+  a.href = URL.createObjectURL(new Blob(['﻿' + csv], { type: 'text/csv;charset=utf-8' }))
+  a.download = name
+  document.body.appendChild(a); a.click(); document.body.removeChild(a)
+  URL.revokeObjectURL(a.href)
+}
+
+function toISODate(d) {
+  if (!d || typeof d !== 'string') return ''
+  if (/^\d{4}-\d{2}-\d{2}/.test(d)) return d.slice(0, 10)
+  if (/^\d{2}\/\d{2}\/\d{4}/.test(d)) { const [dd, mm, yyyy] = d.split('/'); return `${yyyy}-${mm}-${dd}` }
+  return ''
+}
+
 /* ─── Bank Tab content ───────────────────────────────────────── */
 function BankTab({ app }) {
+  const [fromDate, setFromDate] = useState('')
+  const [toDate, setToDate]     = useState('')
+
   const statusCounts = ['Open', 'Postponed', 'Cancelled', 'Closed'].reduce((acc, s) => {
     acc[s] = app.meetings.filter((m) => m.status === s).length
     return acc
   }, {})
 
-  const hasFilters = app.bankQuery || app.bankFilter !== 'all' || app.callerFilter || app.bankDateFilter
+  const meetings = (app.filteredMeetings || []).filter(m => {
+    if (!fromDate && !toDate) return true
+    const d = toISODate(m.date)
+    if (!d) return true
+    return (!fromDate || d >= fromDate) && (!toDate || d <= toDate)
+  })
+
+  const hasDateFilter = !!(fromDate || toDate)
+  const hasFilters = app.bankQuery || app.bankFilter !== 'all' || app.callerFilter || app.bankDateFilter || hasDateFilter
+
+  function exportMeetings() {
+    const headers = ['Title', 'Ref No', 'Header', 'Date', 'Time', 'Duration', 'Status', 'Called By', 'Mode', 'Venue', 'Unit', 'Attendees', 'Topics', 'Notes', 'Action Points']
+    const rows = meetings.map(m => {
+      const attendees = m.attendeeDetails?.map(a => a.name).join('; ') || m.attendees || ''
+      const topics = m.topics?.filter(t => t.topic || t.purpose).map(t => t.topic || t.purpose).join('; ') || m.purpose || ''
+      const notes = m.closingNotes || m.postponeReason || m.cancellationReason || ''
+      const aps = m.actionPoints?.filter(p => p.task)
+        .map(p => `${p.task} [${p.assignedTo || '?'}, Due: ${p.dueDate || '-'}, ${p.status || 'Open'}]`)
+        .join(' | ') || ''
+      return [m.title || '', m.refNo || '', m.meetingHeader || '', m.date || '', m.time || '',
+        m.duration || '', m.status || '', getMeetingCallerLabel(m, app.user), getMeetingModeLabel(m),
+        getMeetingVenue(m), m.unit || '', attendees, topics, notes, aps]
+    })
+    dlCSV(`meeting-bank-${new Date().toISOString().slice(0, 10)}.csv`, toCSV(headers, rows))
+  }
+
+  function clearAllFilters() {
+    app.setBankQuery('')
+    app.setBankFilter('all')
+    app.setCallerFilter?.('')
+    app.setBankDateFilter?.('')
+    setFromDate('')
+    setToDate('')
+  }
 
   return (
     <div className="grid gap-4">
@@ -791,23 +848,40 @@ function BankTab({ app }) {
         </div>
       </Field>
 
+      {/* Date range + export */}
+      <div className="flex items-center gap-2 flex-wrap">
+        <div className="flex items-center gap-2 flex-1 min-w-0">
+          <span className="text-[10px] uppercase tracking-[0.12em] text-[#2e2e2e] shrink-0">From</span>
+          <DateFilterField value={fromDate} onChange={setFromDate} />
+          <span className="text-[#252525] shrink-0">→</span>
+          <DateFilterField value={toDate} onChange={setToDate} />
+        </div>
+        <button
+          onClick={exportMeetings}
+          disabled={!meetings.length}
+          className="shrink-0 min-h-[38px] px-4 py-2 rounded-xl bg-transparent text-[#AACC33]/60 border border-[#AACC33]/20 text-[10px] tracking-[0.08em] uppercase cursor-pointer transition-all hover:bg-[#AACC33]/[0.06] hover:text-[#AACC33] hover:border-[#AACC33]/30 disabled:opacity-30 disabled:cursor-not-allowed"
+        >
+          Export CSV
+        </button>
+      </div>
+
       {/* Results meta */}
       {hasFilters && (
         <div className="flex items-center justify-between">
           <p className="m-0 text-[11px] text-[#333]">
-            <span className="text-[#555]">{app.filteredMeetings.length}</span> result{app.filteredMeetings.length !== 1 ? 's' : ''}
+            <span className="text-[#555]">{meetings.length}</span> result{meetings.length !== 1 ? 's' : ''}
           </p>
           <button className="text-[10px] uppercase tracking-[0.1em] text-[#2a2a2a] hover:text-[#555] transition-colors cursor-pointer"
-            onClick={() => { app.setBankQuery(''); app.setBankFilter('all'); app.setCallerFilter(''); app.setBankDateFilter?.('') }}>
+            onClick={clearAllFilters}>
             Clear filters ✕
           </button>
         </div>
       )}
 
       {/* Flat meeting list */}
-      {app.filteredMeetings.length > 0 ? (
+      {meetings.length > 0 ? (
         <div className="grid gap-2">
-          {app.filteredMeetings.map((meeting) => (
+          {meetings.map((meeting) => (
             <MeetingCard key={meeting.meetingId} meeting={meeting} user={app.user}
               onPreview={app.setPreview ? (m) => previewNotice(app, m) : null}
             />
@@ -819,7 +893,7 @@ function BankTab({ app }) {
           <p className="m-0 text-[#2e2e2e] text-[12px] leading-[1.6]">No meetings match your current filters</p>
           {hasFilters && (
             <button className="mt-4 px-4 py-[7px] rounded-xl border border-[#1e1e1e] text-[10.5px] text-[#333] uppercase tracking-[0.1em] cursor-pointer hover:border-[#2a2a2a] hover:text-[#555] transition-all"
-              onClick={() => { app.setBankQuery(''); app.setBankFilter('all'); app.setCallerFilter(''); app.setBankDateFilter?.('') }}>
+              onClick={clearAllFilters}>
               Clear filters
             </button>
           )}
