@@ -51,13 +51,22 @@ function roundToNextQuarter(date = new Date()) {
   return `${String(rounded.getHours()).padStart(2, '0')}:${String(rounded.getMinutes()).padStart(2, '0')}`
 }
 
-const TIME_OPTIONS = Array.from({ length: 96 }, (_, index) => {
-  const total = index * 15
-  const hour = Math.floor(total / 60)
-  const minute = total % 60
-  const value = `${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}`
-  return { value, label: toReadableTime(value) }
-})
+function splitTime(value) {
+  if (!value) return { hour: 10, minute: 0, period: 'AM' }
+  const [rawHour, rawMinute] = value.split(':').map(Number)
+  return {
+    hour: rawHour % 12 || 12,
+    minute: rawMinute || 0,
+    period: rawHour >= 12 ? 'PM' : 'AM',
+  }
+}
+
+function composeTime({ hour, minute, period }) {
+  const h24 = period === 'PM'
+    ? (hour % 12) + 12
+    : hour === 12 ? 0 : hour
+  return `${String(h24).padStart(2, '0')}:${String(minute).padStart(2, '0')}`
+}
 
 function parseDMY(dmy) {
   if (!isValidDMY(dmy)) return null
@@ -347,12 +356,55 @@ function DateField({ value, onChange }) {
 
 // ─── Shared small components ───────────────────────────────────────────────────
 
-function TimePicker({ value, onChange, onClose }) {
+function TimeColumn({ label, options, value, onChange }) {
   const currentRef = useRef(null)
 
   useEffect(() => {
     currentRef.current?.scrollIntoView({ block: 'center' })
-  }, [])
+  }, [value])
+
+  return (
+    <div className="grid gap-2 min-w-0">
+      <div className="text-[9px] uppercase tracking-[0.14em] text-[#333] text-center">{label}</div>
+      <div className="relative h-[170px] overflow-y-auto rounded-xl border border-[#1d1d1d] bg-[#0b0b0b] p-1 [scrollbar-width:thin] [scrollbar-color:#333_transparent]">
+        <div className="pointer-events-none sticky top-[66px] z-10 h-[34px] rounded-lg border border-[#AACC33]/25 bg-[#AACC33]/[0.06]" />
+        <div className="mt-[-34px] grid gap-1 py-[66px]">
+          {options.map((option) => {
+            const selected = option.value === value
+            return (
+              <button
+                key={option.value}
+                ref={selected ? currentRef : null}
+                type="button"
+                onClick={() => onChange(option.value)}
+                className={`h-[34px] rounded-lg text-[13px] font-mono transition-colors ${
+                  selected
+                    ? 'text-[#AACC33] font-semibold'
+                    : 'text-[#666] hover:text-[#F0F0F0] hover:bg-white/[0.04]'
+                }`}
+              >
+                {option.label}
+              </button>
+            )
+          })}
+        </div>
+      </div>
+    </div>
+  )
+}
+
+function TimePicker({ value, onChange, onClose }) {
+  const selected = splitTime(value)
+  const hourOptions = Array.from({ length: 12 }, (_, i) => ({ value: i + 1, label: String(i + 1).padStart(2, '0') }))
+  const minuteOptions = [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55].map((minute) => ({
+    value: minute,
+    label: String(minute).padStart(2, '0'),
+  }))
+  const periodOptions = ['AM', 'PM'].map((period) => ({ value: period, label: period }))
+
+  function update(part) {
+    onChange(composeTime({ ...selected, ...part }))
+  }
 
   return (
     <div
@@ -362,7 +414,7 @@ function TimePicker({ value, onChange, onClose }) {
         zIndex: 50,
         top: 'calc(100% + 6px)',
         left: 0,
-        width: '276px',
+        width: '330px',
         background: '#111',
         border: '1px solid #262626',
         borderRadius: '16px',
@@ -383,35 +435,21 @@ function TimePicker({ value, onChange, onClose }) {
         </button>
       </div>
 
-      <div style={{ maxHeight: 268, overflowY: 'auto', padding: '8px' }}>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 6 }}>
-          {TIME_OPTIONS.map((time) => {
-            const selected = time.value === value
-            return (
-              <button
-                key={time.value}
-                ref={selected ? currentRef : null}
-                type="button"
-                onClick={() => { onChange(time.value); onClose() }}
-                style={{
-                  minHeight: 34,
-                  border: selected ? '1px solid rgba(170,204,51,0.45)' : '1px solid transparent',
-                  borderRadius: 9,
-                  background: selected ? 'rgba(170,204,51,0.12)' : 'transparent',
-                  color: selected ? '#AACC33' : '#777',
-                  fontSize: 12,
-                  fontFamily: 'monospace',
-                  cursor: 'pointer',
-                  transition: 'background 120ms, color 120ms, border-color 120ms',
-                }}
-                onMouseEnter={e => { if (!selected) { e.currentTarget.style.background='#1e1e1e'; e.currentTarget.style.color='#F0F0F0' } }}
-                onMouseLeave={e => { if (!selected) { e.currentTarget.style.background='transparent'; e.currentTarget.style.color='#777' } }}
-              >
-                {time.label}
-              </button>
-            )
-          })}
-        </div>
+      <div className="grid grid-cols-[1fr_1fr_0.8fr] gap-2 p-3">
+        <TimeColumn label="Hour" options={hourOptions} value={selected.hour} onChange={(hour) => update({ hour })} />
+        <TimeColumn label="Min" options={minuteOptions} value={selected.minute} onChange={(minute) => update({ minute })} />
+        <TimeColumn label="AM/PM" options={periodOptions} value={selected.period} onChange={(period) => update({ period })} />
+      </div>
+
+      <div className="flex items-center justify-between border-t border-[#1e1e1e] px-3 py-2">
+        <span className="font-mono text-[12px] text-[#AACC33]">{toReadableTime(value)}</span>
+        <button
+          type="button"
+          onClick={onClose}
+          className="px-3 py-[6px] rounded-lg border border-[#AACC33]/20 bg-[#AACC33]/10 text-[#AACC33] text-[10px] uppercase tracking-[0.1em] hover:bg-[#AACC33]/15"
+        >
+          Done
+        </button>
       </div>
     </div>
   )
@@ -532,7 +570,6 @@ function CharCount({ value, max }) {
 // ─── Main page ─────────────────────────────────────────────────────────────────
 
 export default function NewMeetingPage({ app }) {
-  const [externalOpen, setExternalOpen] = useState(false)
   const [headerOpen, setHeaderOpen] = useState(false)
   const headerWrapRef = useRef(null)
 
@@ -729,12 +766,13 @@ export default function NewMeetingPage({ app }) {
         <SecHead>Attendees</SecHead>
 
         {/* Add attendee */}
-        <div className="grid gap-3 p-4 rounded-xl border border-[#1e1e1e] bg-[#080808]">
+        <div className="grid gap-4 p-4 rounded-xl border border-[#1e1e1e] bg-[#080808]">
           <div>
             <span className="uppercase tracking-[0.15em] text-[10px] text-[#AACC33]/70 font-semibold block">Add attendee</span>
-            <span className="text-[#333] text-[11px]">Select any saved person</span>
+            <span className="text-[#333] text-[11px]">Select a saved person or add an external attendee</span>
           </div>
-          <div className="grid gap-2 sm:grid-cols-[1fr_auto]">
+
+          <Field label="Saved person">
             <select className={P.select}
               value=""
               onChange={(e) => {
@@ -748,25 +786,15 @@ export default function NewMeetingPage({ app }) {
                 <option key={m.id} value={m.id}>{m.name}{m.desig ? ` - ${m.desig}` : ''}</option>
               ))}
             </select>
-          </div>
+          </Field>
           {availableAttendees.length === 0 && (
             <p className="m-0 text-[#2e2e2e] text-[11px]">All saved people already added.</p>
           )}
-        </div>
 
+          <div className="h-px bg-[#1a1a1a]" />
 
-        {/* External attendee */}
-        <details className="grid gap-3 p-4 rounded-xl border border-[#1e1e1e] bg-[#080808]"
-          open={externalOpen} onToggle={(e) => setExternalOpen(e.currentTarget.open)}>
-          <summary className="list-none cursor-pointer select-none flex items-center justify-between gap-3">
-            <div>
-              <span className="uppercase tracking-[0.15em] text-[10px] text-[#AACC33]/70 font-semibold block">External attendee</span>
-              <span className="text-[#333] text-[11px]">Add guest not in the system</span>
-            </div>
-            <span className="text-[#333] text-[10px] uppercase tracking-[0.1em]">{externalOpen ? 'Collapse' : 'Expand'}</span>
-          </summary>
-          <div className="grid gap-3 pt-2 sm:grid-cols-2">
-            <Field label="Name">
+          <div className="grid gap-3 sm:grid-cols-2">
+            <Field label="External name">
               <input className={P.input} value={app.manualAttendeeForm.name} placeholder="Guest name"
                 onChange={(e) => app.setManualAttendeeForm((c) => ({ ...c, name: e.target.value }))} />
             </Field>
@@ -775,17 +803,18 @@ export default function NewMeetingPage({ app }) {
                 onChange={(e) => app.setManualAttendeeForm((c) => ({ ...c, desig: e.target.value }))} />
             </Field>
           </div>
-          <Field label="Email (optional)">
-            <input className={P.input} value={app.manualAttendeeForm.email} placeholder="guest@example.com"
-              onChange={(e) => app.setManualAttendeeForm((c) => ({ ...c, email: e.target.value }))} />
-          </Field>
-          <Field label="Mobile (optional)">
-            <input className={P.input} value={app.manualAttendeeForm.mobile} placeholder="+1 (555) 123-4567"
-              onChange={(e) => app.setManualAttendeeForm((c) => ({ ...c, mobile: e.target.value }))} />
-          </Field>
+          <div className="grid gap-3 sm:grid-cols-2">
+            <Field label="Email (optional)">
+              <input className={P.input} value={app.manualAttendeeForm.email} placeholder="guest@example.com"
+                onChange={(e) => app.setManualAttendeeForm((c) => ({ ...c, email: e.target.value }))} />
+            </Field>
+            <Field label="Mobile (optional)">
+              <input className={P.input} value={app.manualAttendeeForm.mobile} placeholder="+1 (555) 123-4567"
+                onChange={(e) => app.setManualAttendeeForm((c) => ({ ...c, mobile: e.target.value }))} />
+            </Field>
+          </div>
           <button className={P.ghost} onClick={app.addManualAttendee}>+ Add external attendee</button>
-        </details>
-
+        </div>
         {/* Selected attendees */}
         <div className="grid gap-3 p-4 rounded-xl border border-[#1e1e1e] bg-[#080808]">
           <div className="flex items-center justify-between gap-3">
