@@ -709,37 +709,37 @@ export default function NewMeetingPage({ app }) {
     selectedAttendees,
   )
 
-  const topics = app.meetingForm.topics || [{ topic: '', purpose: '', desiredOutcome: '', documents: '' }]
+  const purposes = app.meetingForm.topics || [{ topic: '', purpose: '', desiredOutcome: '', documents: '' }]
 
-  function addTopic() {
+  function addPurpose() {
     app.setMeetingForm((c) => ({
       ...c,
       topics: [...(c.topics || []), { topic: '', purpose: '', desiredOutcome: '', documents: '' }],
     }))
   }
 
-  function removeTopic(index) {
+  function removePurpose(index) {
     app.setMeetingForm((c) => ({
       ...c,
       topics: (c.topics || []).filter((_, i) => i !== index),
     }))
   }
 
-  function updateTopic(index, key, value) {
+  function updatePurpose(index, key, value) {
     app.setMeetingForm((c) => ({
       ...c,
       topics: (c.topics || []).map((t, i) => (i === index ? { ...t, [key]: value } : t)),
     }))
   }
 
-  const hasTopics = topics.some((t) => t.topic || t.purpose)
+  const hasPurposes = purposes.some((t) => t.purpose)
 
   const canGenerate =
     app.meetingForm.title &&
     isValidDMY(app.meetingForm.date) &&
     app.meetingForm.time &&
     (app.meetingForm.calledBy || (app.isManager && callerOptions.length) || app.isAdmin) &&
-    hasTopics
+    hasPurposes
 
   const dateLabel = toReadableDate(app.meetingForm.date)
   const timeLabel = app.meetingForm.time ? toReadableTime(app.meetingForm.time) : null
@@ -1005,21 +1005,21 @@ export default function NewMeetingPage({ app }) {
         )}
       </div>
 
-      {/* 03 Topics */}
+      {/* 03 Purposes */}
       <div className={P.card}>
         <div className="flex items-center justify-between gap-3">
-          <SecHead n="03">Topics</SecHead>
+          <SecHead n="03">Purposes</SecHead>
           <button
             className={P.ghostSm}
             style={{ width: 'auto' }}
-            onClick={addTopic}
+            onClick={addPurpose}
           >
-            + Add topic
+            + Add purpose
           </button>
         </div>
 
         <p className="m-0 text-[#333] text-[11px] leading-[1.5]">
-          Add one or more topics. Each topic has its own purpose, desired outcome, and documents.
+          Add one or more purposes for this meeting. Each purpose can have its own desired outcome and documents.
         </p>
 
         <label className="flex items-start gap-3 p-3 rounded-xl border border-[#1e1e1e] bg-[#080808] cursor-pointer">
@@ -1037,58 +1037,49 @@ export default function NewMeetingPage({ app }) {
           </span>
         </label>
 
-        {topics.map((topic, index) => (
+        {purposes.map((purpose, index) => (
           <div key={index} className="grid gap-3 p-4 rounded-xl border border-[#1e1e1e] bg-[#080808]">
             <div className="flex items-center justify-between gap-3">
               <span className="uppercase tracking-[0.15em] text-[10px] text-[#AACC33]/70 font-semibold">
-                Topic {index + 1}
+                Purpose {index + 1}
               </span>
-              {topics.length > 1 && (
+              {purposes.length > 1 && (
                 <button
                   className="text-[#FF5A5A]/60 text-[10px] uppercase tracking-[0.08em] hover:text-[#FF5A5A] transition-colors"
-                  onClick={() => removeTopic(index)}
+                  onClick={() => removePurpose(index)}
                 >
                   Remove
                 </button>
               )}
             </div>
 
-            <Field label="Topic name *">
-              <input
-                className={P.input}
-                value={topic.topic}
-                placeholder="e.g. Budget Review"
-                onChange={(e) => updateTopic(index, 'topic', e.target.value)}
-              />
-            </Field>
-
-            <Field label="Purpose">
+            <Field label="Purpose *">
               <div>
                 <textarea
                   className={P.textarea} style={{ minHeight: '80px' }}
-                  value={topic.purpose}
-                  placeholder="Why is this topic on the agenda?"
-                  onChange={(e) => updateTopic(index, 'purpose', e.target.value)}
+                  value={purpose.purpose}
+                  placeholder="What is the purpose of this meeting item?"
+                  onChange={(e) => updatePurpose(index, 'purpose', e.target.value)}
                 />
-                <CharCount value={topic.purpose} max={500} />
+                <CharCount value={purpose.purpose} max={500} />
               </div>
             </Field>
 
             <Field label="Desired outcome">
               <textarea
                 className={P.textarea} style={{ minHeight: '70px' }}
-                value={topic.desiredOutcome}
+                value={purpose.desiredOutcome}
                 placeholder="What should be resolved or decided?"
-                onChange={(e) => updateTopic(index, 'desiredOutcome', e.target.value)}
+                onChange={(e) => updatePurpose(index, 'desiredOutcome', e.target.value)}
               />
             </Field>
 
             <Field label="Documents required">
               <textarea
                 className={P.textarea} style={{ minHeight: '60px' }}
-                value={topic.documents}
+                value={purpose.documents}
                 placeholder={"- Report\n- Budget sheet"}
-                onChange={(e) => updateTopic(index, 'documents', e.target.value)}
+                onChange={(e) => updatePurpose(index, 'documents', e.target.value)}
               />
             </Field>
           </div>
@@ -1119,7 +1110,7 @@ export default function NewMeetingPage({ app }) {
         </button>
         {!canGenerate && (
           <p className="text-[10px] text-[#2e2e2e] text-center m-0">
-            Name, date (dd/mm/yyyy), time, caller, and at least one topic required
+            Name, date (dd/mm/yyyy), time, caller, and at least one purpose required
           </p>
         )}
       </div>
