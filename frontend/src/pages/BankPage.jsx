@@ -400,9 +400,11 @@ function ActionPointList({ points }) {
       {validPoints.map((point, index) => (
         <div key={point.taskId || index} className="p-3 rounded-[10px] border border-[#AACC33]/12 bg-[#AACC33]/[0.035] grid gap-[6px]">
           <p className="m-0 text-[#777] text-[12.5px] leading-[1.65] whitespace-pre-line">{point.task}</p>
-          {(point.assignedTo || point.dueDate) && (
+          {(point.assignedTo || point.assignedToDesig || point.assignedToMobile || point.dueDate) && (
             <div className="flex flex-wrap gap-x-3 gap-y-1 text-[10.5px] text-[#444]">
               {point.assignedTo && <span>Owner: <span className="text-[#666]">{point.assignedTo}</span></span>}
+              {point.assignedToDesig && <span>Designation: <span className="text-[#666]">{point.assignedToDesig}</span></span>}
+              {point.assignedToMobile && <span>Mobile: <span className="text-[#666]">{point.assignedToMobile}</span></span>}
               {point.dueDate && <span>Due: <span className="text-[#666]">{toDateLabel(point.dueDate)}</span></span>}
             </div>
           )}

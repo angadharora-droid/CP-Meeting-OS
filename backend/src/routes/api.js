@@ -616,6 +616,9 @@ router.post('/', async (req, res) => {
           taskId: String(p?.taskId || '').trim(),
           task: String(p?.task || '').trim(),
           assignedTo: String(p?.assignedTo || '').trim(),
+          assignedToDesig: String(p?.assignedToDesig || '').trim(),
+          assignedToMobile: String(p?.assignedToMobile || '').trim(),
+          assignedToSource: p?.assignedToSource === 'manual' ? 'manual' : 'database',
           dueDate: String(p?.dueDate || '').trim(),
         }))
         .filter((p) => p.taskId && p.task);
@@ -668,6 +671,9 @@ router.post('/', async (req, res) => {
               taskId: String(p?.taskId || '').trim(),
               task: String(p?.task || '').trim(),
               assignedTo: String(p?.assignedTo || '').trim(),
+              assignedToDesig: String(p?.assignedToDesig || '').trim(),
+              assignedToMobile: String(p?.assignedToMobile || '').trim(),
+              assignedToSource: p?.assignedToSource === 'manual' ? 'manual' : 'database',
               dueDate: String(p?.dueDate || '').trim(),
             }))
             .filter((p) => p.taskId && p.task)

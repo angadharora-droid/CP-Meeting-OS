@@ -44,6 +44,15 @@ export default function CloseMeetingPage({ app }) {
     }
   }
 
+  function assignExistingPerson(taskId, personId) {
+    const person = app.people.find((p) => p.id === personId)
+    if (!person) return
+    app.updateActionPoint(taskId, 'assignedTo', person.name || '')
+    app.updateActionPoint(taskId, 'assignedToDesig', person.desig || '')
+    app.updateActionPoint(taskId, 'assignedToMobile', person.mobile || '')
+    app.updateActionPoint(taskId, 'assignedToSource', 'database')
+  }
+
   return (
     <section className="grid gap-4">
 
@@ -140,16 +149,42 @@ export default function CloseMeetingPage({ app }) {
                   onChange={(e) => app.updateActionPoint(row.taskId, 'task', e.target.value)} />
               </Field>
 
-              <div className="grid gap-3 sm:grid-cols-2">
+              <div className="grid gap-3">
                 <Field label="Assigned to">
-                  <select className={P.select} value={row.assignedTo}
-                    onChange={(e) => app.updateActionPoint(row.taskId, 'assignedTo', e.target.value)}>
+                  <select className={P.select} value=""
+                    onChange={(e) => assignExistingPerson(row.taskId, e.target.value)}>
                     <option value="">— Select person —</option>
                     {app.people.map((p) => (
-                      <option key={p.id} value={p.name}>{p.name}</option>
+                      <option key={p.id} value={p.id}>{p.name}{p.desig ? ` - ${p.desig}` : ''}</option>
                     ))}
                   </select>
                 </Field>
+                <div className="grid gap-3 sm:grid-cols-3">
+                  <Field label="Name">
+                    <input className={P.input} value={row.assignedTo}
+                      placeholder="Person name"
+                      onChange={(e) => {
+                        app.updateActionPoint(row.taskId, 'assignedTo', e.target.value)
+                        app.updateActionPoint(row.taskId, 'assignedToSource', 'manual')
+                      }} />
+                  </Field>
+                  <Field label="Mobile no.">
+                    <input className={P.input} value={row.assignedToMobile || ''}
+                      placeholder="+91..."
+                      onChange={(e) => {
+                        app.updateActionPoint(row.taskId, 'assignedToMobile', e.target.value)
+                        app.updateActionPoint(row.taskId, 'assignedToSource', 'manual')
+                      }} />
+                  </Field>
+                  <Field label="Designation">
+                    <input className={P.input} value={row.assignedToDesig || ''}
+                      placeholder="Role"
+                      onChange={(e) => {
+                        app.updateActionPoint(row.taskId, 'assignedToDesig', e.target.value)
+                        app.updateActionPoint(row.taskId, 'assignedToSource', 'manual')
+                      }} />
+                  </Field>
+                </div>
                 <Field label="Due date">
                   <input type="date" className={P.input} value={row.dueDate}
                     onChange={(e) => app.updateActionPoint(row.taskId, 'dueDate', e.target.value)} />
