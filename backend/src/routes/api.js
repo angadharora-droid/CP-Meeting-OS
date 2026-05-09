@@ -662,6 +662,17 @@ router.post('/', async (req, res) => {
       const notes = String(req.body?.notes || '').trim();
       const closedOnRaw = req.body?.closedOn;
       const closedOn = closedOnRaw ? new Date(closedOnRaw) : new Date();
+      const actionPoints = Array.isArray(req.body?.actionPoints)
+        ? req.body.actionPoints
+            .map((p) => ({
+              taskId: String(p?.taskId || '').trim(),
+              task: String(p?.task || '').trim(),
+              assignedTo: String(p?.assignedTo || '').trim(),
+              dueDate: String(p?.dueDate || '').trim(),
+            }))
+            .filter((p) => p.taskId && p.task)
+        : [];
+      const followup = req.body?.followup || {};
 
       if (!meetingId) {
         return res.status(400).json({ ok: false, error: 'meetingId required' });
@@ -683,7 +694,13 @@ router.post('/', async (req, res) => {
           $set: {
             status: 'Closed',
             closingNotes: notes,
+            actionPoints,
             closedOn,
+            followupRequired: Boolean(followup?.required),
+            followupDate: String(followup?.date || '').trim(),
+            followupTime: String(followup?.time || '').trim(),
+            followupPurpose: String(followup?.purpose || '').trim(),
+            followupNote: String(followup?.note || '').trim(),
           },
         },
         { upsert: true }

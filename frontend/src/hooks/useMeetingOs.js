@@ -591,6 +591,14 @@ export function useMeetingOs(navigate, page) {
       action: 'close_meeting',
       meetingId: closeMeetingId,
       notes: closureNotes.trim(),
+      actionPoints: points,
+      followup: {
+        required: followup,
+        date: followup ? followupForm.date : '',
+        time: followup ? followupForm.time : '',
+        purpose: followup ? followupForm.purpose.trim() : '',
+        note: followup ? followupForm.note.trim() : '',
+      },
       closedOn: new Date().toISOString(),
     }
 
@@ -628,7 +636,19 @@ export function useMeetingOs(navigate, page) {
 
     setMeetings((current) =>
       current.map((meeting) =>
-        meeting.meetingId === closeMeetingId ? { ...meeting, status: 'Closed', closingNotes: closureNotes, actionPoints: points } : meeting,
+        meeting.meetingId === closeMeetingId
+          ? {
+              ...meeting,
+              status: 'Closed',
+              closingNotes: closureNotes,
+              actionPoints: points,
+              followupRequired: followup,
+              followupDate: followup ? followupForm.date : '',
+              followupTime: followup ? followupForm.time : '',
+              followupPurpose: followup ? followupForm.purpose : '',
+              followupNote: followup ? followupForm.note : '',
+            }
+          : meeting,
       ),
     )
     setTasks((current) => [...normalizedPoints, ...current])
