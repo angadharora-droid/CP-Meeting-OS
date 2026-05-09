@@ -241,28 +241,31 @@ function App() {
   const isSuccess = app.toast && /saved|updated|created|done|success|connect|disconnect|sent|issued|removed|closed|postponed|cancelled/i.test(app.toast)
 
   return (
-    <div className="app-root bg-[#0A0A0A] min-h-dvh text-[#F0F0F0] text-sm">
+    <div className="app-root min-h-dvh text-[#F0F0F0] text-sm">
 
       {/* HEADER */}
-      <div className="border-b border-[#1a1a1a] px-4 sm:px-6 py-3 min-h-[64px] flex items-center justify-between gap-3 sticky top-0 bg-[#080808]/95 backdrop-blur-xl z-50">
+      <div className="sticky top-0 z-50 border-b border-white/[0.07] bg-[#080808]/92 px-3 py-2.5 backdrop-blur-xl sm:px-5">
+        <div className="mx-auto flex min-h-[54px] w-full max-w-[1280px] items-center justify-between gap-3">
         <button
-          className="flex items-center gap-[10px] cursor-pointer hover:opacity-80 transition-opacity"
+          className="flex items-center gap-3 rounded-xl px-1.5 py-1 cursor-pointer hover:bg-white/[0.03] transition-colors"
           onClick={() => navigate('/dashboard')}
         >
-          <div className="w-[34px] h-[34px] bg-[#AACC33] rounded-xl flex items-center justify-center text-black font-black text-[12px] shrink-0 shadow-[0_0_14px_rgba(170,204,51,0.2)]">
+          <div className="w-9 h-9 bg-[#AACC33] rounded-xl flex items-center justify-center text-black font-black text-[12px] shrink-0 shadow-[0_0_18px_rgba(170,204,51,0.18)]">
             MO
           </div>
-          <span className="text-[13px] tracking-[0.1em] uppercase font-semibold hidden sm:block">Meeting OS</span>
+          <span className="hidden sm:grid leading-tight text-left">
+            <span className="text-[12px] tracking-[0.13em] uppercase font-bold">Meeting OS</span>
+            <span className="text-[10px] text-white/35 tracking-[0.12em] uppercase">Centre Point</span>
+          </span>
         </button>
 
         <div className="flex gap-2 items-center">
           <button
             onClick={() => app.setSearchOpen(true)}
-            className="flex items-center gap-2 bg-[#111] border border-[#222] text-[#777] rounded-lg px-3 py-[7px] text-[11px] cursor-pointer hover:border-[#333] hover:text-[#aaa] transition-all"
+            className="flex min-h-[38px] items-center gap-2 rounded-xl border border-white/[0.08] bg-white/[0.035] px-3 text-[11px] text-white/55 cursor-pointer hover:border-white/[0.14] hover:bg-white/[0.055] hover:text-white/80 transition-all"
           >
-            <span className="text-base leading-none">⌕</span>
-            <span className="hidden sm:block">Search</span>
-            <kbd className="hidden sm:flex items-center px-[6px] py-[2px] rounded bg-[#1a1a1a] border border-[#2a2a2a] text-[9px] text-[#666] font-mono tracking-wider">⌘K</kbd>
+            <span>Search</span>
+            <kbd className="hidden sm:flex items-center px-[6px] py-[2px] rounded-md bg-black/30 border border-white/[0.08] text-[9px] text-white/35 font-mono tracking-wider">Ctrl K</kbd>
           </button>
 
           <div className="hidden sm:grid text-right leading-tight">
@@ -272,28 +275,30 @@ function App() {
 
           <button
             onClick={() => navigate('/new-meeting')}
-            className="bg-[#AACC33] text-black rounded-lg px-3 py-[7px] text-[11px] cursor-pointer font-bold whitespace-nowrap hover:bg-[#BADA44] active:scale-[0.97] transition-all border-none"
+            className="min-h-[38px] bg-[#AACC33] text-black rounded-xl px-3 text-[11px] cursor-pointer font-bold whitespace-nowrap hover:bg-[#BADA44] active:scale-[0.97] transition-all border-none"
           >
             + Meeting
           </button>
           <button
             onClick={app.logout}
             title="Logout"
-            className="bg-transparent border border-[#1e1e1e] text-[#444] rounded-lg px-3 py-[7px] text-[13px] cursor-pointer hover:border-[#333] hover:text-[#888] transition-colors"
+            className="min-h-[38px] bg-transparent border border-white/[0.07] text-white/35 rounded-xl px-3 text-[11px] cursor-pointer hover:border-white/[0.14] hover:text-white/70 transition-colors"
           >
-            ⇤
+            Exit
           </button>
+        </div>
         </div>
       </div>
 
       {/* NAV */}
-      <div className="flex border-b border-[#1a1a1a] overflow-x-auto bg-[#080808]/95 backdrop-blur-xl sticky top-[64px] z-40 scrollbar-none px-2">
+      <div className="sticky top-[75px] z-40 border-b border-white/[0.06] bg-[#080808]/88 backdrop-blur-xl">
+        <div className="mx-auto flex w-full max-w-[1280px] overflow-x-auto scrollbar-none px-2 sm:px-4">
         {navItems.map(({ key, label, badge }) => (
           <button
             key={key}
             onClick={() => navigate(`/${key}`)}
-            className={`relative px-4 py-[13px] text-[11px] tracking-[0.08em] uppercase cursor-pointer border-none bg-transparent whitespace-nowrap shrink-0 transition-colors ${
-              page === key ? 'text-[#AACC33]' : 'text-[#666] hover:text-[#999]'
+            className={`relative px-4 py-[12px] text-[10.5px] tracking-[0.11em] uppercase cursor-pointer border-none bg-transparent whitespace-nowrap shrink-0 transition-colors ${
+              page === key ? 'text-[#AACC33]' : 'text-white/38 hover:text-white/70'
             }`}
           >
             {label}
@@ -303,10 +308,11 @@ function App() {
               </span>
             ) : null}
             {page === key && (
-              <span className="absolute bottom-0 left-3 right-3 h-[2px] rounded-full bg-[#AACC33]" />
+              <span className="absolute bottom-0 left-3 right-3 h-[2px] rounded-full bg-[#AACC33] shadow-[0_0_10px_rgba(170,204,51,0.4)]" />
             )}
           </button>
         ))}
+        </div>
       </div>
 
       {/* OVERDUE BANNER */}
@@ -400,7 +406,7 @@ function App() {
       )}
 
       {/* PAGE CONTENT */}
-      <main className="w-full max-w-[1120px] mx-auto px-4 sm:px-6 lg:px-8 pt-5 sm:pt-6 pb-12 animate-fade-in">
+      <main className="w-full max-w-[1180px] mx-auto px-4 sm:px-6 lg:px-8 pt-5 sm:pt-6 pb-12 animate-fade-in">
         {pageMap[page] || pageMap['new-meeting']}
       </main>
 
