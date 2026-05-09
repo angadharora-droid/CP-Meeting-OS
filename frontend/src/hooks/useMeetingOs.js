@@ -44,7 +44,16 @@ export function useMeetingOs(navigate, page) {
   const [meetingAttendeeIds, setMeetingAttendeeIds] = useState([])
   const [manualAttendees, setManualAttendees] = useState([])
   const [manualAttendeeForm, setManualAttendeeForm] = useState(blankManualAttendee)
-  const [actionPoints, setActionPoints] = useState([{ taskId: uid(), task: '', assignedTo: '', dueDate: '' }])
+  const blankActionPoint = () => ({
+    taskId: uid(),
+    task: '',
+    assignedTo: '',
+    assignedToDesig: '',
+    assignedToMobile: '',
+    assignedToSource: 'database',
+    dueDate: '',
+  })
+  const [actionPoints, setActionPoints] = useState([blankActionPoint()])
   const [closureNotes, setClosureNotes] = useState('')
   const [closeMeetingId, setCloseMeetingId] = useState('')
   const [followup, setFollowup] = useState(false)
@@ -493,7 +502,7 @@ export function useMeetingOs(navigate, page) {
   }
 
   function addActionPoint() {
-    setActionPoints((current) => [...current, { taskId: uid(), task: '', assignedTo: '', dueDate: '' }])
+    setActionPoints((current) => [...current, blankActionPoint()])
   }
 
   function updateActionPoint(taskId, key, value) {
@@ -583,6 +592,9 @@ export function useMeetingOs(navigate, page) {
         taskId: row.taskId,
         task: row.task.trim(),
         assignedTo: row.assignedTo.trim(),
+        assignedToDesig: (row.assignedToDesig || '').trim(),
+        assignedToMobile: (row.assignedToMobile || '').trim(),
+        assignedToSource: row.assignedToSource === 'manual' ? 'manual' : 'database',
         dueDate: row.dueDate,
       }))
       .filter((row) => row.task)
@@ -652,7 +664,7 @@ export function useMeetingOs(navigate, page) {
       ),
     )
     setTasks((current) => [...normalizedPoints, ...current])
-    setActionPoints([{ taskId: uid(), task: '', assignedTo: '', dueDate: '' }])
+    setActionPoints([blankActionPoint()])
     setClosureNotes('')
     setFollowup(false)
     setFollowupForm({ date: '', time: '', purpose: '', note: '' })

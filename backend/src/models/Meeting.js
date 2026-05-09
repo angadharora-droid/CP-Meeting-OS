@@ -15,6 +15,9 @@ const actionPointSchema = new mongoose.Schema(
     taskId: { type: String, required: true },
     task: { type: String, required: true },
     assignedTo: { type: String, default: '' },
+    assignedToDesig: { type: String, default: '' },
+    assignedToMobile: { type: String, default: '' },
+    assignedToSource: { type: String, enum: ['database', 'manual'], default: 'database' },
     dueDate: { type: String, default: '' },
   },
   { _id: false }

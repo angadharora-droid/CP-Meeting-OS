@@ -125,7 +125,7 @@ export default function TrackerPage({ app }) {
                         <div>
                           <div className="text-[#555] text-[11px] font-medium">{task.assignedTo}</div>
                           <div className="text-[#2e2e2e] text-[10px]">
-                            {task.dueDate ? `Due ${task.dueDate}` : 'No due date'}
+                            {[task.assignedToDesig, task.assignedToMobile, task.dueDate ? `Due ${task.dueDate}` : 'No due date'].filter(Boolean).join(' - ')}
                           </div>
                         </div>
                       </>
