@@ -23,6 +23,28 @@ function Initials({ name }) {
   )
 }
 
+function buildActionUpdateNotice(task) {
+  return [
+    'ACTION POINT UPDATE NOTICE',
+    '',
+    `Assigned to: ${task.assignedTo || 'Unassigned'}`,
+    task.assignedToDesig ? `Designation: ${task.assignedToDesig}` : '',
+    task.assignedToMobile ? `Mobile: ${task.assignedToMobile}` : '',
+    '',
+    `Meeting: ${task.meetingTitle || 'Meeting'}`,
+    `Meeting date: ${task.meetingDate || 'Not recorded'}`,
+    '',
+    'Action assigned:',
+    task.task || 'Not specified',
+    '',
+    `Due date: ${task.dueDate || 'Not set'}`,
+    `Current status: ${task.status || 'Open'}`,
+    '',
+    'Update requested:',
+    'Please share the latest progress, blockers if any, and expected completion date.',
+  ].filter(Boolean).join('\n')
+}
+
 export default function TrackerPage({ app }) {
   const total    = app.tasks?.length || 0
   const doneCount = app.tasks?.filter((t) => t.status === 'Done').length || 0
@@ -155,12 +177,30 @@ export default function TrackerPage({ app }) {
                           Reset to open
                         </button>
                       )}
+                      <button
+                        className={P.ghost}
+                        onClick={() => app.setPreview({
+                          title: 'Action Update Notice',
+                          content: buildActionUpdateNotice(task),
+                        })}
+                      >
+                        Preview notice
+                      </button>
                     </div>
                   )}
                   {isDone && (
-                    <div className="pt-1 border-t border-[#161616]">
+                    <div className="flex gap-2 pt-1 border-t border-[#161616]">
                       <button className={P.ghost} onClick={() => app.markTask(task.taskId, 'Open')}>
                         Reopen task
+                      </button>
+                      <button
+                        className={P.ghost}
+                        onClick={() => app.setPreview({
+                          title: 'Action Update Notice',
+                          content: buildActionUpdateNotice(task),
+                        })}
+                      >
+                        Preview notice
                       </button>
                     </div>
                   )}
