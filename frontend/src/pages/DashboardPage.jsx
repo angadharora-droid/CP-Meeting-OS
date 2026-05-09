@@ -150,18 +150,18 @@ function MeetingDetail({ meeting, onClose }) {
             </div>
           )}
 
-          {/* Topics or legacy flat fields */}
-          {meeting.topics?.filter((t) => t.topic || t.purpose).length > 0 ? (
+          {/* Purposes or legacy flat fields */}
+          {meeting.topics?.filter((t) => t.purpose || t.topic).length > 0 ? (
             <div className="grid gap-2">
               <div className="text-[9.5px] uppercase tracking-[0.16em] text-white/25">
-                Topics · {meeting.topics.filter((t) => t.topic || t.purpose).length}
+                Purposes - {meeting.topics.filter((t) => t.purpose || t.topic).length}
               </div>
-              {meeting.topics.filter((t) => t.topic || t.purpose).map((t, i) => (
+              {meeting.topics.filter((t) => t.purpose || t.topic).map((t, i) => (
                 <div key={i} className="p-4 rounded-xl bg-white/[0.025] border border-white/[0.05] grid gap-3">
                   <div className="text-[11px] font-semibold text-[#AACC33]/70 uppercase tracking-[0.1em]">
-                    {i + 1}. {t.topic || `Topic ${i + 1}`}
+                    Purpose {i + 1}
                   </div>
-                  {t.purpose       && <TextBlock label="Purpose"           value={t.purpose} />}
+                  <TextBlock label="Purpose" value={t.purpose || t.topic} />
                   {t.desiredOutcome && <TextBlock label="Desired outcome"  value={t.desiredOutcome} />}
                   {t.documents     && <TextBlock label="Documents required" value={t.documents} />}
                 </div>
@@ -207,13 +207,9 @@ export default function DashboardPage({ app }) {
   const navigate = useNavigate()
   const [selectedMeeting, setSelectedMeeting] = useState(null)
 
-  const latestMeeting  = app.meetings[0]
   const today          = new Date().toISOString().slice(0, 10)
   const closedCount    = app.meetings.filter((m) => m.status === 'Closed').length
 
-  const briefAttendees = latestMeeting?.attendeeDetails?.length
-    ? latestMeeting.attendeeDetails.map((a) => a.name).join(', ')
-    : latestMeeting?.attendees || ''
 
   return (
     <section className="grid gap-3">
@@ -252,50 +248,6 @@ export default function DashboardPage({ app }) {
         <StatCard value={app.overdueCount}     label="Overdue"       accent={app.overdueCount > 0 ? 'text-[#FF5A5A]' : undefined} />
       </div>
 
-      {/* ── Latest meeting ── */}
-      {latestMeeting && (
-        <button
-          className="group p-5 border border-white/[0.07] bg-white/[0.025] rounded-3xl grid gap-4 text-left w-full cursor-pointer hover:bg-white/[0.04] hover:border-white/[0.11] hover:-translate-y-[1px] active:translate-y-0 active:scale-[0.995] transition-all duration-200"
-          onClick={() => setSelectedMeeting(latestMeeting)}
-        >
-          {/* Eyebrow divider */}
-          <div className="flex items-center gap-2">
-            <span className="text-[9.5px] uppercase tracking-[0.18em] text-white/30 shrink-0">Latest meeting · tap for details</span>
-            <div className="flex-1 h-px bg-white/[0.07]" />
-          </div>
-
-          <div className="flex items-start justify-between gap-4 -mt-1">
-            <div className="min-w-0">
-              <h2 className="m-0 text-[17px] font-bold leading-snug tracking-tight truncate max-w-[280px]">
-                {latestMeeting.title}
-              </h2>
-              <p className="m-0 mt-[3px] text-white/35 text-[11.5px]">
-                {latestMeeting.date ? toDateLabel(latestMeeting.date) : 'Date TBD'}
-                {latestMeeting.time ? ` · ${latestMeeting.time}` : ''}
-                {latestMeeting.duration ? ` · ${latestMeeting.duration}` : ''}
-              </p>
-            </div>
-            <StatusBadge status={latestMeeting.status} />
-          </div>
-
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-            {[
-              { label: 'Called by', value: getMeetingCallerLabel(latestMeeting, app.user) },
-              { label: 'Mode',      value: getMeetingModeLabel(latestMeeting) },
-              { label: 'Venue',     value: getMeetingVenue(latestMeeting) || 'TBD' },
-              { label: 'Attendees', value: briefAttendees || 'None listed' },
-            ].map(({ label, value }) => (
-              <MetaChip key={label} label={label} value={value} />
-            ))}
-          </div>
-
-          {latestMeeting.purpose && (
-            <p className="m-0 text-white/35 text-[12px] leading-[1.65] line-clamp-2 pt-3 border-t border-white/[0.06]">
-              {latestMeeting.purpose}
-            </p>
-          )}
-        </button>
-      )}
 
       {/* ── Today's schedule ── */}
       {app.todayMeetings.length > 0 && (
@@ -350,10 +302,10 @@ export default function DashboardPage({ app }) {
       )}
 
       {/* ── Empty state ── */}
-      {!app.todayMeetings.length && !latestMeeting && (
+      {!app.todayMeetings.length && (
         <div className="py-14 px-4 border border-dashed border-white/[0.07] rounded-3xl text-white/20 text-[13px] text-center">
-          <div className="text-[36px] mb-3 select-none opacity-40">📋</div>
-          No meetings yet. Create your first meeting to get started.
+          <div className="text-[36px] mb-3 select-none opacity-40">?</div>
+          No meetings scheduled for today.
         </div>
       )}
 

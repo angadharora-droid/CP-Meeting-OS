@@ -527,17 +527,17 @@ function MeetingCard({ meeting, onPreview, user }) {
         </div>
 
         {(() => {
-          const firstTopic = meeting.topics?.[0]
-          const preview = firstTopic?.topic || firstTopic?.purpose || meeting.purpose
-          const topicCount = meeting.topics?.filter((t) => t.topic || t.purpose).length || 0
+          const firstPurpose = meeting.topics?.[0]
+          const preview = firstPurpose?.purpose || firstPurpose?.topic || meeting.purpose
+          const purposeCount = meeting.topics?.filter((t) => t.purpose || t.topic).length || 0
           return preview ? (
             <div className="flex items-start gap-2">
               <p className={`m-0 text-[#444] text-[12px] leading-[1.65] flex-1 ${expanded ? '' : 'line-clamp-2'}`}>
                 {preview}
               </p>
-              {topicCount > 1 && (
+              {purposeCount > 1 && (
                 <span className="shrink-0 px-[8px] py-[3px] rounded-full bg-[#1a1a1a] border border-[#252525] text-[9px] text-[#444] uppercase tracking-[0.1em] mt-[2px]">
-                  +{topicCount - 1} more
+                  +{purposeCount - 1} more
                 </span>
               )}
             </div>
@@ -555,20 +555,18 @@ function MeetingCard({ meeting, onPreview, user }) {
               </div>
             )}
 
-            {meeting.topics?.filter((t) => t.topic || t.purpose).length > 0 ? (
+            {meeting.topics?.filter((t) => t.purpose || t.topic).length > 0 ? (
               <div className="grid gap-2">
-                <SectionLabel label="Topics" />
-                {meeting.topics.filter((t) => t.topic || t.purpose).map((t, i) => (
+                <SectionLabel label="Purposes" />
+                {meeting.topics.filter((t) => t.purpose || t.topic).map((t, i) => (
                   <div key={i} className="p-3 rounded-[10px] border border-[#1a1a1a] bg-[#0a0a0a] grid gap-2">
                     <span className="text-[10px] uppercase tracking-[0.12em] text-[#AACC33]/50 font-semibold">
-                      {i + 1}. {t.topic || `Topic ${i + 1}`}
+                      Purpose {i + 1}
                     </span>
-                    {t.purpose && (
-                      <div>
-                        <div className="text-[9px] uppercase tracking-[0.12em] text-white/20 mb-[3px]">Purpose</div>
-                        <p className="m-0 text-[#666] text-[11.5px] leading-[1.65] whitespace-pre-line">{t.purpose}</p>
-                      </div>
-                    )}
+                    <div>
+                      <div className="text-[9px] uppercase tracking-[0.12em] text-white/20 mb-[3px]">Purpose</div>
+                      <p className="m-0 text-[#666] text-[11.5px] leading-[1.65] whitespace-pre-line">{t.purpose || t.topic}</p>
+                    </div>
                     {t.desiredOutcome && (
                       <div>
                         <div className="text-[9px] uppercase tracking-[0.12em] text-white/20 mb-[3px]">Desired Outcome</div>

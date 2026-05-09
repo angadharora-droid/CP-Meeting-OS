@@ -274,12 +274,12 @@ export function buildForm(meeting, attendees) {
   ]
 
   agendaItems.forEach((item, index) => {
-    const label = item.topic || item.purpose || `Topic ${index + 1}`
+    const label = item.purpose || item.topic || `Purpose ${index + 1}`
     sections.push(
       `${index + 1}. ${label}`,
       '',
       'Purpose:',
-      `- ${item.purpose || label}`,
+      `- ${label}`,
       '',
       'Desired Outcome:',
       `- ${item.desiredOutcome || 'As discussed'}`,
@@ -293,9 +293,6 @@ export function buildForm(meeting, attendees) {
   if (meeting.includeAdditionalPoints !== false) {
     sections.push(
       `${agendaItems.length + 1}. Other Discussions`,
-      '',
-      'Topic:',
-      ...writeLines(2),
       '',
       'Purpose:',
       ...writeLines(3),
