@@ -32,6 +32,13 @@ function toISODate(d) {
   return ''
 }
 
+function formatDateLabel(d) {
+  const iso = toISODate(d)
+  if (!iso) return d || ''
+  const [yyyy, mm, dd] = iso.split('-')
+  return `${dd}/${mm}/${yyyy}`
+}
+
 function Initials({ name }) {
   const letters = (name || '?')
     .split(' ')
@@ -55,12 +62,12 @@ function buildActionUpdateNotice(task) {
     task.assignedToMobile ? `Mobile: ${task.assignedToMobile}` : '',
     '',
     `Meeting: ${task.meetingTitle || 'Meeting'}`,
-    `Meeting date: ${task.meetingDate || 'Not recorded'}`,
+    `Meeting date: ${formatDateLabel(task.meetingDate) || 'Not recorded'}`,
     '',
     'Action assigned:',
     task.task || 'Not specified',
     '',
-    `Due date: ${task.dueDate || 'Not set'}`,
+    `Due date: ${formatDateLabel(task.dueDate) || 'Not set'}`,
     `Current status: ${task.status || 'Open'}`,
     '',
     'Update requested:',
@@ -83,7 +90,7 @@ export default function TrackerPage({ app }) {
     const headers = ['Task', 'Status', 'Assigned To', 'Designation', 'Mobile', 'Due Date', 'Meeting', 'Meeting Date']
     const rows = filteredTasks.map(t => [
       t.task || '', t.status || '', t.assignedTo || '', t.assignedToDesig || '',
-      t.assignedToMobile || '', t.dueDate || '', t.meetingTitle || '', t.meetingDate || '',
+      t.assignedToMobile || '', formatDateLabel(t.dueDate), t.meetingTitle || '', formatDateLabel(t.meetingDate),
     ])
     dlCSV(`tracker-${new Date().toISOString().slice(0, 10)}.csv`, toCSV(headers, rows))
   }
@@ -189,6 +196,7 @@ export default function TrackerPage({ app }) {
           {filteredTasks.map((task) => {
             const s = STATUS_STYLE[task.status] || STATUS_STYLE.Open
             const isDone = task.status === 'Done'
+            const dueDateLabel = formatDateLabel(task.dueDate)
             return (
               <article key={task.taskId} className="border border-[#1e1e1e] bg-[#0e0e0e] rounded-2xl overflow-hidden">
                 {/* Status indicator bar */}
@@ -216,13 +224,13 @@ export default function TrackerPage({ app }) {
                         <div>
                           <div className="text-[#555] text-[11px] font-medium">{task.assignedTo}</div>
                           <div className="text-[#2e2e2e] text-[10px]">
-                            {[task.assignedToDesig, task.assignedToMobile, task.dueDate ? `Due ${task.dueDate}` : 'No due date'].filter(Boolean).join(' - ')}
+                            {[task.assignedToDesig, task.assignedToMobile, dueDateLabel ? `Due ${dueDateLabel}` : 'No due date'].filter(Boolean).join(' - ')}
                           </div>
                         </div>
                       </>
                     ) : (
                       <div className="text-[#2e2e2e] text-[11px]">
-                        Unassigned{task.dueDate ? ` · Due ${task.dueDate}` : ''}
+                        Unassigned{dueDateLabel ? ` · Due ${dueDateLabel}` : ''}
                       </div>
                     )}
                   </div>
