@@ -44,15 +44,6 @@ export default function CloseMeetingPage({ app }) {
     }
   }
 
-  function assignExistingPerson(taskId, personId) {
-    const person = app.people.find((p) => p.id === personId)
-    if (!person) return
-    app.updateActionPoint(taskId, 'assignedTo', person.name || '')
-    app.updateActionPoint(taskId, 'assignedToDesig', person.desig || '')
-    app.updateActionPoint(taskId, 'assignedToMobile', person.mobile || '')
-    app.updateActionPoint(taskId, 'assignedToSource', 'database')
-  }
-
   return (
     <section className="grid gap-4">
 
@@ -150,17 +141,8 @@ export default function CloseMeetingPage({ app }) {
               </Field>
 
               <div className="grid gap-3">
-                <Field label="Assigned to">
-                  <select className={P.select} value=""
-                    onChange={(e) => assignExistingPerson(row.taskId, e.target.value)}>
-                    <option value="">— Select person —</option>
-                    {app.people.map((p) => (
-                      <option key={p.id} value={p.id}>{p.name}{p.desig ? ` - ${p.desig}` : ''}</option>
-                    ))}
-                  </select>
-                </Field>
                 <div className="grid gap-3 sm:grid-cols-3">
-                  <Field label="Name">
+                  <Field label="Assigned to name">
                     <input className={P.input} value={row.assignedTo}
                       placeholder="Person name"
                       onChange={(e) => {

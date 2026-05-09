@@ -373,6 +373,8 @@ function Stat({ val, label }) {
 
 export default function NewMeetingPage({ app }) {
   const [externalOpen, setExternalOpen] = useState(false)
+  const [headerOpen, setHeaderOpen] = useState(false)
+  const headerWrapRef = useRef(null)
 
   const callerName   = app.contactPeople.find((p) => p.id === app.meetingForm.calledBy)?.name ?? app.user?.name ?? 'Organizer'
   const callerPerson = app.contactPeople.find((p) => p.id === app.meetingForm.calledBy)
@@ -393,6 +395,11 @@ export default function NewMeetingPage({ app }) {
     () => [...new Set(app.meetings.map((meeting) => meeting.meetingHeader).filter(Boolean))].sort((a, b) => a.localeCompare(b)),
     [app.meetings],
   )
+  const filteredMeetingHeaders = useMemo(() => {
+    const q = app.meetingForm.meetingHeader.trim().toLowerCase()
+    if (!q) return meetingHeaders
+    return meetingHeaders.filter((header) => header.toLowerCase().includes(q))
+  }, [app.meetingForm.meetingHeader, meetingHeaders])
 
   useEffect(() => {
     if (app.meetingForm.calledBy) return
@@ -405,6 +412,15 @@ export default function NewMeetingPage({ app }) {
     )
     if (match) app.setMeetingForm((c) => ({ ...c, calledBy: match.id }))
   }, [app.isAdmin, app.user?.id]) // eslint-disable-line react-hooks/exhaustive-deps
+
+  useEffect(() => {
+    if (!headerOpen) return
+    function onDown(e) {
+      if (headerWrapRef.current && !headerWrapRef.current.contains(e.target)) setHeaderOpen(false)
+    }
+    document.addEventListener('mousedown', onDown)
+    return () => document.removeEventListener('mousedown', onDown)
+  }, [headerOpen])
 
   const selectedManagerAttendees = app.managers.filter((p) => app.meetingAttendeeIds.includes(p.id))
   const selectedAttendees = [callerPerson, ...selectedManagerAttendees, ...app.manualAttendees].filter(Boolean)
@@ -514,18 +530,50 @@ export default function NewMeetingPage({ app }) {
 
         <div className="grid gap-3 sm:grid-cols-2">
           <Field label="Meeting header">
-            <input
-              className={P.input}
-              list="meeting-header-options"
-              value={app.meetingForm.meetingHeader}
-              placeholder="e.g. Project A"
-              onChange={(e) => app.setMeetingForm((c) => ({ ...c, meetingHeader: e.target.value }))}
-            />
-            <datalist id="meeting-header-options">
-              {meetingHeaders.map((header) => (
-                <option key={header} value={header} />
-              ))}
-            </datalist>
+            <div ref={headerWrapRef} className="relative">
+              <input
+                className={`${P.input} pr-11 ${headerOpen ? 'border-[#AACC33]/55 [box-shadow:0_0_0_3px_rgba(170,204,51,0.08)]' : ''}`}
+                value={app.meetingForm.meetingHeader}
+                placeholder="e.g. Project A"
+                onFocus={() => setHeaderOpen(true)}
+                onChange={(e) => {
+                  app.setMeetingForm((c) => ({ ...c, meetingHeader: e.target.value }))
+                  setHeaderOpen(true)
+                }}
+              />
+              <button
+                type="button"
+                className={`absolute right-3 top-1/2 -translate-y-1/2 w-7 h-7 rounded-lg flex items-center justify-center text-[12px] transition-colors ${
+                  headerOpen ? 'text-[#AACC33] bg-[#AACC33]/10' : 'text-[#555] hover:text-[#888] hover:bg-white/[0.04]'
+                }`}
+                onClick={() => setHeaderOpen((open) => !open)}
+                aria-label="Toggle meeting header suggestions"
+              >
+                <svg width="12" height="12" viewBox="0 0 12 12" fill="none" className={`transition-transform ${headerOpen ? 'rotate-180' : ''}`}>
+                  <path d="M2 4l4 4 4-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+              </button>
+              {headerOpen && filteredMeetingHeaders.length > 0 && (
+                <div className="absolute z-40 mt-2 w-full overflow-hidden rounded-xl border border-[#262626] bg-[#101010] shadow-[0_16px_45px_rgba(0,0,0,0.55)]">
+                  <div className="max-h-52 overflow-y-auto p-1">
+                    {filteredMeetingHeaders.map((header) => (
+                      <button
+                        key={header}
+                        type="button"
+                        className="w-full text-left px-3 py-3 rounded-lg text-[#d8d8d8] text-[13px] font-semibold hover:bg-[#AACC33]/10 hover:text-[#F0F0F0] focus:bg-[#AACC33]/10 focus:text-[#F0F0F0] outline-none transition-colors"
+                        onMouseDown={(e) => e.preventDefault()}
+                        onClick={() => {
+                          app.setMeetingForm((c) => ({ ...c, meetingHeader: header }))
+                          setHeaderOpen(false)
+                        }}
+                      >
+                        {header}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
           </Field>
           <Field label="Meeting name *">
             <input className={P.input} value={app.meetingForm.title} placeholder="e.g. Q2 Sales Review"
