@@ -390,6 +390,54 @@ function SectionLabel({ label }) {
 }
 
 /* ─── Meeting Card ───────────────────────────────────────────── */
+function ActionPointList({ points }) {
+  const validPoints = (points || []).filter((point) => point.task)
+  if (!validPoints.length) return null
+
+  return (
+    <div className="grid gap-2">
+      <SectionLabel label="Action points" />
+      {validPoints.map((point, index) => (
+        <div key={point.taskId || index} className="p-3 rounded-[10px] border border-[#AACC33]/12 bg-[#AACC33]/[0.035] grid gap-[6px]">
+          <p className="m-0 text-[#777] text-[12.5px] leading-[1.65] whitespace-pre-line">{point.task}</p>
+          {(point.assignedTo || point.dueDate) && (
+            <div className="flex flex-wrap gap-x-3 gap-y-1 text-[10.5px] text-[#444]">
+              {point.assignedTo && <span>Owner: <span className="text-[#666]">{point.assignedTo}</span></span>}
+              {point.dueDate && <span>Due: <span className="text-[#666]">{toDateLabel(point.dueDate)}</span></span>}
+            </div>
+          )}
+        </div>
+      ))}
+    </div>
+  )
+}
+
+function FollowupDetail({ meeting }) {
+  if (!meeting.followupRequired) return null
+
+  const schedule = [
+    meeting.followupDate ? toDateLabel(meeting.followupDate) : '',
+    meeting.followupTime || '',
+  ].filter(Boolean).join(' - ')
+
+  return (
+    <div className="grid gap-2">
+      <SectionLabel label="Follow-up" />
+      <div className="p-3 rounded-[10px] border border-[#8fb339]/12 bg-[#8fb339]/[0.04] grid gap-2">
+        {schedule && (
+          <div className="text-[10.5px] uppercase tracking-[0.12em] text-[#8fb339]/55 font-semibold">{schedule}</div>
+        )}
+        {meeting.followupPurpose && (
+          <p className="m-0 text-[#777] text-[12.5px] leading-[1.65] whitespace-pre-line">{meeting.followupPurpose}</p>
+        )}
+        {meeting.followupNote && (
+          <p className="m-0 text-[#555] text-[11.5px] leading-[1.65] whitespace-pre-line">{meeting.followupNote}</p>
+        )}
+      </div>
+    </div>
+  )
+}
+
 function getNoticeAttendees(meeting) {
   if (meeting.attendeeDetails?.length) {
     return meeting.attendeeDetails
@@ -553,6 +601,19 @@ function MeetingCard({ meeting, onPreview, user }) {
                   : meeting.status === 'Cancelled' ? 'danger'
                   : 'default'
                 }
+              />
+            )}
+            {meeting.status === 'Closed' && (
+              <>
+                <ActionPointList points={meeting.actionPoints} />
+                <FollowupDetail meeting={meeting} />
+              </>
+            )}
+            {meeting.status === 'Postponed' && (meeting.postponedToDate || meeting.postponedToTime) && (
+              <DetailRow
+                label="Postponed to"
+                value={[meeting.postponedToDate ? toDateLabel(meeting.postponedToDate) : '', meeting.postponedToTime].filter(Boolean).join(' - ')}
+                variant="amber"
               />
             )}
             {(meeting.unit || meeting.refNo) && (
