@@ -1,5 +1,6 @@
 import { getMeetingCallerLabel, toDateLabel } from '../lib/meetingOs'
 import { useRef, useState } from 'react'
+import { DateField, TimeField } from '../components/DateTimePickers'
 
 const P = {
   primary:  'w-full min-h-[48px] px-5 py-[13px] rounded-xl bg-[#AACC33] text-black font-bold text-[13px] tracking-[0.08em] uppercase cursor-pointer border-none transition-all hover:bg-[#BADA44] active:scale-[0.98] disabled:opacity-30 disabled:cursor-not-allowed disabled:active:scale-100 shadow-[0_0_16px_rgba(170,204,51,0.15)]',
@@ -168,8 +169,10 @@ export default function CloseMeetingPage({ app }) {
                   </Field>
                 </div>
                 <Field label="Due date">
-                  <input type="date" className={P.input} value={row.dueDate}
-                    onChange={(e) => app.updateActionPoint(row.taskId, 'dueDate', e.target.value)} />
+                  <DateField
+                    value={row.dueDate}
+                    onChange={(date) => app.updateActionPoint(row.taskId, 'dueDate', date)}
+                  />
                 </Field>
               </div>
             </div>
@@ -198,12 +201,16 @@ export default function CloseMeetingPage({ app }) {
           <div className="grid gap-4 pt-2 border-t border-[#1a1a1a] mt-1">
             <div className="grid gap-3 sm:grid-cols-2">
               <Field label="Follow-up date">
-                <input type="date" className={P.input} value={app.followupForm.date}
-                  onChange={(e) => app.setFollowupForm((c) => ({ ...c, date: e.target.value }))} />
+                <DateField
+                  value={app.followupForm.date}
+                  onChange={(date) => app.setFollowupForm((c) => ({ ...c, date }))}
+                />
               </Field>
               <Field label="Follow-up time">
-                <input type="time" className={P.input} value={app.followupForm.time}
-                  onChange={(e) => app.setFollowupForm((c) => ({ ...c, time: e.target.value }))} />
+                <TimeField
+                  value={app.followupForm.time}
+                  onChange={(time) => app.setFollowupForm((c) => ({ ...c, time }))}
+                />
               </Field>
             </div>
             <Field label="Purpose / agenda">
@@ -245,12 +252,16 @@ export default function CloseMeetingPage({ app }) {
             </div>
             <div className="grid gap-3 sm:grid-cols-2">
               <Field label="New date">
-                <input type="date" className={P.input} value={postponeForm.date}
-                  onChange={(e) => setPostponeForm((c) => ({ ...c, date: e.target.value }))} />
+                <DateField
+                  value={postponeForm.date}
+                  onChange={(date) => setPostponeForm((c) => ({ ...c, date }))}
+                />
               </Field>
               <Field label="New time">
-                <input type="time" className={P.input} value={postponeForm.time}
-                  onChange={(e) => setPostponeForm((c) => ({ ...c, time: e.target.value }))} />
+                <TimeField
+                  value={postponeForm.time}
+                  onChange={(time) => setPostponeForm((c) => ({ ...c, time }))}
+                />
               </Field>
             </div>
             <Field label="Reason">
