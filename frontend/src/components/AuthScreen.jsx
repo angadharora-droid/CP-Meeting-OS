@@ -28,13 +28,13 @@ export default function AuthScreen({ pin, onDigit, onBack, pinResetForm, onPinRe
             MO
           </div>
           <div>
-            <p className="m-0 text-[10px] uppercase tracking-[0.28em] text-white/25 font-medium mb-[6px]">
+            <p className="m-0 text-[10px] uppercase tracking-[0.28em] text-white/45 font-medium mb-[6px]">
               Centre Point Hospitality
             </p>
             <h1 className="text-[1.75rem] font-black text-white leading-tight mb-2" style={{ fontSize: '1.75rem' }}>
               Meeting OS
             </h1>
-            <p className="text-[0.78rem] text-white/30 m-0">
+            <p className="text-[0.78rem] text-white/50 m-0">
               Enter your 6-digit PIN to continue
             </p>
           </div>
@@ -96,12 +96,12 @@ export default function AuthScreen({ pin, onDigit, onBack, pinResetForm, onPinRe
               <p className="m-0 text-[10px] uppercase tracking-[0.2em] text-[#C8F55A] font-semibold mb-[6px]">
                 Forgot PIN?
               </p>
-              <p className="m-0 text-[0.75rem] text-white/30 leading-[1.6]">
+              <p className="m-0 text-[0.75rem] text-white/50 leading-[1.6]">
                 Submit a request and your admin will issue a temporary PIN.
               </p>
             </div>
 
-            <label className="grid gap-[6px] text-[0.66rem] uppercase tracking-[0.14em] text-white/30">
+            <label className="grid gap-[6px] text-[0.66rem] uppercase tracking-[0.14em] text-white/50">
               Your name
               <input
                 className="h-11 rounded-xl bg-[#131313] border border-white/[0.07] px-3 text-white text-[13px] outline-none placeholder:text-white/15 focus:border-[rgba(200,245,90,0.35)] transition-colors"
@@ -110,7 +110,7 @@ export default function AuthScreen({ pin, onDigit, onBack, pinResetForm, onPinRe
                 placeholder="Full name"
               />
             </label>
-            <label className="grid gap-[6px] text-[0.66rem] uppercase tracking-[0.14em] text-white/30">
+            <label className="grid gap-[6px] text-[0.66rem] uppercase tracking-[0.14em] text-white/50">
               Gmail address
               <input
                 className="h-11 rounded-xl bg-[#131313] border border-white/[0.07] px-3 text-white text-[13px] outline-none placeholder:text-white/15 focus:border-[rgba(200,245,90,0.35)] transition-colors"

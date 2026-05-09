@@ -129,9 +129,9 @@ export default function TrackerPage({ app }) {
       <div className="p-5 border border-[#1e1e1e] bg-[#0e0e0e] rounded-2xl grid gap-4">
         <div className="flex items-start justify-between gap-4">
           <div>
-            <p className="m-0 mb-[5px] uppercase tracking-[0.2em] text-[10px] text-[#333]">Centre Point Hospitality</p>
+            <p className="m-0 mb-[5px] uppercase tracking-[0.2em] text-[10px] text-[#555]">Centre Point Hospitality</p>
             <h1 className="m-0 font-bold text-[22px] text-[#F0F0F0] leading-tight">Tracker</h1>
-            <p className="m-0 mt-[6px] text-[#3a3a3a] text-[12px] leading-[1.6]">
+            <p className="m-0 mt-[6px] text-[#666] text-[13px] leading-[1.6]">
               Keep open action points visible and mark them complete.
             </p>
           </div>
@@ -143,7 +143,7 @@ export default function TrackerPage({ app }) {
 
         {/* Progress bar */}
         <div>
-          <div className="flex justify-between text-[10px] text-[#2e2e2e] mb-[6px] uppercase tracking-[0.1em]">
+          <div className="flex justify-between text-[10px] text-[#555] mb-[6px] uppercase tracking-[0.1em]">
             <span>{doneCount} of {total} done</span>
             {overdue > 0 && <span className="text-[#FF5A5A]/60">{overdue} overdue</span>}
           </div>
@@ -166,7 +166,7 @@ export default function TrackerPage({ app }) {
                 ? key === 'Overdue' ? 'bg-[#FF5A5A]/10 text-[#FF5A5A] border-[#FF5A5A]/25'
                 : key === 'Done'    ? 'bg-[#AACC33]/10 text-[#AACC33] border-[#AACC33]/25'
                 : 'bg-white/[0.04] text-white/50 border-white/[0.08]'
-                : 'bg-transparent text-[#3a3a3a] border-[#1e1e1e] hover:border-[#2e2e2e] hover:text-[#666]'
+                : 'bg-transparent text-[#555] border-[#1e1e1e] hover:border-[#2e2e2e] hover:text-[#888]'
             }`}
             onClick={() => app.setTaskFilter(key)}
           >
@@ -181,11 +181,11 @@ export default function TrackerPage({ app }) {
       {/* ── Date range + export ── */}
       <div className="flex items-center gap-2 flex-wrap">
         <div className="flex items-center gap-2 flex-1 min-w-0">
-          <span className="text-[10px] uppercase tracking-[0.12em] text-[#2e2e2e] shrink-0">From</span>
+          <span className="text-[10px] uppercase tracking-[0.12em] text-[#555] shrink-0">From</span>
           <div className="flex-1 min-w-[180px]">
             <DateField value={fromDate} onChange={setFromDate} />
           </div>
-          <span className="text-[#252525] shrink-0">→</span>
+          <span className="text-[#555] shrink-0">→</span>
           <div className="flex-1 min-w-[180px]">
             <DateField value={toDate} onChange={setToDate} />
           </div>
@@ -224,7 +224,7 @@ export default function TrackerPage({ app }) {
                       <h3 className={`m-0 font-semibold text-[14px] leading-snug ${isDone ? 'line-through text-[#333]' : 'text-[#F0F0F0]'}`}>
                         {task.task}
                       </h3>
-                      <p className="m-0 mt-[4px] text-[#2e2e2e] text-[11px] truncate">{task.meetingTitle || 'From meeting'}</p>
+                      <p className="m-0 mt-[4px] text-[#555] text-[11px] truncate">{task.meetingTitle || 'From meeting'}</p>
                     </div>
                     <span className={`shrink-0 px-[10px] py-[4px] text-[9px] uppercase tracking-[0.12em] font-semibold rounded-full border ${s.badge}`}>
                       {task.status}
@@ -238,13 +238,13 @@ export default function TrackerPage({ app }) {
                         <Initials name={task.assignedTo} />
                         <div>
                           <div className="text-[#555] text-[11px] font-medium">{task.assignedTo}</div>
-                          <div className="text-[#2e2e2e] text-[10px]">
+                          <div className="text-[#555] text-[10px]">
                             {[task.assignedToDesig, task.assignedToMobile, dueDateLabel ? `Due ${dueDateLabel}` : 'No due date'].filter(Boolean).join(' - ')}
                           </div>
                         </div>
                       </>
                     ) : (
-                      <div className="text-[#2e2e2e] text-[11px]">
+                      <div className="text-[#555] text-[11px]">
                         Unassigned{dueDateLabel ? ` · Due ${dueDateLabel}` : ''}
                       </div>
                     )}
@@ -302,11 +302,13 @@ export default function TrackerPage({ app }) {
           })}
         </div>
       ) : (
-        <div className="py-14 px-4 border border-dashed border-[#1e1e1e] rounded-2xl text-[#2e2e2e] text-[12px] text-center leading-[1.6]">
+        <div className="py-14 px-4 border border-dashed border-[#1e1e1e] rounded-2xl text-center leading-[1.6]">
           <div className="text-[32px] mb-3 opacity-30 select-none">✓</div>
-          {app.taskFilter === 'all'
-            ? 'No action points yet. They appear here when you close a meeting.'
-            : `No ${app.taskFilter.toLowerCase()} tasks.`}
+          <div className="text-[#555] text-[12px] leading-[1.6]">
+            {app.taskFilter === 'all'
+              ? 'No action points yet. They appear here when you close a meeting.'
+              : `No ${app.taskFilter.toLowerCase()} tasks.`}
+          </div>
         </div>
       )}
 
