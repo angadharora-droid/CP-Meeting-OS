@@ -345,6 +345,22 @@ export default function DashboardPage({ app }) {
         </div>
       </div>
 
+      {/* ── Apps ── */}
+      <div>
+        <div className="flex items-center gap-2 mb-3">
+          <p className="m-0 text-[10px] uppercase tracking-[0.18em] text-white/50 shrink-0">Apps</p>
+          <div className="flex-1 h-px bg-white/[0.07]" />
+        </div>
+        <a
+          href="/flashreport"
+          className="p-4 rounded-2xl bg-teal-900/20 border border-teal-700/25 text-left hover:bg-teal-900/30 active:scale-[0.97] transition-all cursor-pointer block no-underline"
+        >
+          <div className="text-teal-400 text-[20px] mb-[10px] leading-none">⚡</div>
+          <div className="text-teal-300 text-[12.5px] font-bold mb-[3px]">CP Flash Report</div>
+          <div className="text-teal-400/50 text-[10.5px]">Daily hospitality dashboard</div>
+        </a>
+      </div>
+
       {/* ── Detail overlay ── */}
       <MeetingDetail meeting={selectedMeeting} onClose={() => setSelectedMeeting(null)} />
 
