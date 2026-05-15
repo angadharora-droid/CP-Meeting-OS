@@ -192,6 +192,13 @@ function AgendaFormPreview({ content, orgName }) {
 function App() {
   const location = useLocation()
   const navigate = useNavigate()
+
+  // Hard-reload for /flashreport so Vercel's rewrite fires instead of React Router.
+  if (location.pathname === '/flashreport' || location.pathname.startsWith('/flashreport/')) {
+    window.location.replace(location.pathname + location.search + location.hash)
+    return null
+  }
+
   const page = location.pathname.replace(/^\/+|\/+$/g, '') || 'dashboard'
   const app = useMeetingOs(navigate, page)
 
