@@ -206,6 +206,12 @@ function App() {
     return () => window.removeEventListener('keydown', onKey)
   }, [app])
 
+  // Hard redirect so Vercel rewrite handles /flashreport instead of React Router
+  if (location.pathname === '/flashreport' || location.pathname.startsWith('/flashreport/')) {
+    window.location.replace(location.pathname + location.search + location.hash)
+    return null
+  }
+
   if (!app.authed) {
     return (
       <AuthScreen
