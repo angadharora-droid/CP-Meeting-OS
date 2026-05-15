@@ -32,6 +32,13 @@ export default function LandingPage() {
               desc="Meetings, action tracker, people, and bank"
               href="/meetingos/dashboard"
             />
+            <AppCard
+              icon="FR"
+              name="CP Flash Report"
+              desc="Daily hospitality dashboard"
+              href="/flashreport"
+              color="#2dd4bf"
+            />
           </div>
         </section>
       </main>
@@ -43,20 +50,24 @@ export default function LandingPage() {
   )
 }
 
-function AppCard({ icon, name, desc, href }) {
+function AppCard({ icon, name, desc, href, color = '#AACC33' }) {
   return (
     <a
       href={href}
-      className="surface-panel group flex items-center gap-4 rounded-2xl p-4 text-left text-inherit no-underline transition-all duration-200 hover:-translate-y-[1px] hover:border-[#AACC33]/35 hover:bg-white/[0.045]"
+      className="surface-panel group flex items-center gap-4 rounded-2xl p-4 text-left text-inherit no-underline transition-all duration-200 hover:-translate-y-[1px] hover:bg-white/[0.045]"
+      style={{ '--card-color': color }}
     >
-      <div className="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-[#AACC33] text-[11px] font-black text-black shadow-[0_0_14px_rgba(170,204,51,0.16)]">
+      <div
+        className="grid h-11 w-11 shrink-0 place-items-center rounded-xl text-[11px] font-black text-black"
+        style={{ backgroundColor: color, boxShadow: `0 0 14px ${color}29` }}
+      >
         {icon}
       </div>
       <div className="min-w-0 flex-1">
         <div className="text-[14px] font-bold">{name}</div>
         <div className="mt-1 truncate text-[11px] text-white/42">{desc}</div>
       </div>
-      <span className="text-[18px] text-white/25 transition-colors group-hover:text-[#AACC33]">-&gt;</span>
+      <span className="text-[18px] text-white/25 transition-colors" style={{ color: 'inherit' }}>-&gt;</span>
     </a>
   )
 }
