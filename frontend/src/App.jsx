@@ -192,15 +192,16 @@ function AgendaFormPreview({ content, orgName }) {
 function App() {
   const location = useLocation()
   const navigate = useNavigate()
-
-  // Hard-reload for /flashreport so Vercel's rewrite fires instead of React Router.
-  if (location.pathname === '/flashreport' || location.pathname.startsWith('/flashreport/')) {
-    window.location.replace(location.pathname + location.search + location.hash)
-    return null
-  }
-
   const page = location.pathname.replace(/^\/+|\/+$/g, '') || 'dashboard'
   const app = useMeetingOs(navigate, page)
+
+  // All hooks above must stay unconditional. Redirect runs in effect so React
+  // finishes the render cycle before the browser navigation fires.
+  useEffect(() => {
+    if (location.pathname === '/flashreport' || location.pathname.startsWith('/flashreport/')) {
+      window.location.replace(location.pathname + location.search + location.hash)
+    }
+  }, [location.pathname, location.search, location.hash])
 
   useEffect(() => {
     const onKey = (e) => {
@@ -213,9 +214,7 @@ function App() {
     return () => window.removeEventListener('keydown', onKey)
   }, [app])
 
-  // Hard redirect so Vercel rewrite handles /flashreport instead of React Router
   if (location.pathname === '/flashreport' || location.pathname.startsWith('/flashreport/')) {
-    window.location.replace(location.pathname + location.search + location.hash)
     return null
   }
 
