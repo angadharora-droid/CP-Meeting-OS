@@ -37,7 +37,7 @@ function today() {
   });
 }
 
-const CELL = 48;
+const CELL = 28;
 const GLOW_R = 260;
 
 export default function LandingPage() {
@@ -405,9 +405,9 @@ const C = {
   bg: "#07070A",
   surface: "rgba(255,255,255,0.03)",
   txt: "#F0EEF8",
-  muted: "rgba(240,238,248,0.65)",
-  faint: "rgba(240,238,248,0.45)",
-  vfaint: "rgba(240,238,248,0.28)",
+  muted: "rgba(240,238,248,0.82)",
+  faint: "rgba(240,238,248,0.65)",
+  vfaint: "rgba(240,238,248,0.45)",
   border: "rgba(255,255,255,0.07)",
   borderMid: "rgba(255,255,255,0.1)",
 };
@@ -642,7 +642,7 @@ const styles = {
     marginBottom: 20,
   },
   headlineDim: {
-    color: "rgba(240,238,248,0.55)",
+    color: "rgba(240,238,248,0.72)",
   },
   headlineAccent: {
     background: `linear-gradient(125deg, ${C.pink} 0%, ${C.hotpink} 55%, rgba(240,238,248,0.9) 100%)`,
