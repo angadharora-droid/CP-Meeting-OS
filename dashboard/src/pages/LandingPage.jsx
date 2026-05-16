@@ -217,9 +217,9 @@ export default function LandingPage() {
               </div>
 
               <h1 style={styles.headline}>
-                <span style={styles.headlineWhite}>Pick a system.</span>
+                <span style={styles.headlineWhite}>One desk.</span>
                 <br />
-                <span style={styles.headlineAccent}>Start the work.</span>
+                <span style={styles.headlineAccent}>All systems.</span>
               </h1>
 
               <p style={styles.sub}>
