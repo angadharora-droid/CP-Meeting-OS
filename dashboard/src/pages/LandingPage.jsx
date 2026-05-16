@@ -37,7 +37,7 @@ function today() {
   });
 }
 
-const CELL = 28;
+const CELL = 36;
 const GLOW_R = 260;
 
 export default function LandingPage() {
