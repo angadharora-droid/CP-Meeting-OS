@@ -1,14 +1,6 @@
 {
   "rewrites": [
     {
-      "source": "/flashreport",
-      "destination": "https://cp-flash.vercel.app/flashreport/"
-    },
-    {
-      "source": "/flashreport/:path*",
-      "destination": "https://cp-flash.vercel.app/flashreport/:path*"
-    },
-    {
       "source": "/(.*)",
       "destination": "/index.html"
     }
