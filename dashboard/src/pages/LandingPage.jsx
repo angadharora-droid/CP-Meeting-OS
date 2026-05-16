@@ -67,6 +67,7 @@ const DARK = {
   launchBg: "rgba(255,255,255,0.03)",
   footerLogoBg: "rgba(255,255,255,0.05)",
   accentEnd: "rgba(240,238,248,0.85)",
+  gradientText: true,
   blob1: "rgba(194,0,110,0.13)",
   blob2: "rgba(224,64,160,0.09)",
   logoBgOpacity: 0.28,
@@ -93,6 +94,7 @@ const LIGHT = {
   launchBg: "rgba(194,0,110,0.05)",
   footerLogoBg: "rgba(0,0,0,0.06)",
   accentEnd: "#8B0050",
+  gradientText: false,
   blob1: "rgba(194,0,110,0.08)",
   blob2: "rgba(224,64,160,0.06)",
   logoBgOpacity: 0.18,
@@ -229,10 +231,12 @@ function makeStyles(C) {
       letterSpacing: "-0.03em", marginBottom: 18,
     },
     headlineWhite: { color: C.txt },
-    headlineAccent: {
+    headlineAccent: C.gradientText ? {
       display: "inline-block",
       background: `linear-gradient(125deg, ${C.pink} 0%, ${C.hotpink} 55%, ${C.accentEnd} 100%)`,
       WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text",
+    } : {
+      color: C.pink,
     },
     sub: {
       fontSize: 13, color: C.muted, lineHeight: 1.7,
