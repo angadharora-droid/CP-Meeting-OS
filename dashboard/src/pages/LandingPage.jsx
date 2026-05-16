@@ -158,11 +158,6 @@ export default function LandingPage() {
         <div style={{ ...styles.blob, ...styles.blob2 }} />
       </div>
 
-      {/* Logo watermark */}
-      <div style={styles.logoBg}>
-        <img src={cpgLogo} alt="" style={styles.logoImg} draggable={false} />
-      </div>
-
       <canvas ref={canvasRef} style={styles.canvas} />
 
       <div
@@ -208,27 +203,40 @@ export default function LandingPage() {
 
         {/* Main */}
         <main style={styles.main}>
-          {/* Hero */}
+          {/* Hero — two column */}
           <div style={styles.hero}>
-            <div style={styles.eyebrowRow}>
-              <span style={styles.eyebrowChip}>Command Desk</span>
-              <span style={styles.eyebrowLine} />
+            {/* Left */}
+            <div style={styles.heroLeft}>
+              <div style={styles.eyebrowRow}>
+                <span style={styles.eyebrowChip}>Command Desk</span>
+              </div>
+
+              <h1 style={styles.headline}>
+                <span style={styles.headlineWhite}>Pick a system.</span>
+                <br />
+                <span style={styles.headlineAccent}>Start the work.</span>
+              </h1>
+
+              <p style={styles.sub}>
+                Internal tools for meeting governance and daily hotel operations —
+                unified under one portal.
+              </p>
+
+              <div style={styles.ctaRow}>
+                <a href="#apps" style={styles.ctaPrimary}>Explore Systems &nbsp;→</a>
+                <a href="#" style={styles.ctaGhost}>View Announcements &nbsp;→</a>
+              </div>
             </div>
 
-            <h1 style={styles.headline}>
-              <span style={styles.headlineDim}>Pick a system.</span>
-              <br />
-              <span style={styles.headlineAccent}>Start the work.</span>
-            </h1>
-
-            <p style={styles.sub}>
-              Internal tools for meeting governance and daily hotel operations —
-              unified under one portal.
-            </p>
+            {/* Right — logo glow */}
+            <div style={styles.heroRight}>
+              <div style={styles.heroGlow} />
+              <img src={cpgLogo} alt="" style={styles.heroLogoImg} draggable={false} />
+            </div>
           </div>
 
           {/* Section header */}
-          <div style={styles.sectionRow}>
+          <div id="apps" style={styles.sectionRow}>
             <span style={styles.sectionLabel}>Applications</span>
             <div style={styles.sectionLine} />
             <span style={styles.sectionCount}>{APPS.length} active</span>
@@ -319,73 +327,45 @@ function AppCard({ app, delay }) {
     <a
       ref={cardRef}
       href={app.href}
-      style={{
-        ...styles.card,
-        animationDelay: `${delay}ms`,
-      }}
+      style={{ ...styles.card, animationDelay: `${delay}ms` }}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
     >
       <div ref={glowRef} style={styles.cardGlow} />
       <div style={styles.cardEdge} />
 
-      {/* Head */}
+      {/* Top row: index + live */}
       <div style={styles.cardHead}>
-        <div
-          style={{
-            ...styles.indexBadge,
-            color: accent,
-            borderColor: `rgba(${accentRgb},0.2)`,
-          }}
-        >
+        <div style={{ ...styles.indexBadge, color: accent, borderColor: `rgba(${accentRgb},0.2)` }}>
           {app.index}
         </div>
-        <div
-          style={{
-            ...styles.livePill,
-            color: accent,
-            background: `rgba(${accentRgb},0.1)`,
-            borderColor: `rgba(${accentRgb},0.25)`,
-          }}
-        >
+        <div style={{ ...styles.livePill, color: accent, background: `rgba(${accentRgb},0.1)`, borderColor: `rgba(${accentRgb},0.25)` }}>
           <span style={{ ...styles.liveDot, background: accent }} />
           {app.status}
         </div>
       </div>
 
-      {/* Body */}
+      {/* Body: icon left, text right */}
       <div style={styles.cardBody}>
-        <div
-          style={{
-            ...styles.iconBox,
-            background: `rgba(${accentRgb},0.1)`,
-            borderColor: `rgba(${accentRgb},0.2)`,
-          }}
-        >
+        <div style={{ ...styles.iconBox, background: `rgba(${accentRgb},0.1)`, borderColor: `rgba(${accentRgb},0.2)` }}>
           <span style={{ ...styles.iconText, color: accent }}>{app.short}</span>
         </div>
-        <div style={styles.cardTitle}>{app.label}</div>
-        <div style={styles.cardDesc}>{app.desc}</div>
+        <div style={styles.cardContent}>
+          <div style={styles.cardTitle}>{app.label}</div>
+          <div style={styles.cardDesc}>{app.desc}</div>
+        </div>
       </div>
 
       {/* Foot */}
       <div style={styles.cardFoot}>
         <div style={styles.tags}>
           {app.tags.map((tag) => (
-            <span key={tag} style={styles.tag}>
-              {tag}
-            </span>
+            <span key={tag} style={styles.tag}>{tag}</span>
           ))}
         </div>
-        <div
-          style={{
-            ...styles.launchBtn,
-            borderColor: `rgba(${accentRgb},0.3)`,
-            color: accent,
-          }}
-        >
+        <div style={{ ...styles.launchBtn, borderColor: `rgba(${accentRgb},0.3)`, color: accent }}>
           <span>Open</span>
-          <span style={styles.launchArrow}>↗</span>
+          <span style={styles.launchArrow}>→</span>
         </div>
       </div>
     </a>
@@ -608,12 +588,53 @@ const styles = {
     flexDirection: "column",
   },
 
-  hero: { marginBottom: 32 },
+  /* Hero two-column */
+  hero: {
+    display: "flex",
+    alignItems: "center",
+    gap: 32,
+    marginBottom: 32,
+    flex: 1,
+  },
+  heroLeft: {
+    flex: "0 0 auto",
+    maxWidth: 520,
+  },
+  heroRight: {
+    flex: 1,
+    position: "relative",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    minHeight: 200,
+    overflow: "hidden",
+  },
+  heroGlow: {
+    position: "absolute",
+    width: 420,
+    height: 420,
+    borderRadius: "50%",
+    background: "radial-gradient(circle, rgba(194,0,110,0.35) 0%, rgba(224,64,160,0.15) 40%, transparent 70%)",
+    filter: "blur(40px)",
+    pointerEvents: "none",
+  },
+  heroLogoImg: {
+    position: "relative",
+    width: "min(55%, 320px)",
+    height: "auto",
+    objectFit: "contain",
+    filter: "brightness(0) invert(1)",
+    opacity: 0.18,
+    userSelect: "none",
+    pointerEvents: "none",
+    zIndex: 1,
+  },
+
   eyebrowRow: {
     display: "flex",
     alignItems: "center",
     gap: 14,
-    marginBottom: 22,
+    marginBottom: 20,
   },
   eyebrowChip: {
     fontFamily: FONTS.mono,
@@ -628,21 +649,16 @@ const styles = {
     background: "rgba(194,0,110,0.07)",
     flexShrink: 0,
   },
-  eyebrowLine: {
-    flex: 1,
-    height: "0.5px",
-    background: `linear-gradient(90deg, rgba(194,0,110,0.4), transparent)`,
-  },
   headline: {
     fontFamily: FONTS.display,
-    fontSize: "clamp(40px, 7vw, 72px)",
+    fontSize: "clamp(36px, 6vw, 68px)",
     fontWeight: 800,
-    lineHeight: 0.92,
+    lineHeight: 0.95,
     letterSpacing: "-0.03em",
-    marginBottom: 20,
+    marginBottom: 18,
   },
-  headlineDim: {
-    color: "rgba(240,238,248,0.72)",
+  headlineWhite: {
+    color: C.txt,
   },
   headlineAccent: {
     background: `linear-gradient(125deg, ${C.pink} 0%, ${C.hotpink} 55%, rgba(240,238,248,0.9) 100%)`,
@@ -651,11 +667,55 @@ const styles = {
     backgroundClip: "text",
   },
   sub: {
-    fontSize: 14,
+    fontSize: 13,
     color: C.muted,
-    lineHeight: 1.75,
-    maxWidth: 420,
+    lineHeight: 1.7,
+    maxWidth: 400,
     fontWeight: 400,
+    marginBottom: 24,
+  },
+
+  /* CTA buttons */
+  ctaRow: {
+    display: "flex",
+    alignItems: "center",
+    gap: 12,
+    flexWrap: "wrap",
+  },
+  ctaPrimary: {
+    display: "inline-flex",
+    alignItems: "center",
+    gap: 6,
+    padding: "10px 20px",
+    borderRadius: 8,
+    background: C.pink,
+    color: "#fff",
+    fontFamily: FONTS.body,
+    fontSize: 12,
+    fontWeight: 600,
+    letterSpacing: "0.02em",
+    textDecoration: "none",
+    border: "none",
+    cursor: "pointer",
+    transition: "background 0.2s, transform 0.15s",
+    boxShadow: `0 0 20px rgba(194,0,110,0.35)`,
+  },
+  ctaGhost: {
+    display: "inline-flex",
+    alignItems: "center",
+    gap: 6,
+    padding: "10px 16px",
+    borderRadius: 8,
+    background: "transparent",
+    color: C.faint,
+    fontFamily: FONTS.body,
+    fontSize: 12,
+    fontWeight: 500,
+    letterSpacing: "0.02em",
+    textDecoration: "none",
+    border: `0.5px solid ${C.border}`,
+    cursor: "pointer",
+    transition: "color 0.2s, border-color 0.2s",
   },
 
   sectionRow: {
@@ -690,23 +750,21 @@ const styles = {
   cards: {
     display: "grid",
     gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))",
-    gap: 14,
+    gap: 12,
   },
   card: {
     display: "flex",
     flexDirection: "column",
-    minHeight: 280,
-    borderRadius: 20,
+    borderRadius: 16,
     border: `0.5px solid ${C.borderMid}`,
-    background: C.surface,
+    background: "rgba(255,255,255,0.02)",
     backdropFilter: "blur(32px)",
     WebkitBackdropFilter: "blur(32px)",
-    padding: "24px 24px 20px",
+    padding: "18px 20px 16px",
     position: "relative",
     textDecoration: "none",
     color: C.txt,
-    transition:
-      "border-color 0.35s, transform 0.4s cubic-bezier(0.23,1,0.32,1)",
+    transition: "border-color 0.35s, transform 0.4s cubic-bezier(0.23,1,0.32,1)",
     cursor: "pointer",
     transformStyle: "preserve-3d",
     willChange: "transform",
@@ -727,15 +785,14 @@ const styles = {
     left: "15%",
     right: "15%",
     height: "0.5px",
-    background:
-      "linear-gradient(90deg, transparent, rgba(255,255,255,0.18), transparent)",
+    background: "linear-gradient(90deg, transparent, rgba(255,255,255,0.18), transparent)",
     pointerEvents: "none",
   },
   cardHead: {
     display: "flex",
     alignItems: "center",
     justifyContent: "space-between",
-    marginBottom: 20,
+    marginBottom: 14,
   },
   indexBadge: {
     fontFamily: FONTS.mono,
@@ -767,21 +824,23 @@ const styles = {
     flexShrink: 0,
     animation: "blink 2s ease-in-out infinite",
   },
+  /* Horizontal body: icon left, text right */
   cardBody: {
-    flex: 1,
     display: "flex",
-    flexDirection: "column",
-    gap: 10,
+    alignItems: "flex-start",
+    gap: 14,
+    flex: 1,
+    marginBottom: 14,
   },
   iconBox: {
-    width: 44,
-    height: 44,
-    borderRadius: 12,
+    width: 40,
+    height: 40,
+    borderRadius: 10,
     border: "0.5px solid",
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
-    marginBottom: 2,
+    flexShrink: 0,
   },
   iconText: {
     fontFamily: FONTS.mono,
@@ -789,23 +848,29 @@ const styles = {
     fontWeight: 700,
     letterSpacing: "0.08em",
   },
+  cardContent: {
+    flex: 1,
+    minWidth: 0,
+    display: "flex",
+    flexDirection: "column",
+    gap: 5,
+  },
   cardTitle: {
     fontFamily: FONTS.display,
-    fontSize: 22,
+    fontSize: 18,
     fontWeight: 800,
-    lineHeight: 1.05,
+    lineHeight: 1.1,
     letterSpacing: "-0.02em",
     color: C.txt,
   },
   cardDesc: {
-    fontSize: 12,
+    fontSize: 11.5,
     color: C.muted,
-    lineHeight: 1.75,
+    lineHeight: 1.65,
     fontWeight: 400,
   },
   cardFoot: {
-    marginTop: 20,
-    paddingTop: 16,
+    paddingTop: 12,
     borderTop: `0.5px solid ${C.vfaint}`,
     display: "flex",
     alignItems: "center",
