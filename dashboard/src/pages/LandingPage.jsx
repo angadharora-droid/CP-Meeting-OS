@@ -35,7 +35,7 @@ function today() {
 }
 
 const CELL = 52;
-const GLOW_R = 180;
+const GLOW_R = 240;
 
 export default function LandingPage() {
   const canvasRef = useRef(null);
@@ -87,28 +87,28 @@ export default function LandingPage() {
 
         ctx.beginPath();
         ctx.roundRect(bx, by, bw, bh, br);
-        ctx.fillStyle = `rgba(255,255,255,${0.03 + prox * 0.18})`;
+        ctx.fillStyle = `rgba(255,255,255,${0.05 + prox * 0.28})`;
         ctx.fill();
 
-        if (prox > 0.05) {
+        if (prox > 0.03) {
           ctx.beginPath();
           ctx.roundRect(bx, by, bw, bh, br);
-          ctx.fillStyle = `rgba(170,204,51,${prox * 0.55})`;
+          ctx.fillStyle = `rgba(170,204,51,${prox * 0.9})`;
           ctx.fill();
 
           if (prox2 > 0.02) {
             ctx.beginPath();
             ctx.roundRect(bx, by, bw, bh, br);
-            ctx.fillStyle = `rgba(45,212,191,${prox2 * 0.35})`;
+            ctx.fillStyle = `rgba(45,212,191,${prox2 * 0.7})`;
             ctx.fill();
           }
         }
 
-        if (prox > 0.15) {
+        if (prox > 0.1) {
           ctx.beginPath();
           ctx.roundRect(bx, by, bw, bh, br);
-          ctx.strokeStyle = `rgba(170,204,51,${prox * 0.7})`;
-          ctx.lineWidth = prox * 1.2;
+          ctx.strokeStyle = `rgba(170,204,51,${prox * 1.0})`;
+          ctx.lineWidth = prox * 1.6;
           ctx.stroke();
         }
       }
@@ -161,19 +161,21 @@ export default function LandingPage() {
       <div style={styles.content}>
         {/* Header */}
         <header style={styles.header}>
-          <div style={styles.brand}>
-            <div style={styles.badge}>CPG</div>
-            <div>
-              <div style={styles.brandName}>Centre Point Group</div>
-              <div style={styles.brandSub}>Operations Portal</div>
+          <div style={styles.inner}>
+            <div style={styles.brand}>
+              <div style={styles.badge}>CPG</div>
+              <div>
+                <div style={styles.brandName}>Centre Point Group</div>
+                <div style={styles.brandSub}>Operations Portal</div>
+              </div>
             </div>
-          </div>
-          <div style={styles.headerRight}>
-            <div style={styles.statusDot}>
-              <span style={styles.dot} />
-              All systems live
+            <div style={styles.headerRight}>
+              <div style={styles.statusDot}>
+                <span style={styles.dot} />
+                All systems live
+              </div>
+              <div style={styles.dateTag}>{today()}</div>
             </div>
-            <div style={styles.dateTag}>{today()}</div>
           </div>
         </header>
 
@@ -205,16 +207,18 @@ export default function LandingPage() {
 
         {/* Footer */}
         <footer style={styles.footer}>
-          <span style={styles.footerText}>
-            {new Date().getFullYear()} Centre Point Group
-          </span>
-          <div style={styles.footerSep} />
-          <div style={styles.tickerWrap}>
-            <span style={styles.tickerInner}>
-              CENTRE POINT GROUP &nbsp;·&nbsp; INTERNAL USE ONLY &nbsp;·&nbsp;
-              OPERATIONS PORTAL &nbsp;·&nbsp; CENTRE POINT GROUP &nbsp;·&nbsp;
-              INTERNAL USE ONLY &nbsp;·&nbsp; OPERATIONS PORTAL &nbsp;·&nbsp;
+          <div style={styles.inner}>
+            <span style={styles.footerText}>
+              {new Date().getFullYear()} Centre Point Group
             </span>
+            <div style={styles.footerSep} />
+            <div style={styles.tickerWrap}>
+              <span style={styles.tickerInner}>
+                CENTRE POINT GROUP &nbsp;·&nbsp; INTERNAL USE ONLY &nbsp;·&nbsp;
+                OPERATIONS PORTAL &nbsp;·&nbsp; CENTRE POINT GROUP &nbsp;·&nbsp;
+                INTERNAL USE ONLY &nbsp;·&nbsp; OPERATIONS PORTAL &nbsp;·&nbsp;
+              </span>
+            </div>
           </div>
         </footer>
       </div>
@@ -336,11 +340,19 @@ const styles = {
     zIndex: 2,
   },
 
-  /* Header */
-  header: {
+  /* Centering wrapper used inside header, main, footer */
+  inner: {
+    maxWidth: 1100,
+    margin: "0 auto",
+    width: "100%",
     display: "flex",
     alignItems: "center",
     justifyContent: "space-between",
+    gap: 12,
+  },
+
+  /* Header */
+  header: {
     padding: "14px 24px",
     borderBottom: `0.5px solid ${C.b1}`,
     background: "rgba(6,6,8,0.6)",
@@ -414,7 +426,7 @@ const styles = {
   },
 
   /* Main */
-  main: { padding: "36px 24px 28px" },
+  main: { padding: "48px 24px 36px", maxWidth: 1100, margin: "0 auto", width: "100%" },
   hero: { marginBottom: 32 },
   eyebrow: {
     display: "inline-flex",
@@ -614,10 +626,6 @@ const styles = {
   footer: {
     borderTop: `0.5px solid ${C.b1}`,
     padding: "10px 24px",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "space-between",
-    gap: 12,
     background: "rgba(6,6,8,0.6)",
     backdropFilter: "blur(20px)",
     WebkitBackdropFilter: "blur(20px)",
