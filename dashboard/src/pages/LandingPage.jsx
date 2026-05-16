@@ -34,8 +34,8 @@ function today() {
   });
 }
 
-const CELL = 52;
-const GLOW_R = 240;
+const CELL = 56;
+const GLOW_R = 280;
 
 export default function LandingPage() {
   const canvasRef = useRef(null);
@@ -60,56 +60,45 @@ export default function LandingPage() {
     const ctx = canvas.getContext("2d");
     const W = canvas.width;
     const H = canvas.height;
-    const cols = Math.ceil(W / CELL) + 1;
-    const rows = Math.ceil(H / CELL) + 1;
+    const cols = Math.ceil(W / CELL) + 2;
+    const rows = Math.ceil(H / CELL) + 2;
     const { x: lx, y: ly } = mouseRef.current;
 
     ctx.clearRect(0, 0, W, H);
 
-    for (let row = 0; row < rows; row++) {
-      for (let col = 0; col < cols; col++) {
+    // Draw dots at grid intersections
+    for (let row = 0; row <= rows; row++) {
+      for (let col = 0; col <= cols; col++) {
         const x = col * CELL;
         const y = row * CELL;
-        const cx = x + CELL * 0.5;
-        const cy = y + CELL * 0.5;
-        const dx = cx - lx;
-        const dy = cy - ly;
+        const dx = x - lx;
+        const dy = y - ly;
         const dist = Math.sqrt(dx * dx + dy * dy);
-        const prox = Math.max(0, 1 - dist / GLOW_R);
-        const prox2 = Math.max(0, 1 - dist / (GLOW_R * 0.5));
+        const prox     = Math.max(0, 1 - dist / GLOW_R);
+        const proxCore = Math.max(0, 1 - dist / (GLOW_R * 0.35));
 
-        const pad = 3;
-        const bx = x + pad;
-        const by = y + pad;
-        const bw = CELL - pad * 2;
-        const bh = CELL - pad * 2;
-        const br = CELL * 0.18;
+        // Dot radius: tiny at rest, grows near cursor
+        const r = 0.9 + prox * 3.4;
 
         ctx.beginPath();
-        ctx.roundRect(bx, by, bw, bh, br);
-        ctx.fillStyle = `rgba(255,255,255,${0.05 + prox * 0.28})`;
-        ctx.fill();
+        ctx.arc(x, y, r, 0, Math.PI * 2);
 
-        if (prox > 0.03) {
-          ctx.beginPath();
-          ctx.roundRect(bx, by, bw, bh, br);
-          ctx.fillStyle = `rgba(170,204,51,${prox * 0.9})`;
+        if (proxCore > 0.1) {
+          // Inner core — teal center, lime ring
+          ctx.fillStyle = `rgba(45,212,191,${0.55 + proxCore * 0.35})`;
           ctx.fill();
-
-          if (prox2 > 0.02) {
-            ctx.beginPath();
-            ctx.roundRect(bx, by, bw, bh, br);
-            ctx.fillStyle = `rgba(45,212,191,${prox2 * 0.7})`;
-            ctx.fill();
-          }
-        }
-
-        if (prox > 0.1) {
           ctx.beginPath();
-          ctx.roundRect(bx, by, bw, bh, br);
-          ctx.strokeStyle = `rgba(170,204,51,${prox * 1.0})`;
-          ctx.lineWidth = prox * 1.6;
-          ctx.stroke();
+          ctx.arc(x, y, r * 0.55, 0, Math.PI * 2);
+          ctx.fillStyle = `rgba(170,204,51,${proxCore * 0.9})`;
+          ctx.fill();
+        } else if (prox > 0.04) {
+          // Outer glow zone — white shifting to lime
+          ctx.fillStyle = `rgba(170,204,51,${0.08 + prox * 0.38})`;
+          ctx.fill();
+        } else {
+          // Resting state — dim white dot
+          ctx.fillStyle = "rgba(255,255,255,0.09)";
+          ctx.fill();
         }
       }
     }
