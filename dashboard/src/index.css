@@ -20,8 +20,9 @@
   body {
     margin: 0;
     background:
-      linear-gradient(180deg, #0b0b0b 0%, #070707 48%, #0a0a0a 100%),
-      repeating-linear-gradient(90deg, rgba(255,255,255,0.018) 0 1px, transparent 1px 72px);
+      linear-gradient(135deg, rgba(170,204,51,0.08) 0%, transparent 28%),
+      linear-gradient(225deg, rgba(45,212,191,0.07) 0%, transparent 24%),
+      linear-gradient(180deg, #0c0c0b 0%, #070707 52%, #0b0b0b 100%);
     font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
     color: #F0F0F0;
     text-rendering: geometricPrecision;
@@ -57,9 +58,87 @@
 }
 
 @layer utilities {
+  .portal-shell {
+    background-image:
+      linear-gradient(rgba(255,255,255,0.035) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.035) 1px, transparent 1px);
+    background-size: 72px 72px;
+  }
+
   .surface-panel {
     border: 1px solid rgba(255, 255, 255, 0.075);
     background: linear-gradient(180deg, rgba(255,255,255,0.035), rgba(255,255,255,0.018));
     box-shadow: 0 18px 60px rgba(0,0,0,0.22);
+  }
+
+  .portal-map {
+    position: relative;
+    min-height: 250px;
+    overflow: hidden;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 0.5rem;
+    background:
+      linear-gradient(rgba(255,255,255,0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.04) 1px, transparent 1px),
+      #101010;
+    background-size: 32px 32px;
+  }
+
+  .portal-map-node {
+    position: absolute;
+    z-index: 2;
+    display: grid;
+    width: 64px;
+    height: 64px;
+    place-items: center;
+    border-radius: 0.5rem;
+    border: 1px solid rgba(255,255,255,0.13);
+    font-size: 12px;
+    font-weight: 900;
+    letter-spacing: 0.12em;
+    box-shadow: 0 18px 36px rgba(0,0,0,0.26);
+  }
+
+  .node-core {
+    left: calc(50% - 32px);
+    top: calc(50% - 32px);
+    background: #F4F4F1;
+    color: #050505;
+  }
+
+  .node-meeting {
+    left: 28px;
+    top: 36px;
+    background: #AACC33;
+    color: #050505;
+  }
+
+  .node-flash {
+    right: 28px;
+    bottom: 36px;
+    background: #2DD4BF;
+    color: #05201d;
+  }
+
+  .portal-map-line {
+    position: absolute;
+    z-index: 1;
+    height: 2px;
+    transform-origin: left center;
+    background: linear-gradient(90deg, rgba(170,204,51,0.72), rgba(45,212,191,0.72));
+  }
+
+  .line-a {
+    left: 88px;
+    top: 88px;
+    width: 134px;
+    transform: rotate(26deg);
+  }
+
+  .line-b {
+    left: 168px;
+    top: 152px;
+    width: 130px;
+    transform: rotate(26deg);
   }
 }
