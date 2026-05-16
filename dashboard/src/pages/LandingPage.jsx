@@ -1,4 +1,5 @@
 import { useEffect, useRef, useCallback } from "react";
+import cpgLogo from "../assets/cpg-logo.png";
 
 const APPS = [
   {
@@ -145,9 +146,9 @@ export default function LandingPage() {
       onMouseLeave={handleMouseLeave}
       style={styles.shell}
     >
-      {/* Logo watermark — drawn in code, behind the dot canvas */}
+      {/* Logo watermark — PNG asset behind the dot canvas */}
       <div style={styles.logoBg}>
-        <CpgLogoSvg style={styles.logoImg} />
+        <img src={cpgLogo} alt="" style={styles.logoImg} draggable={false} />
       </div>
 
       <canvas ref={canvasRef} style={styles.canvas} />
@@ -158,7 +159,7 @@ export default function LandingPage() {
           <div style={styles.inner}>
             <div style={styles.brand}>
               <div style={styles.badge}>
-                <CpgLogoSvg bg={C.lime} style={{ width: "100%", height: "100%", opacity: 1, animation: "none" }} />
+                <img src={cpgLogo} alt="CPG" style={{ width: "100%", height: "100%", objectFit: "contain", filter: "brightness(0) invert(1)" }} draggable={false} />
               </div>
               <div>
                 <div style={styles.brandName}>Centre Point Group</div>
@@ -398,11 +399,14 @@ const styles = {
   logoImg: {
     width: "min(72vw, 620px)",
     height: "min(72vw, 620px)",
-    opacity: 0.05,
+    objectFit: "contain",
+    opacity: 0.06,
+    filter: "brightness(0) invert(1)",
     animation: "logoBreathe 90s linear infinite",
     transformOrigin: "center center",
     userSelect: "none",
     flexShrink: 0,
+    pointerEvents: "none",
   },
   canvas: {
     position: "absolute",
