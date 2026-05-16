@@ -41,9 +41,9 @@ const CELL = 36;
 const GLOW_R = 260;
 
 const FONTS = {
-  display: "'Barlow Condensed', sans-serif",
-  mono: "'Fira Code', monospace",
-  body: "'Barlow', sans-serif",
+  display: "'Syne', sans-serif",
+  mono: "'Space Mono', monospace",
+  body: "'DM Sans', 'Space Grotesk', sans-serif",
 };
 
 const DARK = {
