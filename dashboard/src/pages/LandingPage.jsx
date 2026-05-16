@@ -226,9 +226,9 @@ function makeStyles(C) {
     },
     headline: {
       fontFamily: FONTS.display,
-      fontSize: "clamp(52px, 9vw, 108px)",
-      fontWeight: 800, lineHeight: 0.95,
-      letterSpacing: "-0.03em", marginBottom: 18,
+      fontSize: "clamp(36px, 6vw, 68px)",
+      fontWeight: 800, lineHeight: 1.15,
+      letterSpacing: "0.01em", marginBottom: 24,
     },
     headlineWhite: { color: C.txt },
     headlineAccent: C.gradientText ? {
