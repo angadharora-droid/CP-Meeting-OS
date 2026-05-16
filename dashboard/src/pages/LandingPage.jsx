@@ -7,8 +7,8 @@ const APPS = [
     label: "Meeting OS",
     desc: "Schedule meetings, record closure notes, track action points, and manage the full meeting lifecycle.",
     href: "https://meetingos.centrepointgroup.in",
-    accent: "#AACC33",
-    accentRgb: "170,204,51",
+    accent: "#C2006E",
+    accentRgb: "194,0,110",
     tags: ["Meetings", "Tasks", "People"],
     status: "Live",
   },
@@ -18,8 +18,8 @@ const APPS = [
     label: "CP Flash Report",
     desc: "Daily hospitality pulse — occupancy, revenue, costs, and operational metrics across all hotels.",
     href: "https://flashreport.centrepointgroup.in",
-    accent: "#2DD4BF",
-    accentRgb: "45,212,191",
+    accent: "#E040A0",
+    accentRgb: "224,64,160",
     tags: ["Daily", "Hotels", "Revenue"],
     status: "Live",
   },
@@ -157,7 +157,9 @@ export default function LandingPage() {
         <header style={styles.header}>
           <div style={styles.inner}>
             <div style={styles.brand}>
-              <div style={styles.badge}>CPG</div>
+              <div style={styles.badge}>
+                <CpgLogoSvg bg={C.lime} style={{ width: "100%", height: "100%", opacity: 1, animation: "none" }} />
+              </div>
               <div>
                 <div style={styles.brandName}>Centre Point Group</div>
                 <div style={styles.brandSub}>Operations Portal</div>
@@ -183,7 +185,8 @@ export default function LandingPage() {
             <h1 style={styles.headline}>
               Pick a system.
               <br />
-              <span style={styles.accentText}>Start the work.</span>
+              <span style={{ opacity: 0.45 }}>Start </span>
+              <span style={styles.accentText}>the work.</span>
             </h1>
             <p style={styles.sub}>
               Internal tools for meeting governance and daily hotel operations — unified.
@@ -251,7 +254,7 @@ function buildFlowerPath() {
 
 const FLOWER_PATH = buildFlowerPath();
 
-function CpgLogoSvg({ style }) {
+function CpgLogoSvg({ style, bg = "#060608" }) {
   return (
     <svg viewBox="0 0 200 200" style={style} aria-hidden="true">
       <g transform="translate(100 100)">
@@ -259,8 +262,8 @@ function CpgLogoSvg({ style }) {
         {/* Flower — single smooth path, concave valleys between petals */}
         <path d={FLOWER_PATH} fill="white" />
 
-        {/* Dark disc clears petal fill at center so ring + hands show */}
-        <circle r="36" fill="#060608" />
+        {/* Disc clears petal fill at center so ring + hands show */}
+        <circle r="36" fill={bg} />
 
         {/* White ring */}
         <circle r="36" fill="none" stroke="white" strokeWidth="3.5" />
@@ -363,8 +366,8 @@ const FONTS = {
 };
 
 const C = {
-  lime: "#AACC33",
-  teal: "#2DD4BF",
+  lime: "#C2006E",
+  teal: "#E040A0",
   bg: "#060608",
   txt: "#ECEAF6",
   muted: "rgba(236,234,246,0.38)",
@@ -439,19 +442,16 @@ const styles = {
   },
   brand: { display: "flex", alignItems: "center", gap: 10 },
   badge: {
-    width: 32,
-    height: 32,
-    borderRadius: 8,
-    background: C.txt,
-    color: C.bg,
+    width: 38,
+    height: 38,
+    borderRadius: 10,
+    background: C.lime,
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
-    fontFamily: FONTS.mono,
-    fontSize: 8,
-    fontWeight: 700,
-    letterSpacing: "0.04em",
     flexShrink: 0,
+    overflow: "hidden",
+    padding: 5,
   },
   brandName: {
     fontFamily: FONTS.syne,
