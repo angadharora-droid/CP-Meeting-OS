@@ -145,9 +145,9 @@ export default function LandingPage() {
       onMouseLeave={handleMouseLeave}
       style={styles.shell}
     >
-      {/* Logo watermark — behind the dot canvas */}
+      {/* Logo watermark — drawn in code, behind the dot canvas */}
       <div style={styles.logoBg}>
-        <img src="/cpg-logo.png" alt="" style={styles.logoImg} />
+        <CpgLogoSvg style={styles.logoImg} />
       </div>
 
       <canvas ref={canvasRef} style={styles.canvas} />
@@ -218,6 +218,59 @@ export default function LandingPage() {
       </div>
     </div>
   );
+}
+
+/* ── CPG Logo drawn in SVG ─────────────────────────────────────────────────
+   8-petal flower  ·  center ring  ·  namaste hands — all in code, no file
+   ─────────────────────────────────────────────────────────────────────── */
+function CpgLogoSvg({ style }) {
+  // Petal path: inner end at y=-18, outer rounded tip at y=-94, width ~64px
+  const petal = "M 0,-18 C -32,-22 -38,-62 -24,-84 Q -10,-98 0,-98 Q 10,-98 24,-84 C 38,-62 32,-22 0,-18 Z"
+  const rotations = [0, 45, 90, 135, 180, 225, 270, 315]
+
+  return (
+    <svg
+      viewBox="0 0 200 200"
+      xmlns="http://www.w3.org/2000/svg"
+      style={style}
+      aria-hidden="true"
+    >
+      <g transform="translate(100 100)">
+        {/* 8 petals */}
+        {rotations.map((deg) => (
+          <path key={deg} d={petal} transform={`rotate(${deg})`} fill="white" />
+        ))}
+
+        {/* Center circle ring */}
+        <circle r="36" fill="none" stroke="white" strokeWidth="3" />
+
+        {/* Namaste hands */}
+        <g fill="white">
+          {/* Left hand: palm fans left at bottom, fingers taper to center top */}
+          <path d="
+            M  -1,-29
+            C  -1,-29 -17,-14 -17, 6
+            C -17, 18  -7, 21  -2, 21
+            L  -1,-29 Z
+          " />
+          {/* Right hand: mirror */}
+          <path d="
+            M   1,-29
+            C   1,-29  17,-14  17, 6
+            C  17, 18   7, 21   2, 21
+            L   1,-29 Z
+          " />
+          {/* Palm base — horizontal bar connecting both hands at the bottom */}
+          <path d="
+            M -17, 6
+            C -20, 14 -10, 23  0, 23
+            C  10, 23  20, 14  17, 6
+            C  10, 10   -10, 10 -17, 6 Z
+          " />
+        </g>
+      </g>
+    </svg>
+  )
 }
 
 function AppCard({ app }) {
@@ -331,14 +384,13 @@ const styles = {
     overflow: "hidden",
   },
   logoImg: {
-    width: "min(72vw, 640px)",
-    height: "auto",
+    width: "min(72vw, 620px)",
+    height: "min(72vw, 620px)",
     opacity: 0.05,
-    filter: "grayscale(1) brightness(4)",
     animation: "logoBreathe 90s linear infinite",
     transformOrigin: "center center",
     userSelect: "none",
-    draggable: false,
+    flexShrink: 0,
   },
   canvas: {
     position: "absolute",
