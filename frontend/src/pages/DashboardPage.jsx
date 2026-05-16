@@ -11,6 +11,7 @@ function StatCard({ value, label, accent }) {
       <span className={`text-[28px] font-black leading-none tabular-nums font-mono tracking-tight ${accent || 'text-[#F0F0F0]'}`}>
         {value}
       </span>
+      
       <span className="text-[10.5px] text-white/55 uppercase tracking-[0.14em] mt-1">{label}</span>
     </div>
   )
