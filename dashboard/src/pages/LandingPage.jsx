@@ -160,6 +160,12 @@ export default function LandingPage() {
 
       <canvas ref={canvasRef} style={styles.canvas} />
 
+      {/* Hero logo + glow — absolute, right side */}
+      <div style={styles.heroRight}>
+        <div style={styles.heroGlow} />
+        <img src={cpgLogo} alt="" style={styles.heroLogoImg} draggable={false} />
+      </div>
+
       <div
         style={{
           ...styles.content,
@@ -224,11 +230,6 @@ export default function LandingPage() {
 
             </div>
 
-            {/* Right — logo glow */}
-            <div style={styles.heroRight}>
-              <div style={styles.heroGlow} />
-              <img src={cpgLogo} alt="" style={styles.heroLogoImg} draggable={false} />
-            </div>
           </div>
 
           {/* Section header */}
@@ -588,37 +589,38 @@ const styles = {
   hero: {
     display: "flex",
     alignItems: "center",
-    gap: 48,
     marginBottom: 28,
   },
   heroLeft: {
-    flex: "0 0 52%",
     maxWidth: 520,
   },
   heroRight: {
-    flex: 1,
-    height: 260,
-    position: "relative",
+    position: "absolute",
+    right: 0,
+    top: "50%",
+    transform: "translateY(-50%)",
+    width: "45%",
+    height: "100%",
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
-    overflow: "hidden",
-    borderRadius: 16,
+    pointerEvents: "none",
+    zIndex: 2,
   },
   heroGlow: {
     position: "absolute",
-    inset: 0,
-    background: "radial-gradient(ellipse at 55% 50%, rgba(194,0,110,0.45) 0%, rgba(224,64,160,0.2) 45%, transparent 75%)",
-    filter: "blur(32px)",
+    inset: "-10%",
+    background: "radial-gradient(ellipse at center, rgba(194,0,110,0.4) 0%, rgba(224,64,160,0.18) 40%, transparent 70%)",
+    filter: "blur(70px)",
     pointerEvents: "none",
   },
   heroLogoImg: {
     position: "relative",
-    width: 200,
-    height: 200,
+    width: 260,
+    height: 260,
     objectFit: "contain",
     filter: "brightness(0) invert(1)",
-    opacity: 0.22,
+    opacity: 0.15,
     userSelect: "none",
     pointerEvents: "none",
     zIndex: 1,
