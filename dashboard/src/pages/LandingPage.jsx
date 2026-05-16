@@ -405,9 +405,9 @@ const C = {
   bg: "#07070A",
   surface: "rgba(255,255,255,0.03)",
   txt: "#F0EEF8",
-  muted: "rgba(240,238,248,0.4)",
-  faint: "rgba(240,238,248,0.15)",
-  vfaint: "rgba(240,238,248,0.07)",
+  muted: "rgba(240,238,248,0.65)",
+  faint: "rgba(240,238,248,0.45)",
+  vfaint: "rgba(240,238,248,0.28)",
   border: "rgba(255,255,255,0.07)",
   borderMid: "rgba(255,255,255,0.1)",
 };
@@ -418,7 +418,7 @@ const styles = {
     fontFamily: FONTS.body,
     background: C.bg,
     color: C.txt,
-    minHeight: "100dvh",
+    height: "100dvh",
     overflow: "hidden",
     position: "relative",
   },
@@ -499,6 +499,9 @@ const styles = {
   content: {
     position: "relative",
     zIndex: 3,
+    height: "100%",
+    display: "flex",
+    flexDirection: "column",
   },
 
   /* Header */
@@ -511,9 +514,7 @@ const styles = {
     background: "rgba(7,7,10,0.72)",
     backdropFilter: "blur(28px)",
     WebkitBackdropFilter: "blur(28px)",
-    position: "sticky",
-    top: 0,
-    zIndex: 10,
+    flexShrink: 0,
   },
   inner: {
     maxWidth: 1120,
@@ -596,12 +597,18 @@ const styles = {
 
   /* Main */
   main: {
-    padding: "64px 28px 48px",
+    flex: 1,
+    padding: "40px 28px 32px",
     maxWidth: 1120,
     margin: "0 auto",
+    width: "100%",
+    boxSizing: "border-box",
+    overflow: "hidden",
+    display: "flex",
+    flexDirection: "column",
   },
 
-  hero: { marginBottom: 52 },
+  hero: { marginBottom: 32 },
   eyebrowRow: {
     display: "flex",
     alignItems: "center",
@@ -635,7 +642,7 @@ const styles = {
     marginBottom: 20,
   },
   headlineDim: {
-    color: "rgba(240,238,248,0.32)",
+    color: "rgba(240,238,248,0.55)",
   },
   headlineAccent: {
     background: `linear-gradient(125deg, ${C.pink} 0%, ${C.hotpink} 55%, rgba(240,238,248,0.9) 100%)`,
@@ -842,6 +849,7 @@ const styles = {
     background: "rgba(7,7,10,0.72)",
     backdropFilter: "blur(24px)",
     WebkitBackdropFilter: "blur(24px)",
+    flexShrink: 0,
   },
   footerInner: {
     maxWidth: 1120,
