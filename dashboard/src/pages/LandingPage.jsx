@@ -612,7 +612,7 @@ const styles = {
     maskRepeat: "no-repeat",
     WebkitMaskPosition: "center",
     maskPosition: "center",
-    opacity: 0.55,
+    opacity: 0.28,
   },
 
   eyebrowRow: {
