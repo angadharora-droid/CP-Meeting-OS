@@ -230,6 +230,7 @@ function makeStyles(C) {
     },
     headlineWhite: { color: C.txt },
     headlineAccent: {
+      display: "inline-block",
       background: `linear-gradient(125deg, ${C.pink} 0%, ${C.hotpink} 55%, ${C.accentEnd} 100%)`,
       WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text",
     },
