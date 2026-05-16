@@ -222,10 +222,6 @@ export default function LandingPage() {
                 unified under one portal.
               </p>
 
-              <div style={styles.ctaRow}>
-                <a href="#apps" style={styles.ctaPrimary}>Explore Systems &nbsp;→</a>
-                <a href="#" style={styles.ctaGhost}>View Announcements &nbsp;→</a>
-              </div>
             </div>
 
             {/* Right — logo glow */}
@@ -592,37 +588,37 @@ const styles = {
   hero: {
     display: "flex",
     alignItems: "center",
-    gap: 32,
-    marginBottom: 32,
-    flex: 1,
+    gap: 48,
+    marginBottom: 28,
   },
   heroLeft: {
-    flex: "0 0 auto",
+    flex: "0 0 52%",
     maxWidth: 520,
   },
   heroRight: {
     flex: 1,
+    height: 260,
     position: "relative",
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
-    alignSelf: "stretch",
     overflow: "hidden",
+    borderRadius: 16,
   },
   heroGlow: {
     position: "absolute",
-    inset: "-20%",
-    background: "radial-gradient(ellipse at center, rgba(194,0,110,0.55) 0%, rgba(224,64,160,0.28) 35%, transparent 70%)",
-    filter: "blur(60px)",
+    inset: 0,
+    background: "radial-gradient(ellipse at 55% 50%, rgba(194,0,110,0.45) 0%, rgba(224,64,160,0.2) 45%, transparent 75%)",
+    filter: "blur(32px)",
     pointerEvents: "none",
   },
   heroLogoImg: {
     position: "relative",
-    width: "min(80%, 380px)",
-    height: "auto",
+    width: 200,
+    height: 200,
     objectFit: "contain",
     filter: "brightness(0) invert(1)",
-    opacity: 0.45,
+    opacity: 0.22,
     userSelect: "none",
     pointerEvents: "none",
     zIndex: 1,
