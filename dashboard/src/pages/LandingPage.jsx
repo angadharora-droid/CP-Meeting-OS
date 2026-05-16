@@ -67,7 +67,6 @@ export default function LandingPage() {
 
     ctx.clearRect(0, 0, W, H);
 
-    // Draw dots at grid intersections
     for (let row = 0; row <= rows; row++) {
       for (let col = 0; col <= cols; col++) {
         const x = col * CELL;
@@ -78,23 +77,23 @@ export default function LandingPage() {
         const prox     = Math.max(0, 1 - dist / GLOW_R);
         const proxCore = Math.max(0, 1 - dist / (GLOW_R * 0.35));
 
-        // Dot radius: tiny at rest, grows near cursor
         const r = 0.9 + prox * 3.4;
 
         ctx.beginPath();
         ctx.arc(x, y, r, 0, Math.PI * 2);
 
         if (proxCore > 0.1) {
-          // Inner core — teal center, lime ring
-          ctx.fillStyle = `rgba(45,212,191,${0.55 + proxCore * 0.35})`;
+          // Inner core — brand pink
+          ctx.fillStyle = `rgba(194,0,110,${0.55 + proxCore * 0.35})`;
           ctx.fill();
           ctx.beginPath();
           ctx.arc(x, y, r * 0.55, 0, Math.PI * 2);
-          ctx.fillStyle = `rgba(170,204,51,${proxCore * 0.9})`;
+          // Core highlight — hot pink
+          ctx.fillStyle = `rgba(224,64,160,${proxCore * 0.9})`;
           ctx.fill();
         } else if (prox > 0.04) {
-          // Outer glow zone — white shifting to lime
-          ctx.fillStyle = `rgba(170,204,51,${0.08 + prox * 0.38})`;
+          // Outer glow zone — brand pink
+          ctx.fillStyle = `rgba(194,0,110,${0.08 + prox * 0.38})`;
           ctx.fill();
         } else {
           // Resting state — dim white dot
@@ -221,68 +220,6 @@ export default function LandingPage() {
         </footer>
       </div>
     </div>
-  );
-}
-
-/* ── CPG Logo — computed SVG, no image file ────────────────────────────────
-   Flower: smooth 8-petal bezier path with correct concave valleys
-   Hands:  namaste silhouette traced from logo geometry
-   ─────────────────────────────────────────────────────────────────────── */
-
-// Build the 8-petal outline as one continuous smooth bezier path.
-// Alternates 16 points: 8 outer tips (R_o) + 8 inner valleys (R_i).
-// Clockwise tangent at angle θ is (-sinθ, cosθ) — used for bezier handles.
-function buildFlowerPath() {
-  const N = 8, R_o = 90, R_i = 68, H_o = 23, H_i = 16;
-  const pts = Array.from({ length: 2 * N }, (_, i) => {
-    const R     = i % 2 === 0 ? R_o : R_i;
-    const angle = (i * Math.PI / N) - Math.PI / 2;
-    const h     = i % 2 === 0 ? H_o : H_i;
-    return { x: R * Math.cos(angle), y: R * Math.sin(angle), angle, h };
-  });
-  const f = (n) => n.toFixed(2);
-  let d = `M ${f(pts[0].x)} ${f(pts[0].y)}`;
-  for (let i = 0; i < pts.length; i++) {
-    const a = pts[i], b = pts[(i + 1) % pts.length];
-    const [tax, tay] = [-Math.sin(a.angle), Math.cos(a.angle)];
-    const [tbx, tby] = [-Math.sin(b.angle), Math.cos(b.angle)];
-    d += ` C ${f(a.x + a.h * tax)} ${f(a.y + a.h * tay)}`
-       + `   ${f(b.x - b.h * tbx)} ${f(b.y - b.h * tby)}`
-       + `   ${f(b.x)} ${f(b.y)}`;
-  }
-  return d + ' Z';
-}
-
-const FLOWER_PATH = buildFlowerPath();
-
-function CpgLogoSvg({ style, bg = "#060608" }) {
-  return (
-    <svg viewBox="0 0 200 200" style={style} aria-hidden="true">
-      <g transform="translate(100 100)">
-
-        {/* Flower — single smooth path, concave valleys between petals */}
-        <path d={FLOWER_PATH} fill="white" />
-
-        {/* Disc clears petal fill at center so ring + hands show */}
-        <circle r="36" fill={bg} />
-
-        {/* White ring */}
-        <circle r="36" fill="none" stroke="white" strokeWidth="3.5" />
-
-        {/* Namaste hands — two palm silhouettes pressed together */}
-        {/* Left: inner edge vertical, outer edge curves outward from shoulder to palm */}
-        <path
-          d="M -3,-35 L -3,21 C -11,24 -21,23 -26,19 C -31,4 -25,-21 -8,-33 C -6,-34 -4,-35 -3,-35 Z"
-          fill="white"
-        />
-        {/* Right: mirror */}
-        <path
-          d="M 3,-35 L 3,21 C 11,24 21,23 26,19 C 31,4 25,-21 8,-33 C 6,-34 4,-35 3,-35 Z"
-          fill="white"
-        />
-
-      </g>
-    </svg>
   );
 }
 
@@ -421,8 +358,6 @@ const styles = {
     position: "relative",
     zIndex: 3,
   },
-
-  /* Centering wrapper used inside header, main, footer */
   inner: {
     maxWidth: 1100,
     margin: "0 auto",
@@ -432,8 +367,6 @@ const styles = {
     justifyContent: "space-between",
     gap: 12,
   },
-
-  /* Header */
   header: {
     padding: "14px 24px",
     borderBottom: `0.5px solid ${C.b1}`,
@@ -503,8 +436,6 @@ const styles = {
     borderRadius: 6,
     background: "rgba(255,255,255,0.02)",
   },
-
-  /* Main */
   main: { padding: "48px 24px 36px", maxWidth: 1100, margin: "0 auto", width: "100%" },
   hero: { marginBottom: 32 },
   eyebrow: {
@@ -559,8 +490,6 @@ const styles = {
     alignItems: "center",
     gap: 8,
   },
-
-  /* Cards */
   cards: {
     display: "grid",
     gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))",
@@ -700,8 +629,6 @@ const styles = {
     transition: "transform 0.2s, background 0.2s",
     backdropFilter: "blur(8px)",
   },
-
-  /* Footer */
   footer: {
     borderTop: `0.5px solid ${C.b1}`,
     padding: "10px 24px",
