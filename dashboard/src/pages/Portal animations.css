@@ -1,10 +1,8 @@
-/* Import fonts */
-@import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=Space+Grotesk:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Sans:wght@300;400;500;600&family=Space+Mono:wght@400;700&display=swap');
 
-/* Keyframes used by LandingPage.jsx */
 @keyframes blink {
   0%, 100% { opacity: 1; }
-  50%       { opacity: 0.3; }
+  50%       { opacity: 0.25; }
 }
 
 @keyframes ticker {
@@ -13,7 +11,25 @@
 }
 
 @keyframes logoBreathe {
-  0%   { transform: scale(1);    opacity: 0.045; }
-  50%  { transform: scale(1.05); opacity: 0.065; }
-  100% { transform: scale(1);    opacity: 0.045; }
+  0%   { transform: scale(1);    opacity: 0.04; }
+  50%  { transform: scale(1.04); opacity: 0.06; }
+  100% { transform: scale(1);    opacity: 0.04; }
+}
+
+@keyframes cardReveal {
+  from { opacity: 0; transform: translateY(24px) scale(0.98); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes blobDrift1 {
+  0%   { transform: translate(0, 0); }
+  33%  { transform: translate(4%, 6%); }
+  66%  { transform: translate(-3%, 3%); }
+  100% { transform: translate(0, 0); }
+}
+
+@keyframes blobDrift2 {
+  0%   { transform: translate(0, 0); }
+  50%  { transform: translate(-5%, -4%); }
+  100% { transform: translate(0, 0); }
 }

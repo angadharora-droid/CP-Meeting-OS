@@ -1,4 +1,4 @@
-import { useEffect, useRef, useCallback } from "react";
+import { useEffect, useRef, useCallback, useState } from "react";
 import cpgLogo from "../assets/cpg-logo.png";
 
 const APPS = [
@@ -12,6 +12,7 @@ const APPS = [
     accentRgb: "194,0,110",
     tags: ["Meetings", "Tasks", "People"],
     status: "Live",
+    index: "01",
   },
   {
     key: "flash-report",
@@ -23,6 +24,7 @@ const APPS = [
     accentRgb: "224,64,160",
     tags: ["Daily", "Hotels", "Revenue"],
     status: "Live",
+    index: "02",
   },
 ];
 
@@ -35,8 +37,8 @@ function today() {
   });
 }
 
-const CELL = 56;
-const GLOW_R = 280;
+const CELL = 48;
+const GLOW_R = 260;
 
 export default function LandingPage() {
   const canvasRef = useRef(null);
@@ -44,6 +46,12 @@ export default function LandingPage() {
   const mouseRef = useRef({ x: -999, y: -999 });
   const targetRef = useRef({ x: -999, y: -999 });
   const rafRef = useRef(null);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    const t = setTimeout(() => setMounted(true), 60);
+    return () => clearTimeout(t);
+  }, []);
 
   const lerp = (a, b, t) => a + (b - a) * t;
 
@@ -74,30 +82,26 @@ export default function LandingPage() {
         const dx = x - lx;
         const dy = y - ly;
         const dist = Math.sqrt(dx * dx + dy * dy);
-        const prox     = Math.max(0, 1 - dist / GLOW_R);
+        const prox = Math.max(0, 1 - dist / GLOW_R);
         const proxCore = Math.max(0, 1 - dist / (GLOW_R * 0.35));
 
-        const r = 0.9 + prox * 3.4;
+        const r = 0.7 + prox * 3.2;
 
         ctx.beginPath();
         ctx.arc(x, y, r, 0, Math.PI * 2);
 
         if (proxCore > 0.1) {
-          // Inner core — brand pink
           ctx.fillStyle = `rgba(194,0,110,${0.55 + proxCore * 0.35})`;
           ctx.fill();
           ctx.beginPath();
-          ctx.arc(x, y, r * 0.55, 0, Math.PI * 2);
-          // Core highlight — hot pink
+          ctx.arc(x, y, r * 0.5, 0, Math.PI * 2);
           ctx.fillStyle = `rgba(224,64,160,${proxCore * 0.9})`;
           ctx.fill();
         } else if (prox > 0.04) {
-          // Outer glow zone — brand pink
-          ctx.fillStyle = `rgba(194,0,110,${0.08 + prox * 0.38})`;
+          ctx.fillStyle = `rgba(194,0,110,${0.06 + prox * 0.32})`;
           ctx.fill();
         } else {
-          // Resting state — dim white dot
-          ctx.fillStyle = "rgba(255,255,255,0.09)";
+          ctx.fillStyle = "rgba(255,255,255,0.06)";
           ctx.fill();
         }
       }
@@ -108,8 +112,8 @@ export default function LandingPage() {
     const t = targetRef.current;
     const m = mouseRef.current;
     mouseRef.current = {
-      x: lerp(m.x, t.x, 0.12),
-      y: lerp(m.y, t.y, 0.12),
+      x: lerp(m.x, t.x, 0.1),
+      y: lerp(m.y, t.y, 0.1),
     };
     drawGrid();
     rafRef.current = requestAnimationFrame(animate);
@@ -145,76 +149,132 @@ export default function LandingPage() {
       onMouseLeave={handleMouseLeave}
       style={styles.shell}
     >
-      {/* Logo watermark — PNG asset behind the dot canvas */}
+      {/* Noise grain overlay */}
+      <div style={styles.grain} />
+
+      {/* Ambient glow blobs */}
+      <div style={styles.blobWrap}>
+        <div style={{ ...styles.blob, ...styles.blob1 }} />
+        <div style={{ ...styles.blob, ...styles.blob2 }} />
+      </div>
+
+      {/* Logo watermark */}
       <div style={styles.logoBg}>
         <img src={cpgLogo} alt="" style={styles.logoImg} draggable={false} />
       </div>
 
       <canvas ref={canvasRef} style={styles.canvas} />
 
-      <div style={styles.content}>
+      <div
+        style={{
+          ...styles.content,
+          opacity: mounted ? 1 : 0,
+          transition: "opacity 0.5s ease",
+        }}
+      >
         {/* Header */}
         <header style={styles.header}>
           <div style={styles.inner}>
             <div style={styles.brand}>
               <div style={styles.badge}>
-                <img src={cpgLogo} alt="CPG" style={{ width: "100%", height: "100%", objectFit: "contain", filter: "brightness(0) invert(1)" }} draggable={false} />
+                <img
+                  src={cpgLogo}
+                  alt="CPG"
+                  style={{
+                    width: "100%",
+                    height: "100%",
+                    objectFit: "contain",
+                    filter: "brightness(0) invert(1)",
+                  }}
+                  draggable={false}
+                />
               </div>
-              <div>
+              <div style={styles.brandText}>
                 <div style={styles.brandName}>Centre Point Group</div>
                 <div style={styles.brandSub}>Operations Portal</div>
               </div>
             </div>
-            <div style={styles.headerRight}>
-              <div style={styles.statusDot}>
-                <span style={styles.dot} />
-                All systems live
+
+            <nav style={styles.nav}>
+              <div style={styles.statusPill}>
+                <span style={styles.statusDot} />
+                <span style={styles.statusLabel}>All systems live</span>
               </div>
+              <div style={styles.navDivider} />
               <div style={styles.dateTag}>{today()}</div>
-            </div>
+            </nav>
           </div>
         </header>
 
         {/* Main */}
         <main style={styles.main}>
+          {/* Hero */}
           <div style={styles.hero}>
-            <div style={styles.eyebrow}>
+            <div style={styles.eyebrowRow}>
+              <span style={styles.eyebrowChip}>Command Desk</span>
               <span style={styles.eyebrowLine} />
-              Command Desk
             </div>
+
             <h1 style={styles.headline}>
-              Pick a system.
+              <span style={styles.headlineDim}>Pick a system.</span>
               <br />
-              <span style={{ opacity: 0.45 }}>Start </span>
-              <span style={styles.accentText}>the work.</span>
+              <span style={styles.headlineAccent}>Start the work.</span>
             </h1>
+
             <p style={styles.sub}>
-              Internal tools for meeting governance and daily hotel operations — unified.
+              Internal tools for meeting governance and daily hotel operations —
+              unified under one portal.
             </p>
           </div>
 
-          <div style={styles.sectionLabel}>Applications</div>
+          {/* Section header */}
+          <div style={styles.sectionRow}>
+            <span style={styles.sectionLabel}>Applications</span>
+            <div style={styles.sectionLine} />
+            <span style={styles.sectionCount}>{APPS.length} active</span>
+          </div>
 
+          {/* Cards */}
           <div style={styles.cards}>
-            {APPS.map((app) => (
-              <AppCard key={app.key} app={app} />
+            {APPS.map((app, i) => (
+              <AppCard key={app.key} app={app} delay={i * 90} />
             ))}
           </div>
         </main>
 
         {/* Footer */}
         <footer style={styles.footer}>
-          <div style={styles.inner}>
-            <span style={styles.footerText}>
-              {new Date().getFullYear()} Centre Point Group
-            </span>
-            <div style={styles.footerSep} />
+          <div style={styles.footerInner}>
+            <div style={styles.footerLeft}>
+              <div style={styles.footerLogo}>
+                <img
+                  src={cpgLogo}
+                  alt="CPG"
+                  style={{
+                    width: 18,
+                    height: 18,
+                    objectFit: "contain",
+                    filter: "brightness(0) invert(1)",
+                    opacity: 0.5,
+                  }}
+                  draggable={false}
+                />
+              </div>
+              <span style={styles.footerCopy}>
+                © {new Date().getFullYear()} Centre Point Group
+              </span>
+            </div>
+
             <div style={styles.tickerWrap}>
               <span style={styles.tickerInner}>
                 CENTRE POINT GROUP &nbsp;·&nbsp; INTERNAL USE ONLY &nbsp;·&nbsp;
                 OPERATIONS PORTAL &nbsp;·&nbsp; CENTRE POINT GROUP &nbsp;·&nbsp;
                 INTERNAL USE ONLY &nbsp;·&nbsp; OPERATIONS PORTAL &nbsp;·&nbsp;
               </span>
+            </div>
+
+            <div style={styles.footerRight}>
+              <span style={styles.footerVersion}>v2.0</span>
             </div>
           </div>
         </footer>
@@ -223,60 +283,93 @@ export default function LandingPage() {
   );
 }
 
-function AppCard({ app }) {
+/* ─── AppCard ─────────────────────────────────────────────────────────────── */
+
+function AppCard({ app, delay }) {
+  const cardRef = useRef(null);
+  const glowRef = useRef(null);
   const { accent, accentRgb } = app;
+
+  const handleMouseMove = (e) => {
+    const card = cardRef.current;
+    const glow = glowRef.current;
+    if (!card || !glow) return;
+    const rect = card.getBoundingClientRect();
+    const cx = rect.left + rect.width / 2;
+    const cy = rect.top + rect.height / 2;
+    const rx = ((e.clientY - cy) / rect.height) * -10;
+    const ry = ((e.clientX - cx) / rect.width) * 12;
+    card.style.transform = `perspective(1000px) rotateX(${rx}deg) rotateY(${ry}deg) translateY(-6px)`;
+    const px = ((e.clientX - rect.left) / rect.width) * 100;
+    const py = ((e.clientY - rect.top) / rect.height) * 100;
+    glow.style.background = `radial-gradient(circle at ${px}% ${py}%, rgba(${accentRgb},0.14) 0%, transparent 65%)`;
+    glow.style.opacity = "1";
+  };
+
+  const handleMouseLeave = () => {
+    const card = cardRef.current;
+    const glow = glowRef.current;
+    if (!card || !glow) return;
+    card.style.transform =
+      "perspective(1000px) rotateX(0deg) rotateY(0deg) translateY(0px)";
+    glow.style.opacity = "0";
+  };
 
   return (
     <a
+      ref={cardRef}
       href={app.href}
-      style={styles.card}
-      onMouseEnter={(e) => {
-        e.currentTarget.style.borderColor = `rgba(${accentRgb},0.3)`;
-        e.currentTarget.style.background = `rgba(${accentRgb},0.06)`;
-        e.currentTarget.style.transform = "translateY(-3px)";
-        e.currentTarget.style.boxShadow = `0 0 40px rgba(${accentRgb},0.08), inset 0 0 40px rgba(${accentRgb},0.04)`;
-        e.currentTarget.querySelector(".arrow-btn").style.transform =
-          "translate(2px,-2px)";
+      style={{
+        ...styles.card,
+        animationDelay: `${delay}ms`,
       }}
-      onMouseLeave={(e) => {
-        e.currentTarget.style.borderColor = "rgba(255,255,255,0.09)";
-        e.currentTarget.style.background = "rgba(255,255,255,0.04)";
-        e.currentTarget.style.transform = "translateY(0)";
-        e.currentTarget.style.boxShadow = "none";
-        e.currentTarget.querySelector(".arrow-btn").style.transform =
-          "translate(0,0)";
-      }}
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
     >
-      {/* Glass top shimmer */}
-      <div style={styles.cardShimmer} />
+      <div ref={glowRef} style={styles.cardGlow} />
+      <div style={styles.cardEdge} />
 
-      {/* Top row */}
-      <div style={styles.cardTop}>
-        <div style={{ ...styles.iconWrap, background: accent }}>
-          {app.short}
-          <div style={styles.iconOverlay} />
+      {/* Head */}
+      <div style={styles.cardHead}>
+        <div
+          style={{
+            ...styles.indexBadge,
+            color: accent,
+            borderColor: `rgba(${accentRgb},0.2)`,
+          }}
+        >
+          {app.index}
         </div>
         <div
           style={{
-            ...styles.liveBadge,
+            ...styles.livePill,
             color: accent,
-            borderColor: `rgba(${accentRgb},0.3)`,
-            background: `rgba(${accentRgb},0.08)`,
+            background: `rgba(${accentRgb},0.1)`,
+            borderColor: `rgba(${accentRgb},0.25)`,
           }}
         >
-          <span
-            style={{ ...styles.liveDot, background: accent }}
-          />
+          <span style={{ ...styles.liveDot, background: accent }} />
           {app.status}
         </div>
       </div>
 
-      {/* Title + desc */}
-      <div style={styles.cardTitle}>{app.label}</div>
-      <div style={styles.cardDesc}>{app.desc}</div>
+      {/* Body */}
+      <div style={styles.cardBody}>
+        <div
+          style={{
+            ...styles.iconBox,
+            background: `rgba(${accentRgb},0.1)`,
+            borderColor: `rgba(${accentRgb},0.2)`,
+          }}
+        >
+          <span style={{ ...styles.iconText, color: accent }}>{app.short}</span>
+        </div>
+        <div style={styles.cardTitle}>{app.label}</div>
+        <div style={styles.cardDesc}>{app.desc}</div>
+      </div>
 
-      {/* Bottom */}
-      <div style={styles.cardBottom}>
+      {/* Foot */}
+      <div style={styles.cardFoot}>
         <div style={styles.tags}>
           {app.tags.map((tag) => (
             <span key={tag} style={styles.tag}>
@@ -284,36 +377,42 @@ function AppCard({ app }) {
             </span>
           ))}
         </div>
-        <div style={styles.launchRow}>
-          <span style={{ ...styles.launchLabel, color: accent }}>Launch</span>
-          <div className="arrow-btn" style={styles.arrowBtn}>
-            ↗
-          </div>
+        <div
+          style={{
+            ...styles.launchBtn,
+            borderColor: `rgba(${accentRgb},0.3)`,
+            color: accent,
+          }}
+        >
+          <span>Open</span>
+          <span style={styles.launchArrow}>↗</span>
         </div>
       </div>
     </a>
   );
 }
 
-/* ─── Styles ─────────────────────────────────────────────────────────────── */
-
+/* ─── Design tokens ──────────────────────────────────────────────────────── */
 const FONTS = {
-  syne: "'Syne', sans-serif",
+  display: "'Syne', sans-serif",
   mono: "'Space Mono', monospace",
-  body: "'Space Grotesk', sans-serif",
+  body: "'DM Sans', 'Space Grotesk', sans-serif",
 };
 
 const C = {
-  lime: "#C2006E",
-  teal: "#E040A0",
-  bg: "#060608",
-  txt: "#ECEAF6",
-  muted: "rgba(236,234,246,0.38)",
-  faint: "rgba(236,234,246,0.13)",
-  b1: "rgba(255,255,255,0.06)",
-  b2: "rgba(255,255,255,0.12)",
+  pink: "#C2006E",
+  hotpink: "#E040A0",
+  bg: "#07070A",
+  surface: "rgba(255,255,255,0.03)",
+  txt: "#F0EEF8",
+  muted: "rgba(240,238,248,0.4)",
+  faint: "rgba(240,238,248,0.15)",
+  vfaint: "rgba(240,238,248,0.07)",
+  border: "rgba(255,255,255,0.07)",
+  borderMid: "rgba(255,255,255,0.1)",
 };
 
+/* ─── Styles ─────────────────────────────────────────────────────────────── */
 const styles = {
   shell: {
     fontFamily: FONTS.body,
@@ -323,6 +422,49 @@ const styles = {
     overflow: "hidden",
     position: "relative",
   },
+
+  grain: {
+    position: "fixed",
+    inset: 0,
+    zIndex: 0,
+    opacity: 0.028,
+    backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")`,
+    backgroundRepeat: "repeat",
+    backgroundSize: "200px 200px",
+    pointerEvents: "none",
+  },
+
+  blobWrap: {
+    position: "fixed",
+    inset: 0,
+    zIndex: 0,
+    pointerEvents: "none",
+    overflow: "hidden",
+  },
+  blob: {
+    position: "absolute",
+    borderRadius: "50%",
+    filter: "blur(100px)",
+  },
+  blob1: {
+    width: 600,
+    height: 600,
+    top: "-15%",
+    left: "-10%",
+    background:
+      "radial-gradient(circle, rgba(194,0,110,0.13) 0%, transparent 70%)",
+    animation: "blobDrift1 22s ease-in-out infinite",
+  },
+  blob2: {
+    width: 500,
+    height: 500,
+    bottom: "-10%",
+    right: "-5%",
+    background:
+      "radial-gradient(circle, rgba(224,64,160,0.09) 0%, transparent 70%)",
+    animation: "blobDrift2 28s ease-in-out infinite",
+  },
+
   logoBg: {
     position: "absolute",
     inset: 0,
@@ -334,17 +476,16 @@ const styles = {
     overflow: "hidden",
   },
   logoImg: {
-    width: "min(72vw, 620px)",
-    height: "min(72vw, 620px)",
+    width: "min(65vw, 580px)",
+    height: "min(65vw, 580px)",
     objectFit: "contain",
-    opacity: 0.06,
+    opacity: 0.04,
     filter: "brightness(0) invert(1)",
     animation: "logoBreathe 90s linear infinite",
-    transformOrigin: "center center",
     userSelect: "none",
-    flexShrink: 0,
     pointerEvents: "none",
   },
+
   canvas: {
     position: "absolute",
     top: 0,
@@ -354,203 +495,330 @@ const styles = {
     pointerEvents: "none",
     zIndex: 1,
   },
+
   content: {
     position: "relative",
     zIndex: 3,
   },
+
+  /* Header */
+  header: {
+    padding: "0 28px",
+    height: 58,
+    display: "flex",
+    alignItems: "center",
+    borderBottom: `0.5px solid ${C.border}`,
+    background: "rgba(7,7,10,0.72)",
+    backdropFilter: "blur(28px)",
+    WebkitBackdropFilter: "blur(28px)",
+    position: "sticky",
+    top: 0,
+    zIndex: 10,
+  },
   inner: {
-    maxWidth: 1100,
+    maxWidth: 1120,
     margin: "0 auto",
     width: "100%",
     display: "flex",
     alignItems: "center",
     justifyContent: "space-between",
-    gap: 12,
+    gap: 16,
   },
-  header: {
-    padding: "14px 24px",
-    borderBottom: `0.5px solid ${C.b1}`,
-    background: "rgba(6,6,8,0.6)",
-    backdropFilter: "blur(20px)",
-    WebkitBackdropFilter: "blur(20px)",
-    position: "sticky",
-    top: 0,
-    zIndex: 10,
-  },
-  brand: { display: "flex", alignItems: "center", gap: 10 },
+  brand: { display: "flex", alignItems: "center", gap: 11 },
   badge: {
-    width: 38,
-    height: 38,
-    borderRadius: 10,
-    background: C.lime,
+    width: 34,
+    height: 34,
+    borderRadius: 9,
+    background: C.pink,
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
     flexShrink: 0,
     overflow: "hidden",
     padding: 5,
+    boxShadow: `0 0 0 1px rgba(194,0,110,0.3), 0 4px 16px rgba(194,0,110,0.2)`,
   },
+  brandText: { display: "flex", flexDirection: "column", gap: 2 },
   brandName: {
-    fontFamily: FONTS.syne,
-    fontSize: 11,
+    fontFamily: FONTS.display,
+    fontSize: 12,
     fontWeight: 700,
-    letterSpacing: "0.16em",
+    letterSpacing: "0.12em",
     textTransform: "uppercase",
-    lineHeight: 1.3,
+    color: C.txt,
+    lineHeight: 1,
   },
   brandSub: {
-    fontFamily: FONTS.body,
-    fontSize: 9,
-    fontWeight: 500,
-    letterSpacing: "0.14em",
+    fontFamily: FONTS.mono,
+    fontSize: 8,
+    letterSpacing: "0.16em",
     textTransform: "uppercase",
     color: C.muted,
-    lineHeight: 1.3,
+    lineHeight: 1,
   },
-  headerRight: { display: "flex", alignItems: "center", gap: 10 },
-  statusDot: {
+  nav: { display: "flex", alignItems: "center", gap: 14 },
+  statusPill: {
     display: "flex",
     alignItems: "center",
-    gap: 6,
-    fontFamily: FONTS.mono,
-    fontSize: 9,
-    color: C.muted,
-    letterSpacing: "0.06em",
+    gap: 7,
+    padding: "5px 12px",
+    borderRadius: 100,
+    border: `0.5px solid rgba(194,0,110,0.25)`,
+    background: "rgba(194,0,110,0.07)",
   },
-  dot: {
-    display: "inline-block",
-    width: 6,
-    height: 6,
+  statusDot: {
+    width: 5,
+    height: 5,
     borderRadius: "50%",
-    background: C.lime,
-    animation: "blink 2s ease-in-out infinite",
+    background: C.pink,
     flexShrink: 0,
+    boxShadow: `0 0 6px ${C.pink}`,
+    animation: "blink 2.5s ease-in-out infinite",
+  },
+  statusLabel: {
+    fontFamily: FONTS.mono,
+    fontSize: 8,
+    letterSpacing: "0.1em",
+    textTransform: "uppercase",
+    color: C.pink,
+  },
+  navDivider: {
+    width: 1,
+    height: 16,
+    background: C.border,
   },
   dateTag: {
     fontFamily: FONTS.mono,
     fontSize: 9,
     color: C.faint,
     letterSpacing: "0.08em",
-    padding: "5px 10px",
-    border: `0.5px solid ${C.b1}`,
-    borderRadius: 6,
-    background: "rgba(255,255,255,0.02)",
   },
-  main: { padding: "48px 24px 36px", maxWidth: 1100, margin: "0 auto", width: "100%" },
-  hero: { marginBottom: 32 },
-  eyebrow: {
-    display: "inline-flex",
+
+  /* Main */
+  main: {
+    padding: "64px 28px 48px",
+    maxWidth: 1120,
+    margin: "0 auto",
+  },
+
+  hero: { marginBottom: 52 },
+  eyebrowRow: {
+    display: "flex",
     alignItems: "center",
-    gap: 6,
+    gap: 14,
+    marginBottom: 22,
+  },
+  eyebrowChip: {
     fontFamily: FONTS.mono,
     fontSize: 9,
     fontWeight: 700,
-    letterSpacing: "0.28em",
+    letterSpacing: "0.22em",
     textTransform: "uppercase",
-    color: C.lime,
-    marginBottom: 14,
-  },
-  eyebrowLine: {
-    display: "inline-block",
-    width: 20,
-    height: 1,
-    background: C.lime,
+    color: C.pink,
+    padding: "5px 10px",
+    border: `0.5px solid rgba(194,0,110,0.3)`,
+    borderRadius: 4,
+    background: "rgba(194,0,110,0.07)",
     flexShrink: 0,
   },
-  headline: {
-    fontFamily: FONTS.syne,
-    fontSize: "clamp(34px, 6.5vw, 56px)",
-    fontWeight: 800,
-    lineHeight: 0.94,
-    letterSpacing: "-0.025em",
-    marginBottom: 14,
+  eyebrowLine: {
+    flex: 1,
+    height: "0.5px",
+    background: `linear-gradient(90deg, rgba(194,0,110,0.4), transparent)`,
   },
-  accentText: {
-    background: `linear-gradient(135deg, ${C.lime} 0%, ${C.teal} 100%)`,
+  headline: {
+    fontFamily: FONTS.display,
+    fontSize: "clamp(40px, 7vw, 72px)",
+    fontWeight: 800,
+    lineHeight: 0.92,
+    letterSpacing: "-0.03em",
+    marginBottom: 20,
+  },
+  headlineDim: {
+    color: "rgba(240,238,248,0.32)",
+  },
+  headlineAccent: {
+    background: `linear-gradient(125deg, ${C.pink} 0%, ${C.hotpink} 55%, rgba(240,238,248,0.9) 100%)`,
     WebkitBackgroundClip: "text",
     WebkitTextFillColor: "transparent",
     backgroundClip: "text",
   },
   sub: {
-    fontSize: 13,
+    fontSize: 14,
     color: C.muted,
-    lineHeight: 1.7,
-    maxWidth: 380,
+    lineHeight: 1.75,
+    maxWidth: 420,
     fontWeight: 400,
-    margin: 0,
+  },
+
+  sectionRow: {
+    display: "flex",
+    alignItems: "center",
+    gap: 14,
+    marginBottom: 16,
   },
   sectionLabel: {
     fontFamily: FONTS.mono,
-    fontSize: 9,
-    letterSpacing: "0.2em",
+    fontSize: 8,
+    letterSpacing: "0.22em",
     textTransform: "uppercase",
     color: C.faint,
-    marginBottom: 12,
-    display: "flex",
-    alignItems: "center",
-    gap: 8,
+    flexShrink: 0,
   },
+  sectionLine: {
+    flex: 1,
+    height: "0.5px",
+    background: C.border,
+  },
+  sectionCount: {
+    fontFamily: FONTS.mono,
+    fontSize: 8,
+    letterSpacing: "0.12em",
+    textTransform: "uppercase",
+    color: C.faint,
+    flexShrink: 0,
+  },
+
+  /* Cards */
   cards: {
     display: "grid",
-    gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))",
-    gap: 10,
+    gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))",
+    gap: 14,
   },
   card: {
     display: "flex",
     flexDirection: "column",
-    minHeight: 230,
-    borderRadius: 18,
-    border: "0.5px solid rgba(255,255,255,0.09)",
-    background: "rgba(255,255,255,0.04)",
-    backdropFilter: "blur(24px)",
-    WebkitBackdropFilter: "blur(24px)",
-    padding: 22,
-    overflow: "hidden",
+    minHeight: 280,
+    borderRadius: 20,
+    border: `0.5px solid ${C.borderMid}`,
+    background: C.surface,
+    backdropFilter: "blur(32px)",
+    WebkitBackdropFilter: "blur(32px)",
+    padding: "24px 24px 20px",
     position: "relative",
     textDecoration: "none",
     color: C.txt,
-    transition: "border-color 0.3s, background 0.3s, transform 0.3s, box-shadow 0.3s",
+    transition:
+      "border-color 0.35s, transform 0.4s cubic-bezier(0.23,1,0.32,1)",
     cursor: "pointer",
+    transformStyle: "preserve-3d",
+    willChange: "transform",
+    overflow: "hidden",
+    animation: "cardReveal 0.6s cubic-bezier(0.23,1,0.32,1) both",
   },
-  cardShimmer: {
+  cardGlow: {
+    position: "absolute",
+    inset: 0,
+    opacity: 0,
+    transition: "opacity 0.4s",
+    pointerEvents: "none",
+    borderRadius: "inherit",
+  },
+  cardEdge: {
     position: "absolute",
     top: 0,
-    left: 0,
-    right: 0,
-    height: 1,
+    left: "15%",
+    right: "15%",
+    height: "0.5px",
     background:
-      "linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent)",
+      "linear-gradient(90deg, transparent, rgba(255,255,255,0.18), transparent)",
     pointerEvents: "none",
   },
-  cardTop: {
+  cardHead: {
     display: "flex",
-    alignItems: "flex-start",
+    alignItems: "center",
     justifyContent: "space-between",
-    marginBottom: 18,
+    marginBottom: 20,
   },
-  iconWrap: {
-    width: 46,
-    height: 46,
+  indexBadge: {
+    fontFamily: FONTS.mono,
+    fontSize: 10,
+    fontWeight: 700,
+    letterSpacing: "0.08em",
+    padding: "3px 8px",
+    borderRadius: 5,
+    border: "0.5px solid",
+    background: "rgba(255,255,255,0.03)",
+  },
+  livePill: {
+    display: "flex",
+    alignItems: "center",
+    gap: 5,
+    fontFamily: FONTS.mono,
+    fontSize: 7,
+    fontWeight: 700,
+    letterSpacing: "0.14em",
+    textTransform: "uppercase",
+    padding: "4px 9px",
+    borderRadius: 100,
+    border: "0.5px solid",
+  },
+  liveDot: {
+    width: 4,
+    height: 4,
+    borderRadius: "50%",
+    flexShrink: 0,
+    animation: "blink 2s ease-in-out infinite",
+  },
+  cardBody: {
+    flex: 1,
+    display: "flex",
+    flexDirection: "column",
+    gap: 10,
+  },
+  iconBox: {
+    width: 44,
+    height: 44,
     borderRadius: 12,
+    border: "0.5px solid",
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
+    marginBottom: 2,
+  },
+  iconText: {
     fontFamily: FONTS.mono,
-    fontSize: 11,
+    fontSize: 10,
     fontWeight: 700,
-    color: "#000",
-    flexShrink: 0,
-    position: "relative",
-    overflow: "hidden",
+    letterSpacing: "0.08em",
   },
-  iconOverlay: {
-    position: "absolute",
-    inset: 0,
-    background:
-      "linear-gradient(135deg, rgba(255,255,255,0.3) 0%, transparent 60%)",
-    pointerEvents: "none",
+  cardTitle: {
+    fontFamily: FONTS.display,
+    fontSize: 22,
+    fontWeight: 800,
+    lineHeight: 1.05,
+    letterSpacing: "-0.02em",
+    color: C.txt,
   },
-  liveBadge: {
+  cardDesc: {
+    fontSize: 12,
+    color: C.muted,
+    lineHeight: 1.75,
+    fontWeight: 400,
+  },
+  cardFoot: {
+    marginTop: 20,
+    paddingTop: 16,
+    borderTop: `0.5px solid ${C.vfaint}`,
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "space-between",
+    gap: 12,
+  },
+  tags: { display: "flex", flexWrap: "wrap", gap: 5 },
+  tag: {
+    fontFamily: FONTS.mono,
+    fontSize: 7,
+    fontWeight: 700,
+    letterSpacing: "0.1em",
+    textTransform: "uppercase",
+    color: C.faint,
+    border: `0.5px solid ${C.vfaint}`,
+    background: "rgba(255,255,255,0.025)",
+    padding: "3px 7px",
+    borderRadius: 4,
+  },
+  launchBtn: {
     display: "flex",
     alignItems: "center",
     gap: 5,
@@ -559,103 +827,73 @@ const styles = {
     fontWeight: 700,
     letterSpacing: "0.12em",
     textTransform: "uppercase",
-    padding: "4px 8px",
-    borderRadius: 6,
+    padding: "6px 12px",
+    borderRadius: 8,
     border: "0.5px solid",
-    backdropFilter: "blur(8px)",
-  },
-  liveDot: {
-    display: "inline-block",
-    width: 5,
-    height: 5,
-    borderRadius: "50%",
-    flexShrink: 0,
-    animation: "blink 2s ease-in-out infinite",
-  },
-  cardTitle: {
-    fontFamily: FONTS.syne,
-    fontSize: 20,
-    fontWeight: 800,
-    lineHeight: 1.1,
-    letterSpacing: "-0.01em",
-    marginBottom: 6,
-  },
-  cardDesc: {
-    fontSize: 12,
-    color: C.muted,
-    lineHeight: 1.7,
-    fontWeight: 400,
-  },
-  cardBottom: { marginTop: "auto", paddingTop: 16 },
-  tags: { display: "flex", flexWrap: "wrap", gap: 5, marginBottom: 14 },
-  tag: {
-    fontFamily: FONTS.mono,
-    fontSize: 8,
-    fontWeight: 700,
-    letterSpacing: "0.1em",
-    textTransform: "uppercase",
-    color: C.faint,
-    border: `0.5px solid rgba(255,255,255,0.07)`,
     background: "rgba(255,255,255,0.03)",
-    padding: "3px 8px",
-    borderRadius: 5,
-    backdropFilter: "blur(4px)",
+    flexShrink: 0,
   },
-  launchRow: {
+  launchArrow: { fontSize: 11 },
+
+  /* Footer */
+  footer: {
+    borderTop: `0.5px solid ${C.border}`,
+    padding: "12px 28px",
+    background: "rgba(7,7,10,0.72)",
+    backdropFilter: "blur(24px)",
+    WebkitBackdropFilter: "blur(24px)",
+  },
+  footerInner: {
+    maxWidth: 1120,
+    margin: "0 auto",
     display: "flex",
     alignItems: "center",
-    justifyContent: "space-between",
-    borderTop: "0.5px solid rgba(255,255,255,0.06)",
-    paddingTop: 12,
+    gap: 16,
   },
-  launchLabel: {
-    fontFamily: FONTS.syne,
-    fontSize: 11,
-    fontWeight: 700,
-    letterSpacing: "0.12em",
-    textTransform: "uppercase",
+  footerLeft: {
+    display: "flex",
+    alignItems: "center",
+    gap: 8,
+    flexShrink: 0,
   },
-  arrowBtn: {
-    width: 32,
-    height: 32,
-    borderRadius: 9,
-    border: "0.5px solid rgba(255,255,255,0.1)",
-    background: "rgba(255,255,255,0.04)",
+  footerLogo: {
+    width: 22,
+    height: 22,
+    borderRadius: 5,
+    background: "rgba(255,255,255,0.05)",
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
-    fontSize: 14,
-    color: C.muted,
-    transition: "transform 0.2s, background 0.2s",
-    backdropFilter: "blur(8px)",
   },
-  footer: {
-    borderTop: `0.5px solid ${C.b1}`,
-    padding: "10px 24px",
-    background: "rgba(6,6,8,0.6)",
-    backdropFilter: "blur(20px)",
-    WebkitBackdropFilter: "blur(20px)",
-  },
-  footerText: {
+  footerCopy: {
     fontFamily: FONTS.mono,
-    fontSize: 9,
+    fontSize: 8,
     color: C.faint,
     letterSpacing: "0.1em",
     textTransform: "uppercase",
     whiteSpace: "nowrap",
   },
-  footerSep: { width: 1, height: 10, background: C.b2, flexShrink: 0 },
   tickerWrap: {
     overflow: "hidden",
     fontFamily: FONTS.mono,
-    fontSize: 9,
-    color: C.faint,
+    fontSize: 8,
+    color: C.vfaint,
     letterSpacing: "0.08em",
     whiteSpace: "nowrap",
     flex: 1,
   },
   tickerInner: {
     display: "inline-block",
-    animation: "ticker 18s linear infinite",
+    animation: "ticker 20s linear infinite",
+  },
+  footerRight: { flexShrink: 0 },
+  footerVersion: {
+    fontFamily: FONTS.mono,
+    fontSize: 8,
+    color: C.vfaint,
+    letterSpacing: "0.1em",
+    padding: "3px 8px",
+    border: `0.5px solid ${C.vfaint}`,
+    borderRadius: 4,
   },
 };
