@@ -41,9 +41,9 @@ const CELL = 36;
 const GLOW_R = 260;
 
 const FONTS = {
-  display: "'Outfit', sans-serif",
-  mono: "'JetBrains Mono', monospace",
-  body: "'Inter', sans-serif",
+  display: "'Space Grotesk', sans-serif",
+  mono: "'Space Mono', monospace",
+  body: "'DM Sans', sans-serif",
 };
 
 const DARK = {
