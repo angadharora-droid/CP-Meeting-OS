@@ -1,184 +1,148 @@
-const apps = [
+const APPS = [
   {
     key: 'meeting-os',
+    short: 'MO',
     label: 'Meeting OS',
-    shortLabel: 'MO',
+    desc: 'Schedule meetings, record closure notes, track action points, and manage the full meeting lifecycle.',
     href: 'https://meetingos.centrepointgroup.in',
-    summary: 'Meeting scheduling, closure notes, action tracking, and meeting bank.',
     accent: '#AACC33',
+    tags: ['Meetings', 'Tasks', 'People'],
     status: 'Live',
-    metrics: ['Meetings', 'Tasks', 'People'],
   },
   {
     key: 'flash-report',
+    short: 'FR',
     label: 'CP Flash Report',
-    shortLabel: 'FR',
+    desc: 'Daily hospitality pulse — occupancy, revenue, costs, and operational metrics across all hotels.',
     href: 'https://flashreport.centrepointgroup.in',
-    summary: 'Daily hospitality pulse for occupancy, revenue, cost, and operations.',
     accent: '#2DD4BF',
+    tags: ['Daily', 'Hotels', 'Revenue'],
     status: 'Live',
-    metrics: ['Daily', 'Hotels', 'Costs'],
   },
 ]
 
-const quickSignals = [
-  { label: 'Workspace', value: 'Internal', tone: 'text-sky-200 bg-sky-300/10 border-sky-300/20' },
-  { label: 'Access', value: 'Team', tone: 'text-[#E4FF70] bg-[#AACC33]/10 border-[#AACC33]/20' },
-  { label: 'Mode', value: 'Secure', tone: 'text-amber-100 bg-amber-300/10 border-amber-300/20' },
-]
+function today() {
+  return new Date().toLocaleDateString('en-GB', { weekday: 'long', day: '2-digit', month: 'short', year: 'numeric' })
+}
 
 export default function LandingPage() {
-  const year = new Date().getFullYear()
-
   return (
-    <div className="portal-shell min-h-dvh text-[#F4F4F1]">
-      <header className="border-b border-white/10 bg-[#090909]/86 px-4 py-3 backdrop-blur-xl sm:px-6">
-        <div className="mx-auto flex max-w-[1180px] items-center justify-between gap-4">
-          <a href="/" className="flex items-center gap-3 text-inherit no-underline">
-            <div className="grid h-10 w-10 shrink-0 place-items-center rounded-lg bg-[#F4F4F1] text-[11px] font-black text-black">
+    <div className="portal-shell min-h-dvh flex flex-col text-[#F4F4F1]">
+
+      {/* Header */}
+      <header className="sticky top-0 z-50 border-b border-white/[0.08] bg-[#090909]/90 backdrop-blur-xl">
+        <div className="mx-auto flex max-w-[1100px] items-center justify-between gap-4 px-5 py-3 sm:px-8">
+          <div className="flex items-center gap-3">
+            <div className="h-9 w-9 rounded-lg bg-[#F4F4F1] grid place-items-center text-[10px] font-black text-black shrink-0">
               CPG
             </div>
-            <div className="grid leading-tight">
-              <span className="text-[12px] font-black uppercase tracking-[0.14em]">Centre Point Group</span>
-              <span className="text-[10px] font-bold uppercase tracking-[0.14em] text-white/38">Operations portal</span>
+            <div className="leading-tight">
+              <div className="text-[12px] font-black uppercase tracking-[0.14em]">Centre Point Group</div>
+              <div className="text-[10px] text-white/35 uppercase tracking-[0.12em] font-bold">Operations Portal</div>
             </div>
-          </a>
+          </div>
 
-          <div className="hidden items-center gap-2 sm:flex">
-            {quickSignals.map((signal) => (
-              <span key={signal.label} className={`rounded-lg border px-3 py-2 text-[10px] font-black uppercase tracking-[0.12em] ${signal.tone}`}>
-                {signal.label}: {signal.value}
-              </span>
-            ))}
+          <div className="text-[11px] text-white/35 font-medium hidden sm:block">
+            {today()}
           </div>
         </div>
       </header>
 
-      <main className="mx-auto grid w-full max-w-[1180px] gap-5 px-4 py-5 sm:px-6 lg:grid-cols-[minmax(0,1fr)_360px] lg:py-8">
-        <section className="grid min-h-[calc(100dvh-132px)] content-between rounded-lg border border-white/10 bg-[#111111] p-5 sm:p-7">
-          <div>
-            <div className="mb-8 flex flex-wrap items-center gap-2">
-              {quickSignals.map((signal) => (
-                <span key={signal.label} className={`rounded-lg border px-3 py-2 text-[10px] font-black uppercase tracking-[0.12em] sm:hidden ${signal.tone}`}>
-                  {signal.label}: {signal.value}
-                </span>
-              ))}
-            </div>
+      {/* Main */}
+      <main className="flex-1 mx-auto w-full max-w-[1100px] px-5 sm:px-8 py-10 sm:py-14 grid gap-10">
 
-            <div className="grid gap-6 xl:grid-cols-[0.9fr_1.1fr] xl:items-end">
-              <div>
-                <p className="m-0 text-[11px] font-black uppercase tracking-[0.22em] text-[#AACC33]">Command desk</p>
-                <h1 className="mt-4 max-w-[720px] text-[clamp(42px,7vw,88px)] font-black leading-[0.95] tracking-normal">
-                  Pick the system. Start the work.
-                </h1>
-              </div>
+        {/* Hero */}
+        <div className="grid gap-3">
+          <p className="m-0 text-[10px] font-black uppercase tracking-[0.22em] text-[#AACC33]">
+            Command desk
+          </p>
+          <h1 className="text-[clamp(32px,6vw,68px)] font-black leading-[0.95] tracking-tight">
+            Pick a system.<br />Start the work.
+          </h1>
+          <p className="m-0 text-[14px] text-white/45 max-w-[480px] leading-relaxed mt-1">
+            Internal tools for meeting governance and daily hotel operations — in one place.
+          </p>
+        </div>
 
-              <div className="grid gap-3">
-                <p className="m-0 max-w-[460px] text-[15px] leading-8 text-white/58">
-                  A single launch point for daily hotel operations, meeting governance, and follow-up visibility across the team.
-                </p>
-                <div className="grid grid-cols-3 gap-2">
-                  <MiniStat value="2" label="Apps" />
-                  <MiniStat value="24/7" label="Portal" />
-                  <MiniStat value="CPG" label="Team" />
-                </div>
-              </div>
-            </div>
-          </div>
+        {/* App cards */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          {APPS.map((app) => (
+            <AppCard key={app.key} app={app} />
+          ))}
+        </div>
 
-          <div className="mt-10 grid gap-3 lg:grid-cols-2">
-            {apps.map((app) => (
-              <AppLaunchCard key={app.key} app={app} />
-            ))}
-          </div>
-        </section>
-
-        <aside className="grid gap-5 lg:grid-rows-[auto_1fr_auto]">
-          <section className="rounded-lg border border-white/10 bg-[#171717] p-5">
-            <div className="text-[10px] font-black uppercase tracking-[0.16em] text-white/38">Today</div>
-            <div className="mt-4 text-[28px] font-black leading-none">{new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short' })}</div>
-            <div className="mt-2 text-[12px] font-bold uppercase tracking-[0.14em] text-white/42">
-              {new Date().toLocaleDateString('en-GB', { weekday: 'long' })}
-            </div>
-          </section>
-
-          <section className="rounded-lg border border-white/10 bg-[#171717] p-5">
-            <div className="mb-5 flex items-center justify-between gap-3">
-              <h2 className="m-0 text-[16px] font-black tracking-tight">Portal Map</h2>
-              <span className="rounded-lg border border-emerald-300/20 bg-emerald-300/10 px-2 py-1 text-[10px] font-black uppercase tracking-[0.12em] text-emerald-100">
-                Online
-              </span>
-            </div>
-
-            <div className="portal-map" aria-hidden="true">
-              <div className="portal-map-node node-core">CPG</div>
-              <div className="portal-map-node node-meeting">MO</div>
-              <div className="portal-map-node node-flash">FR</div>
-              <div className="portal-map-line line-a" />
-              <div className="portal-map-line line-b" />
-            </div>
-
-            <div className="mt-5 grid gap-2">
-              {apps.map((app) => (
-                <a key={app.key} href={app.href} className="flex items-center justify-between rounded-lg border border-white/10 bg-white/[0.035] px-3 py-3 text-inherit no-underline transition-colors hover:bg-white/[0.07]">
-                  <span className="text-[12px] font-bold">{app.label}</span>
-                  <span className="text-[11px] font-black" style={{ color: app.accent }}>Open</span>
-                </a>
-              ))}
-            </div>
-          </section>
-
-          <footer className="rounded-lg border border-white/10 bg-[#111111] p-4 text-[10px] font-bold uppercase tracking-[0.14em] text-white/30">
-            {year} Centre Point Group. Internal use only.
-          </footer>
-        </aside>
       </main>
+
+      {/* Footer */}
+      <footer className="border-t border-white/[0.06] px-5 sm:px-8 py-4">
+        <div className="mx-auto max-w-[1100px] flex items-center justify-between gap-4">
+          <span className="text-[10px] text-white/25 font-bold uppercase tracking-[0.12em]">
+            {new Date().getFullYear()} Centre Point Group
+          </span>
+          <span className="text-[10px] text-white/20 font-bold uppercase tracking-[0.12em]">
+            Internal use only
+          </span>
+        </div>
+      </footer>
+
     </div>
   )
 }
 
-function MiniStat({ value, label }) {
-  return (
-    <div className="rounded-lg border border-white/10 bg-black/20 p-3">
-      <div className="text-[18px] font-black leading-none">{value}</div>
-      <div className="mt-2 text-[9px] font-black uppercase tracking-[0.14em] text-white/38">{label}</div>
-    </div>
-  )
-}
-
-function AppLaunchCard({ app }) {
+function AppCard({ app }) {
   return (
     <a
       href={app.href}
-      className="group grid min-h-[230px] content-between rounded-lg border border-white/10 bg-[#181818] p-5 text-inherit no-underline transition-all hover:-translate-y-0.5 hover:border-white/20 hover:bg-[#202020]"
-      style={{ '--app-accent': app.accent }}
+      className="group relative flex flex-col justify-between min-h-[240px] rounded-2xl border border-white/[0.08] bg-[#111] p-6 no-underline text-inherit overflow-hidden transition-all duration-200 hover:border-white/[0.16] hover:bg-[#161616] hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.99]"
     >
-      <div>
-        <div className="mb-5 flex items-start justify-between gap-3">
-          <div className="grid h-12 w-12 place-items-center rounded-lg text-[12px] font-black text-black" style={{ backgroundColor: app.accent }}>
-            {app.shortLabel}
+      {/* Subtle accent glow on hover */}
+      <div
+        className="pointer-events-none absolute -top-16 -right-16 w-48 h-48 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+        style={{ background: `radial-gradient(circle, ${app.accent}18 0%, transparent 65%)` }}
+      />
+
+      <div className="relative">
+        {/* Top row */}
+        <div className="flex items-start justify-between gap-3 mb-5">
+          <div
+            className="h-12 w-12 rounded-xl grid place-items-center text-[12px] font-black text-black shrink-0"
+            style={{ backgroundColor: app.accent }}
+          >
+            {app.short}
           </div>
-          <span className="rounded-lg border px-2 py-1 text-[10px] font-black uppercase tracking-[0.12em]" style={{ borderColor: `${app.accent}55`, backgroundColor: `${app.accent}18`, color: app.accent }}>
+          <span
+            className="text-[9px] font-black uppercase tracking-[0.12em] px-2.5 py-1.5 rounded-lg border"
+            style={{ color: app.accent, borderColor: `${app.accent}40`, backgroundColor: `${app.accent}14` }}
+          >
             {app.status}
           </span>
         </div>
-        <h2 className="m-0 text-[24px] font-black leading-tight tracking-tight">{app.label}</h2>
-        <p className="m-0 mt-3 text-[13px] leading-7 text-white/52">{app.summary}</p>
+
+        {/* Title + desc */}
+        <h2 className="m-0 text-[22px] font-black leading-tight tracking-tight mb-2">{app.label}</h2>
+        <p className="m-0 text-[13px] text-white/45 leading-[1.7]">{app.desc}</p>
       </div>
 
-      <div>
-        <div className="mb-4 flex flex-wrap gap-2">
-          {app.metrics.map((metric) => (
-            <span key={metric} className="rounded-lg border border-white/10 bg-white/[0.04] px-2 py-1 text-[10px] font-bold text-white/45">
-              {metric}
+      <div className="relative mt-6">
+        {/* Tags */}
+        <div className="flex flex-wrap gap-2 mb-5">
+          {app.tags.map((tag) => (
+            <span key={tag} className="text-[10px] font-bold text-white/35 border border-white/[0.08] bg-white/[0.03] px-2.5 py-1 rounded-lg">
+              {tag}
             </span>
           ))}
         </div>
-        <div className="flex items-center justify-between border-t border-white/10 pt-4">
-          <span className="text-[11px] font-black uppercase tracking-[0.14em]" style={{ color: app.accent }}>Launch</span>
-          <span className="grid h-8 w-8 place-items-center rounded-lg border border-white/10 bg-white/[0.04] text-[17px] font-black text-white/50 transition-transform group-hover:translate-x-0.5">
-            -&gt;
+
+        {/* Launch row */}
+        <div className="flex items-center justify-between border-t border-white/[0.07] pt-4">
+          <span className="text-[11px] font-black uppercase tracking-[0.14em]" style={{ color: app.accent }}>
+            Launch
           </span>
+          <div
+            className="h-8 w-8 rounded-lg border border-white/[0.09] bg-white/[0.04] grid place-items-center text-white/40 text-[14px] font-black transition-transform duration-200 group-hover:translate-x-0.5"
+          >
+            →
+          </div>
         </div>
       </div>
     </a>
