@@ -145,6 +145,11 @@ export default function LandingPage() {
       onMouseLeave={handleMouseLeave}
       style={styles.shell}
     >
+      {/* Logo watermark — behind the dot canvas */}
+      <div style={styles.logoBg}>
+        <img src="/cpg-logo.png" alt="" style={styles.logoImg} />
+      </div>
+
       <canvas ref={canvasRef} style={styles.canvas} />
 
       <div style={styles.content}>
@@ -315,6 +320,26 @@ const styles = {
     overflow: "hidden",
     position: "relative",
   },
+  logoBg: {
+    position: "absolute",
+    inset: 0,
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    pointerEvents: "none",
+    zIndex: 0,
+    overflow: "hidden",
+  },
+  logoImg: {
+    width: "min(72vw, 640px)",
+    height: "auto",
+    opacity: 0.05,
+    filter: "grayscale(1) brightness(4)",
+    animation: "logoBreathe 90s linear infinite",
+    transformOrigin: "center center",
+    userSelect: "none",
+    draggable: false,
+  },
   canvas: {
     position: "absolute",
     top: 0,
@@ -322,11 +347,11 @@ const styles = {
     width: "100%",
     height: "100%",
     pointerEvents: "none",
-    zIndex: 0,
+    zIndex: 1,
   },
   content: {
     position: "relative",
-    zIndex: 2,
+    zIndex: 3,
   },
 
   /* Centering wrapper used inside header, main, footer */
