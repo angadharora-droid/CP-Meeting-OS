@@ -160,10 +160,9 @@ export default function LandingPage() {
 
       <canvas ref={canvasRef} style={styles.canvas} />
 
-      {/* Hero logo + glow — absolute, right side */}
-      <div style={styles.heroRight}>
-        <div style={styles.heroGlow} />
-        <img src={cpgLogo} alt="" style={styles.heroLogoImg} draggable={false} />
+      {/* Logo — centered background, gradient masked to logo shape */}
+      <div style={styles.heroBg}>
+        <div style={{ ...styles.heroBgLogo, WebkitMaskImage: `url(${cpgLogo})`, maskImage: `url(${cpgLogo})` }} />
       </div>
 
       <div
@@ -594,36 +593,26 @@ const styles = {
   heroLeft: {
     maxWidth: 520,
   },
-  heroRight: {
+  heroBg: {
     position: "absolute",
-    right: 0,
-    top: "50%",
-    transform: "translateY(-50%)",
-    width: "45%",
-    height: "100%",
+    inset: 0,
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
     pointerEvents: "none",
     zIndex: 2,
   },
-  heroGlow: {
-    position: "absolute",
-    inset: "-10%",
-    background: "radial-gradient(ellipse at center, rgba(194,0,110,0.4) 0%, rgba(224,64,160,0.18) 40%, transparent 70%)",
-    filter: "blur(70px)",
-    pointerEvents: "none",
-  },
-  heroLogoImg: {
-    position: "relative",
-    width: 420,
-    height: 420,
-    objectFit: "contain",
-    filter: "brightness(0) invert(1)",
-    opacity: 0.15,
-    userSelect: "none",
-    pointerEvents: "none",
-    zIndex: 1,
+  heroBgLogo: {
+    width: 520,
+    height: 520,
+    background: "radial-gradient(circle at 40% 40%, rgba(224,64,160,0.9) 0%, rgba(194,0,110,0.75) 45%, rgba(120,0,70,0.5) 75%, transparent 100%)",
+    WebkitMaskSize: "contain",
+    maskSize: "contain",
+    WebkitMaskRepeat: "no-repeat",
+    maskRepeat: "no-repeat",
+    WebkitMaskPosition: "center",
+    maskPosition: "center",
+    opacity: 0.55,
   },
 
   eyebrowRow: {
