@@ -60,32 +60,42 @@ const DARK = {
   borderMid: "rgba(255,255,255,0.1)",
   dot: "rgba(255,255,255,0.06)",
   cardBg: "rgba(255,255,255,0.02)",
+  cardShadow: "none",
   cardEdge: "rgba(255,255,255,0.18)",
   badgeBg: "rgba(255,255,255,0.03)",
   tagBg: "rgba(255,255,255,0.025)",
   launchBg: "rgba(255,255,255,0.03)",
   footerLogoBg: "rgba(255,255,255,0.05)",
+  accentEnd: "rgba(240,238,248,0.85)",
+  blob1: "rgba(194,0,110,0.13)",
+  blob2: "rgba(224,64,160,0.09)",
+  logoBgOpacity: 0.28,
 };
 
 const LIGHT = {
   pink: "#C2006E",
   hotpink: "#E040A0",
-  bg: "#F0EDF6",
-  headerBg: "rgba(240,237,246,0.88)",
-  surface: "rgba(0,0,0,0.03)",
-  txt: "#0C0810",
-  muted: "rgba(12,8,16,0.72)",
-  faint: "rgba(12,8,16,0.52)",
-  vfaint: "rgba(12,8,16,0.32)",
-  border: "rgba(0,0,0,0.08)",
-  borderMid: "rgba(0,0,0,0.13)",
-  dot: "rgba(0,0,0,0.07)",
-  cardBg: "rgba(0,0,0,0.03)",
-  cardEdge: "rgba(0,0,0,0.1)",
-  badgeBg: "rgba(0,0,0,0.04)",
-  tagBg: "rgba(0,0,0,0.04)",
-  launchBg: "rgba(0,0,0,0.04)",
+  bg: "#F8F5FC",
+  headerBg: "rgba(255,255,255,0.95)",
+  surface: "rgba(194,0,110,0.04)",
+  txt: "#0D0A14",
+  muted: "rgba(13,10,20,0.65)",
+  faint: "rgba(13,10,20,0.45)",
+  vfaint: "rgba(13,10,20,0.28)",
+  border: "rgba(0,0,0,0.07)",
+  borderMid: "rgba(194,0,110,0.15)",
+  dot: "rgba(0,0,0,0.065)",
+  cardBg: "#FFFFFF",
+  cardShadow: "0 2px 8px rgba(0,0,0,0.05), 0 8px 28px rgba(194,0,110,0.06)",
+  cardEdge: "rgba(194,0,110,0.12)",
+  badgeBg: "rgba(194,0,110,0.06)",
+  tagBg: "rgba(194,0,110,0.05)",
+  launchBg: "rgba(194,0,110,0.05)",
   footerLogoBg: "rgba(0,0,0,0.06)",
+  accentEnd: "#8B0050",
+  blob1: "rgba(194,0,110,0.08)",
+  blob2: "rgba(224,64,160,0.06)",
+  logoBgOpacity: 0.18,
 };
 
 function makeStyles(C) {
@@ -113,12 +123,12 @@ function makeStyles(C) {
     blob: { position: "absolute", borderRadius: "50%", filter: "blur(100px)" },
     blob1: {
       width: 600, height: 600, top: "-15%", left: "-10%",
-      background: "radial-gradient(circle, rgba(194,0,110,0.13) 0%, transparent 70%)",
+      background: `radial-gradient(circle, ${C.blob1} 0%, transparent 70%)`,
       animation: "blobDrift1 22s ease-in-out infinite",
     },
     blob2: {
       width: 500, height: 500, bottom: "-10%", right: "-5%",
-      background: "radial-gradient(circle, rgba(224,64,160,0.09) 0%, transparent 70%)",
+      background: `radial-gradient(circle, ${C.blob2} 0%, transparent 70%)`,
       animation: "blobDrift2 28s ease-in-out infinite",
     },
     canvas: { position: "absolute", top: 0, left: 0, width: "100%", height: "100%", pointerEvents: "none", zIndex: 1 },
@@ -133,7 +143,7 @@ function makeStyles(C) {
       WebkitMaskSize: "contain", maskSize: "contain",
       WebkitMaskRepeat: "no-repeat", maskRepeat: "no-repeat",
       WebkitMaskPosition: "center", maskPosition: "center",
-      opacity: 0.28,
+      opacity: C.logoBgOpacity,
     },
     content: {
       position: "relative", zIndex: 3,
@@ -220,7 +230,7 @@ function makeStyles(C) {
     },
     headlineWhite: { color: C.txt },
     headlineAccent: {
-      background: `linear-gradient(125deg, ${C.pink} 0%, ${C.hotpink} 55%, rgba(240,238,248,0.9) 100%)`,
+      background: `linear-gradient(125deg, ${C.pink} 0%, ${C.hotpink} 55%, ${C.accentEnd} 100%)`,
       WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text",
     },
     sub: {
@@ -242,10 +252,11 @@ function makeStyles(C) {
       display: "flex", flexDirection: "column",
       borderRadius: 16, border: `0.5px solid ${C.borderMid}`,
       background: C.cardBg,
+      boxShadow: C.cardShadow,
       backdropFilter: "blur(32px)", WebkitBackdropFilter: "blur(32px)",
       padding: "18px 20px 16px", position: "relative",
       textDecoration: "none", color: C.txt,
-      transition: "border-color 0.35s, transform 0.4s cubic-bezier(0.23,1,0.32,1)",
+      transition: "border-color 0.35s, transform 0.4s cubic-bezier(0.23,1,0.32,1), box-shadow 0.3s",
       cursor: "pointer", transformStyle: "preserve-3d",
       willChange: "transform", overflow: "hidden",
       animation: "cardReveal 0.6s cubic-bezier(0.23,1,0.32,1) both",
@@ -500,7 +511,7 @@ export default function LandingPage() {
           <div style={styles.footerInner}>
             <div style={styles.footerLeft}>
               <div style={styles.footerLogo}>
-                <img src={cpgLogo} alt="CPG" style={{ width: 18, height: 18, objectFit: "contain", filter: "brightness(0) invert(1)", opacity: 0.5 }} draggable={false} />
+                <img src={cpgLogo} alt="CPG" style={{ width: 18, height: 18, objectFit: "contain", filter: isDark ? "brightness(0) invert(1)" : "none", opacity: 0.55 }} draggable={false} />
               </div>
               <span style={styles.footerCopy}>© {new Date().getFullYear()} Centre Point Group</span>
             </div>
