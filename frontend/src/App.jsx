@@ -195,14 +195,6 @@ function App() {
   const page = location.pathname.replace(/^\/+|\/+$/g, '') || 'dashboard'
   const app = useMeetingOs(navigate, page)
 
-  // All hooks above must stay unconditional. Redirect runs in effect so React
-  // finishes the render cycle before the browser navigation fires.
-  useEffect(() => {
-    if (location.pathname === '/flashreport' || location.pathname.startsWith('/flashreport/')) {
-      window.location.replace(location.pathname + location.search + location.hash)
-    }
-  }, [location.pathname, location.search, location.hash])
-
   useEffect(() => {
     const onKey = (e) => {
       if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
@@ -213,10 +205,6 @@ function App() {
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
   }, [app])
-
-  if (location.pathname === '/flashreport' || location.pathname.startsWith('/flashreport/')) {
-    return null
-  }
 
   if (!app.authed) {
     return (
