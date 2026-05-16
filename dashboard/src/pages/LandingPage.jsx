@@ -616,8 +616,8 @@ const styles = {
   },
   heroLogoImg: {
     position: "relative",
-    width: 260,
-    height: 260,
+    width: 420,
+    height: 420,
     objectFit: "contain",
     filter: "brightness(0) invert(1)",
     opacity: 0.15,
