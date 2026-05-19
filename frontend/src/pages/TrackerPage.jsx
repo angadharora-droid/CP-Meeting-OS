@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { DateField } from '../components/DateTimePickers'
 
 const P = {
-  primary: 'min-h-[40px] px-4 py-[9px] rounded-xl bg-indigo-600 text-white font-semibold text-[11px] tracking-[0.08em] uppercase cursor-pointer border-none transition-all hover:bg-indigo-700 active:scale-[0.97] disabled:opacity-40 disabled:cursor-not-allowed shadow-[0_1px_2px_rgba(15,23,42,0.06),0_4px_10px_rgba(79,70,229,0.18)]',
+  primary: 'min-h-[40px] px-4 py-[9px] rounded-xl bg-slate-700 text-white font-semibold text-[11px] tracking-[0.08em] uppercase cursor-pointer border-none transition-all hover:bg-slate-800 active:scale-[0.97] disabled:opacity-40 disabled:cursor-not-allowed shadow-[0_1px_2px_rgba(15,23,42,0.06),0_4px_10px_rgba(15,23,42,0.10)]',
   ghost:   'min-h-[40px] px-4 py-[9px] rounded-xl bg-white text-slate-700 border border-slate-200 text-[11px] tracking-[0.06em] cursor-pointer transition-colors hover:border-slate-300 hover:bg-slate-50 font-medium',
 }
 
@@ -57,7 +57,7 @@ function Initials({ name }) {
     .slice(0, 2)
     .toUpperCase()
   return (
-    <div className="w-8 h-8 rounded-full bg-indigo-50 border border-indigo-100 flex items-center justify-center text-[10px] font-bold text-indigo-600 shrink-0">
+    <div className="w-8 h-8 rounded-full bg-slate-100 border border-slate-200 flex items-center justify-center text-[10px] font-bold text-slate-700 shrink-0">
       {letters}
     </div>
   )
@@ -149,7 +149,7 @@ export default function TrackerPage({ app }) {
           </div>
           <div className="h-[6px] rounded-full bg-slate-100 overflow-hidden">
             <div
-              className="h-full rounded-full bg-indigo-600 transition-all duration-500"
+              className="h-full rounded-full bg-slate-700 transition-all duration-500"
               style={{ width: `${pct}%` }}
             />
           </div>
@@ -165,7 +165,7 @@ export default function TrackerPage({ app }) {
               app.taskFilter === key
                 ? key === 'Overdue' ? 'bg-red-50 text-red-700 border-red-200'
                 : key === 'Done'    ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
-                : 'bg-indigo-50 text-indigo-700 border-indigo-200'
+                : 'bg-slate-100 text-slate-800 border-slate-300'
                 : 'bg-white text-slate-600 border-slate-200 hover:border-slate-300 hover:text-slate-900'
             }`}
             onClick={() => app.setTaskFilter(key)}
@@ -199,7 +199,7 @@ export default function TrackerPage({ app }) {
         <button
           onClick={exportTasks}
           disabled={!filteredTasks.length}
-          className="shrink-0 min-h-[36px] px-4 py-[7px] rounded-xl bg-white text-indigo-700 border border-indigo-200 text-[10px] tracking-[0.08em] uppercase cursor-pointer transition-all hover:bg-indigo-50 hover:border-indigo-300 disabled:opacity-40 disabled:cursor-not-allowed font-semibold"
+          className="shrink-0 min-h-[36px] px-4 py-[7px] rounded-xl bg-white text-slate-800 border border-slate-300 text-[10px] tracking-[0.08em] uppercase cursor-pointer transition-all hover:bg-slate-100 hover:border-slate-400 disabled:opacity-40 disabled:cursor-not-allowed font-semibold"
         >
           Export CSV
         </button>

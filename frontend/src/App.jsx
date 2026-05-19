@@ -250,7 +250,7 @@ function App() {
           className="flex items-center gap-3 rounded-xl px-1.5 py-1 cursor-pointer hover:bg-slate-100 transition-colors"
           onClick={() => navigate('/dashboard')}
         >
-          <div className="w-9 h-9 bg-gradient-to-br from-indigo-600 to-indigo-700 rounded-xl flex items-center justify-center text-white font-bold text-[12px] tracking-wider shrink-0 shadow-[0_4px_12px_rgba(79,70,229,0.22)]">
+          <div className="w-9 h-9 bg-gradient-to-br from-slate-700 to-slate-800 rounded-xl flex items-center justify-center text-white font-bold text-[12px] tracking-wider shrink-0 shadow-[0_4px_12px_rgba(15,23,42,0.14)]">
             MO
           </div>
           <span className="hidden sm:grid leading-tight text-left">
@@ -275,7 +275,7 @@ function App() {
 
           <button
             onClick={() => navigate('/new-meeting')}
-            className="min-h-[38px] bg-indigo-600 text-white rounded-xl px-3 text-[11px] cursor-pointer font-semibold whitespace-nowrap hover:bg-indigo-700 active:scale-[0.97] transition-all border-none shadow-[0_1px_2px_rgba(15,23,42,0.06),0_4px_10px_rgba(79,70,229,0.18)]"
+            className="min-h-[38px] bg-slate-700 text-white rounded-xl px-3 text-[11px] cursor-pointer font-semibold whitespace-nowrap hover:bg-slate-800 active:scale-[0.97] transition-all border-none shadow-[0_1px_2px_rgba(15,23,42,0.06),0_4px_10px_rgba(15,23,42,0.10)]"
           >
             + Meeting
           </button>
@@ -298,17 +298,17 @@ function App() {
             key={key}
             onClick={() => navigate(`/${key}`)}
             className={`relative px-4 py-[12px] text-[10.5px] tracking-[0.11em] uppercase cursor-pointer border-none bg-transparent whitespace-nowrap shrink-0 transition-colors font-semibold ${
-              page === key ? 'text-indigo-600' : 'text-slate-500 hover:text-slate-900'
+              page === key ? 'text-slate-700' : 'text-slate-500 hover:text-slate-900'
             }`}
           >
             {label}
             {badge ? (
-              <span className="ml-1.5 inline-flex items-center justify-center px-[5px] py-[1px] rounded-full bg-indigo-50 text-indigo-600 text-[9px] font-bold min-w-[16px]">
+              <span className="ml-1.5 inline-flex items-center justify-center px-[5px] py-[1px] rounded-full bg-slate-100 text-slate-700 text-[9px] font-bold min-w-[16px]">
                 {badge}
               </span>
             ) : null}
             {page === key && (
-              <span className="absolute bottom-0 left-3 right-3 h-[2px] rounded-full bg-indigo-600" />
+              <span className="absolute bottom-0 left-3 right-3 h-[2px] rounded-full bg-slate-700" />
             )}
           </button>
         ))}
@@ -383,7 +383,7 @@ function App() {
             )}
             <div className="document-preview-actions flex gap-2">
               <button
-                className="flex-1 bg-indigo-600 border-none text-white rounded-xl px-4 py-[11px] text-[12px] cursor-pointer font-semibold hover:bg-indigo-700 active:scale-[0.98] transition-all shadow-[0_1px_2px_rgba(15,23,42,0.06),0_4px_10px_rgba(79,70,229,0.18)]"
+                className="flex-1 bg-slate-700 border-none text-white rounded-xl px-4 py-[11px] text-[12px] cursor-pointer font-semibold hover:bg-slate-800 active:scale-[0.98] transition-all shadow-[0_1px_2px_rgba(15,23,42,0.06),0_4px_10px_rgba(15,23,42,0.10)]"
                 onClick={() => app.copyText(app.preview.content)}
               >
                 Copy to clipboard

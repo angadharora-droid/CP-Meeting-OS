@@ -3,21 +3,21 @@ import { useRef, useState } from 'react'
 import { DateField, TimeField } from '../components/DateTimePickers'
 
 const P = {
-  primary:  'w-full min-h-[48px] px-5 py-[13px] rounded-xl bg-indigo-600 text-white font-semibold text-[13px] tracking-[0.08em] uppercase cursor-pointer border-none transition-all hover:bg-indigo-700 active:scale-[0.98] disabled:opacity-40 disabled:cursor-not-allowed disabled:active:scale-100 shadow-[0_1px_2px_rgba(15,23,42,0.06),0_4px_12px_rgba(79,70,229,0.18)]',
+  primary:  'w-full min-h-[48px] px-5 py-[13px] rounded-xl bg-slate-700 text-white font-semibold text-[13px] tracking-[0.08em] uppercase cursor-pointer border-none transition-all hover:bg-slate-800 active:scale-[0.98] disabled:opacity-40 disabled:cursor-not-allowed disabled:active:scale-100 shadow-[0_1px_2px_rgba(15,23,42,0.06),0_4px_12px_rgba(15,23,42,0.10)]',
   ghost:    'w-full min-h-[44px] px-4 py-3 rounded-xl bg-white text-slate-700 border border-slate-200 text-[12px] tracking-[0.06em] cursor-pointer transition-colors hover:border-slate-300 hover:bg-slate-50 font-medium disabled:opacity-50 disabled:cursor-not-allowed',
   danger:   'bg-transparent border-none text-red-500 text-[11px] tracking-[0.08em] uppercase cursor-pointer p-0 transition-colors hover:text-red-700 font-semibold',
-  input:    'bg-white border border-slate-200 rounded-xl text-slate-900 text-[14px] px-[13px] py-3 w-full outline-none min-h-[44px] appearance-none transition-[border-color,box-shadow] duration-150 placeholder:text-slate-400 focus:border-indigo-500 focus:[box-shadow:0_0_0_3px_rgba(79,70,229,0.12)]',
-  select:   'bg-white border border-slate-200 rounded-xl text-slate-900 text-[14px] px-[13px] py-3 w-full outline-none min-h-[44px] appearance-none cursor-pointer transition-[border-color] duration-150 focus:border-indigo-500 [background-image:url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'12\' height=\'8\' fill=\'none\'%3E%3Cpath d=\'M1 1l5 5 5-5\' stroke=\'%2394A3B8\' stroke-width=\'1.5\' stroke-linecap=\'round\'/%3E%3C/svg%3E")] bg-no-repeat [background-position:right_13px_center] pr-9',
-  textarea: 'bg-white border border-slate-200 rounded-xl text-slate-900 text-[14px] px-[13px] py-3 w-full outline-none appearance-none resize-y min-h-[80px] leading-[1.6] transition-[border-color,box-shadow] duration-150 placeholder:text-slate-400 focus:border-indigo-500 focus:[box-shadow:0_0_0_3px_rgba(79,70,229,0.12)]',
+  input:    'bg-white border border-slate-200 rounded-xl text-slate-900 text-[14px] px-[13px] py-3 w-full outline-none min-h-[44px] appearance-none transition-[border-color,box-shadow] duration-150 placeholder:text-slate-400 focus:border-slate-500 focus:[box-shadow:0_0_0_3px_rgba(51,65,85,0.10)]',
+  select:   'bg-white border border-slate-200 rounded-xl text-slate-900 text-[14px] px-[13px] py-3 w-full outline-none min-h-[44px] appearance-none cursor-pointer transition-[border-color] duration-150 focus:border-slate-500 [background-image:url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'12\' height=\'8\' fill=\'none\'%3E%3Cpath d=\'M1 1l5 5 5-5\' stroke=\'%2394A3B8\' stroke-width=\'1.5\' stroke-linecap=\'round\'/%3E%3C/svg%3E")] bg-no-repeat [background-position:right_13px_center] pr-9',
+  textarea: 'bg-white border border-slate-200 rounded-xl text-slate-900 text-[14px] px-[13px] py-3 w-full outline-none appearance-none resize-y min-h-[80px] leading-[1.6] transition-[border-color,box-shadow] duration-150 placeholder:text-slate-400 focus:border-slate-500 focus:[box-shadow:0_0_0_3px_rgba(51,65,85,0.10)]',
   card:     'p-4 grid gap-4 border border-slate-200 bg-white rounded-2xl shadow-[0_1px_2px_rgba(15,23,42,0.04)]',
   label:    'flex flex-col gap-[6px] text-[11px] tracking-[0.15em] uppercase text-slate-500 font-semibold',
-  secHead:  'flex items-center gap-2 text-[10px] uppercase tracking-[0.18em] text-indigo-600 font-semibold',
+  secHead:  'flex items-center gap-2 text-[10px] uppercase tracking-[0.18em] text-slate-700 font-semibold',
 }
 
 function SecHead({ n, children }) {
   return (
     <div className={P.secHead}>
-      {n && <span className="text-indigo-300 font-mono">{n}</span>}
+      {n && <span className="text-slate-400 font-mono">{n}</span>}
       {n && <span className="text-slate-300">/</span>}
       {children}
     </div>
@@ -87,7 +87,7 @@ export default function CloseMeetingPage({ app }) {
         {app.activeMeeting && (
           <div className="grid gap-[5px] p-4 rounded-xl bg-slate-50 border border-slate-200">
             <div className="flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full bg-indigo-600" />
+              <span className="w-2 h-2 rounded-full bg-slate-700" />
               <span className="text-slate-900 font-semibold text-[14px]">{app.activeMeeting.title}</span>
             </div>
               <span className="text-slate-600 text-[12px] pl-4">
@@ -128,7 +128,7 @@ export default function CloseMeetingPage({ app }) {
           {app.actionPoints.map((row, index) => (
             <div key={row.taskId} className="p-4 grid gap-4 border border-slate-200 bg-slate-50 rounded-xl">
               <div className="flex items-center justify-between gap-3">
-                <span className="uppercase tracking-[0.15em] text-[10px] text-indigo-600 font-semibold">
+                <span className="uppercase tracking-[0.15em] text-[10px] text-slate-700 font-semibold">
                   Point {index + 1}
                 </span>
                 <button className={P.danger} onClick={() => app.removeActionPoint(row.taskId)}>Remove</button>
@@ -188,7 +188,7 @@ export default function CloseMeetingPage({ app }) {
 
         <label className="flex items-center gap-3 cursor-pointer">
           <div className={`w-5 h-5 rounded-md border flex items-center justify-center transition-all ${
-            app.followup ? 'bg-indigo-600 border-indigo-600' : 'bg-white border-slate-300'
+            app.followup ? 'bg-slate-700 border-slate-700' : 'bg-white border-slate-300'
           }`}>
             {app.followup && <span className="text-white text-[11px] font-bold leading-none">✓</span>}
             <input type="checkbox" className="sr-only" checked={app.followup}
@@ -247,7 +247,7 @@ export default function CloseMeetingPage({ app }) {
           {/* Postpone */}
           <div className="grid gap-3 p-4 rounded-xl border border-slate-200 bg-slate-50">
             <div className="flex items-center justify-between gap-3">
-              <span className="uppercase tracking-[0.15em] text-[10px] text-indigo-600 font-semibold">Postpone</span>
+              <span className="uppercase tracking-[0.15em] text-[10px] text-slate-700 font-semibold">Postpone</span>
               <span className="text-slate-500 text-[10px]">Caller or admin only</span>
             </div>
             <div className="grid gap-3 sm:grid-cols-2">

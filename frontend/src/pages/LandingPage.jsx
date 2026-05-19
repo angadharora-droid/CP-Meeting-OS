@@ -3,7 +3,7 @@ export default function LandingPage() {
     <div className="min-h-dvh text-slate-900 flex flex-col">
       <header className="border-b border-slate-200/80 bg-white/85 backdrop-blur-xl px-5 py-4">
         <div className="mx-auto flex max-w-[1100px] items-center gap-3">
-          <div className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-gradient-to-br from-indigo-600 to-indigo-700 text-[11px] font-bold text-white shadow-[0_4px_12px_rgba(79,70,229,0.22)]">
+          <div className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-gradient-to-br from-slate-700 to-slate-800 text-[11px] font-bold text-white shadow-[0_4px_12px_rgba(15,23,42,0.14)]">
             CPG
           </div>
           <div className="grid leading-tight">
@@ -15,7 +15,7 @@ export default function LandingPage() {
 
       <main className="flex flex-1 items-center justify-center px-5 py-12">
         <section className="w-full max-w-[560px] text-center">
-          <p className="m-0 mb-4 text-[10px] font-semibold uppercase tracking-[0.22em] text-indigo-600">
+          <p className="m-0 mb-4 text-[10px] font-semibold uppercase tracking-[0.22em] text-slate-700">
             Operations workspace
           </p>
           <h1 className="mx-auto max-w-[620px] text-[clamp(34px,7vw,58px)] font-bold leading-[1.02] tracking-tight text-slate-900">
@@ -51,7 +51,7 @@ export default function LandingPage() {
   )
 }
 
-function AppCard({ icon, name, desc, href, gradient = 'from-indigo-600 to-indigo-700', shadow = 'rgba(79,70,229,0.22)' }) {
+function AppCard({ icon, name, desc, href, gradient = 'from-slate-700 to-slate-800', shadow = 'rgba(15,23,42,0.14)' }) {
   return (
     <a
       href={href}
@@ -67,7 +67,7 @@ function AppCard({ icon, name, desc, href, gradient = 'from-indigo-600 to-indigo
         <div className="text-[14px] font-semibold text-slate-900">{name}</div>
         <div className="mt-1 truncate text-[11px] text-slate-500">{desc}</div>
       </div>
-      <span className="text-[18px] text-slate-400 transition-colors group-hover:text-indigo-600">→</span>
+      <span className="text-[18px] text-slate-400 transition-colors group-hover:text-slate-700">→</span>
     </a>
   )
 }

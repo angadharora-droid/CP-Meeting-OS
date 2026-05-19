@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 
-const dateTimeClass = 'bg-white border border-slate-200 rounded-xl text-slate-900 text-[14px] pl-[42px] pr-[44px] py-3 w-full outline-none min-h-[44px] appearance-none transition-[border-color,box-shadow] duration-150 focus:border-indigo-500 focus:[box-shadow:0_0_0_3px_rgba(79,70,229,0.12)] placeholder:text-slate-400 font-mono'
+const dateTimeClass = 'bg-white border border-slate-200 rounded-xl text-slate-900 text-[14px] pl-[42px] pr-[44px] py-3 w-full outline-none min-h-[44px] appearance-none transition-[border-color,box-shadow] duration-150 focus:border-slate-500 focus:[box-shadow:0_0_0_3px_rgba(51,65,85,0.10)] placeholder:text-slate-400 font-mono'
 
 function maskDate(raw) {
   const digits = raw.replace(/\D/g, '').slice(0, 8)
@@ -73,7 +73,7 @@ function composeTime({ hour, minute, period }) {
 
 function CalendarIcon({ active }) {
   return (
-    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" style={{ color: active ? '#4F46E5' : '#94A3B8', transition: 'color 150ms', display: 'block' }}>
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" style={{ color: active ? '#334155' : '#94A3B8', transition: 'color 150ms', display: 'block' }}>
       <rect x="1.5" y="2.5" width="13" height="12" rx="2" stroke="currentColor" strokeWidth="1.25" />
       <path d="M1.5 6.5h13" stroke="currentColor" strokeWidth="1.25" />
       <path d="M5 1v3M11 1v3" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" />
@@ -88,7 +88,7 @@ function CalendarIcon({ active }) {
 
 function ClockIcon({ active }) {
   return (
-    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" style={{ color: active ? '#4F46E5' : '#94A3B8', transition: 'color 150ms', display: 'block' }}>
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" style={{ color: active ? '#334155' : '#94A3B8', transition: 'color 150ms', display: 'block' }}>
       <circle cx="8" cy="8" r="6.5" stroke="currentColor" strokeWidth="1.25" />
       <path d="M8 4.5V8l2.4 1.6" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
@@ -126,14 +126,14 @@ function CalendarPicker({ value, onChange, onClose }) {
           const sel = parsed && parsed.d === d && parsed.m === viewMonth + 1 && parsed.y === viewYear
           const isToday = today.getDate() === d && today.getMonth() === viewMonth && today.getFullYear() === viewYear
           return (
-            <button key={d} type="button" className={`h-8 rounded-lg text-[12px] font-mono ${sel ? 'bg-indigo-600 font-bold text-white' : isToday ? 'border border-indigo-300 text-indigo-600' : 'text-slate-700 hover:bg-slate-100 hover:text-slate-900'}`} onClick={() => { onChange(formatDMY(d, viewMonth + 1, viewYear)); onClose() }}>
+            <button key={d} type="button" className={`h-8 rounded-lg text-[12px] font-mono ${sel ? 'bg-slate-700 font-bold text-white' : isToday ? 'border border-slate-400 text-slate-700' : 'text-slate-700 hover:bg-slate-100 hover:text-slate-900'}`} onClick={() => { onChange(formatDMY(d, viewMonth + 1, viewYear)); onClose() }}>
               {d}
             </button>
           )
         })}
       </div>
       <div className="border-t border-slate-200 px-3 py-2">
-        <button type="button" className="w-full text-[10px] uppercase tracking-[0.1em] text-slate-500 hover:text-indigo-600 font-semibold" onClick={() => { onChange(formatDMY(today.getDate(), today.getMonth() + 1, today.getFullYear())); onClose() }}>Today</button>
+        <button type="button" className="w-full text-[10px] uppercase tracking-[0.1em] text-slate-500 hover:text-slate-700 font-semibold" onClick={() => { onChange(formatDMY(today.getDate(), today.getMonth() + 1, today.getFullYear())); onClose() }}>Today</button>
       </div>
     </div>
   )
@@ -185,7 +185,7 @@ export function DateField({ value, onChange, output = 'iso' }) {
 
 function PickerToggle({ open, onClick, label }) {
   return (
-    <button type="button" tabIndex={-1} onClick={onClick} aria-label={label} className={`absolute right-2.5 top-1/2 z-10 flex h-7 w-7 -translate-y-1/2 items-center justify-center rounded-lg transition-colors ${open ? 'bg-indigo-50 text-indigo-600' : 'text-slate-400 hover:bg-slate-100 hover:text-slate-700'}`}>
+    <button type="button" tabIndex={-1} onClick={onClick} aria-label={label} className={`absolute right-2.5 top-1/2 z-10 flex h-7 w-7 -translate-y-1/2 items-center justify-center rounded-lg transition-colors ${open ? 'bg-slate-100 text-slate-700' : 'text-slate-400 hover:bg-slate-100 hover:text-slate-700'}`}>
       <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
         <path d={open ? 'M2 8l4-4 4 4' : 'M2 4l4 4 4-4'} stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
       </svg>
@@ -258,10 +258,10 @@ function TimePicker({ value, onChange, onClose }) {
     <div onMouseDown={(e) => e.preventDefault()} className="absolute left-0 top-[calc(100%+6px)] z-50 w-[280px] overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-[0_16px_48px_rgba(15,23,42,0.14)]">
       <div className="flex items-center justify-between border-b border-slate-200 px-3.5 py-2.5">
         <span className="text-[9px] font-bold uppercase tracking-[0.18em] text-slate-500">Select time</span>
-        <button type="button" onClick={() => { onChange(roundToNextQuarter()); onClose() }} className="rounded-md border border-indigo-200 bg-indigo-50 px-2.5 py-1 text-[9px] font-bold uppercase tracking-[0.12em] text-indigo-600 hover:bg-indigo-100">Now</button>
+        <button type="button" onClick={() => { onChange(roundToNextQuarter()); onClose() }} className="rounded-md border border-slate-300 bg-slate-100 px-2.5 py-1 text-[9px] font-bold uppercase tracking-[0.12em] text-slate-700 hover:bg-slate-200">Now</button>
       </div>
       <div className="relative h-[196px]">
-        <div className="pointer-events-none absolute inset-x-3 top-1/2 h-[42px] -translate-y-1/2 rounded-2xl bg-indigo-50" />
+        <div className="pointer-events-none absolute inset-x-3 top-1/2 h-[42px] -translate-y-1/2 rounded-2xl bg-slate-100" />
         <div className="pointer-events-none absolute inset-x-0 top-0 z-10 h-16 bg-gradient-to-b from-white to-transparent" />
         <div className="pointer-events-none absolute inset-x-0 bottom-0 z-10 h-16 bg-gradient-to-t from-white to-transparent" />
         <div className="flex h-full items-stretch">
@@ -272,8 +272,8 @@ function TimePicker({ value, onChange, onClose }) {
         </div>
       </div>
       <div className="flex items-center justify-between gap-3 border-t border-slate-200 px-4 py-3">
-        <span className="font-mono text-[16px] font-bold tracking-wider text-indigo-600">{toReadableTime(value) || '--:-- --'}</span>
-        <button type="button" onClick={onClose} className="rounded-lg bg-indigo-600 px-[18px] py-[7px] text-[10px] font-bold uppercase tracking-[0.1em] text-white hover:bg-indigo-700 shadow-[0_2px_8px_rgba(79,70,229,0.22)]">Done</button>
+        <span className="font-mono text-[16px] font-bold tracking-wider text-slate-700">{toReadableTime(value) || '--:-- --'}</span>
+        <button type="button" onClick={onClose} className="rounded-lg bg-slate-700 px-[18px] py-[7px] text-[10px] font-bold uppercase tracking-[0.1em] text-white hover:bg-slate-800 shadow-[0_2px_8px_rgba(15,23,42,0.14)]">Done</button>
       </div>
     </div>
   )

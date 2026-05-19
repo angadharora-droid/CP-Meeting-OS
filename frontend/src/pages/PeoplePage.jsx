@@ -1,10 +1,10 @@
 const P = {
-  primary: 'min-h-[44px] px-5 py-3 rounded-xl bg-indigo-600 text-white font-semibold text-[12px] tracking-[0.08em] uppercase cursor-pointer border-none transition-all hover:bg-indigo-700 active:scale-[0.98] disabled:opacity-40 disabled:cursor-not-allowed shadow-[0_1px_2px_rgba(15,23,42,0.06),0_4px_12px_rgba(79,70,229,0.18)]',
+  primary: 'min-h-[44px] px-5 py-3 rounded-xl bg-slate-700 text-white font-semibold text-[12px] tracking-[0.08em] uppercase cursor-pointer border-none transition-all hover:bg-slate-800 active:scale-[0.98] disabled:opacity-40 disabled:cursor-not-allowed shadow-[0_1px_2px_rgba(15,23,42,0.06),0_4px_12px_rgba(15,23,42,0.10)]',
   ghost:   'min-h-[44px] px-5 py-3 rounded-xl bg-white text-slate-700 border border-slate-200 text-[12px] tracking-[0.06em] cursor-pointer transition-colors hover:border-slate-300 hover:bg-slate-50 font-medium',
   danger:  'min-h-[44px] px-5 py-3 rounded-xl bg-white text-red-700 border border-red-200 text-[12px] tracking-[0.06em] cursor-pointer transition-colors hover:border-red-300 hover:bg-red-50 font-medium',
-  input:   'bg-white border border-slate-200 rounded-xl text-slate-900 text-[13px] px-[13px] py-3 w-full outline-none min-h-[44px] appearance-none transition-[border-color,box-shadow] duration-150 placeholder:text-slate-400 focus:border-indigo-500 focus:[box-shadow:0_0_0_3px_rgba(79,70,229,0.12)]',
+  input:   'bg-white border border-slate-200 rounded-xl text-slate-900 text-[13px] px-[13px] py-3 w-full outline-none min-h-[44px] appearance-none transition-[border-color,box-shadow] duration-150 placeholder:text-slate-400 focus:border-slate-500 focus:[box-shadow:0_0_0_3px_rgba(51,65,85,0.10)]',
   card:    'p-4 grid gap-4 border border-slate-200 bg-white rounded-2xl shadow-[0_1px_2px_rgba(15,23,42,0.04)]',
-  secHead: 'text-[10px] uppercase tracking-[0.18em] text-indigo-600 font-semibold',
+  secHead: 'text-[10px] uppercase tracking-[0.18em] text-slate-700 font-semibold',
 }
 
 function Avatar({ name, size = 'md' }) {
@@ -16,7 +16,7 @@ function Avatar({ name, size = 'md' }) {
     .toUpperCase()
   const dim = size === 'lg' ? 'w-11 h-11 text-[13px]' : 'w-9 h-9 text-[11px]'
   return (
-    <div className={`${dim} rounded-full bg-indigo-50 border border-indigo-100 flex items-center justify-center font-bold text-indigo-600 shrink-0`}>
+    <div className={`${dim} rounded-full bg-slate-100 border border-slate-200 flex items-center justify-center font-bold text-slate-700 shrink-0`}>
       {letters}
     </div>
   )
@@ -157,7 +157,7 @@ export default function PeoplePage({ app }) {
                   <div className="flex flex-wrap items-center justify-between gap-2 pt-1 border-t border-slate-200">
                     <span className="text-slate-500 text-[11px]">
                       {req.tempPin
-                        ? <span>Temp PIN: <code className="text-indigo-600 font-mono">{req.tempPin}</code></span>
+                        ? <span>Temp PIN: <code className="text-slate-700 font-mono">{req.tempPin}</code></span>
                         : 'Awaiting admin action'}
                     </span>
                     <button
