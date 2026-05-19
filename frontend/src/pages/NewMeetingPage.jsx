@@ -2,17 +2,17 @@ import { buildForm, buildNotice, toDateLabel, parseUserDateInput } from '../lib/
 import { useEffect, useMemo, useRef, useState } from 'react'
 
 const P = {
-  primary:  'w-full min-h-[48px] px-5 py-[13px] rounded-xl bg-indigo-600 text-white font-semibold text-[13px] tracking-[0.08em] uppercase cursor-pointer border-none transition-all hover:bg-indigo-700 active:scale-[0.98] disabled:opacity-40 disabled:cursor-not-allowed disabled:active:scale-100 shadow-[0_1px_2px_rgba(15,23,42,0.06),0_4px_12px_rgba(79,70,229,0.18)]',
+  primary:  'w-full min-h-[48px] px-5 py-[13px] rounded-xl bg-slate-700 text-white font-semibold text-[13px] tracking-[0.08em] uppercase cursor-pointer border-none transition-all hover:bg-slate-800 active:scale-[0.98] disabled:opacity-40 disabled:cursor-not-allowed disabled:active:scale-100 shadow-[0_1px_2px_rgba(15,23,42,0.06),0_4px_12px_rgba(15,23,42,0.10)]',
   ghost:    'w-full min-h-[44px] px-4 py-3 rounded-xl bg-white text-slate-700 border border-slate-200 text-[12px] tracking-[0.06em] cursor-pointer transition-colors hover:border-slate-300 hover:bg-slate-50 font-medium',
   ghostSm:  'min-h-[38px] px-4 py-2 rounded-xl bg-white text-slate-700 border border-slate-200 text-[11px] tracking-[0.06em] cursor-pointer transition-colors hover:border-slate-300 hover:bg-slate-50 font-medium',
-  input:    'bg-white border border-slate-200 rounded-xl text-slate-900 text-[14px] px-[13px] py-3 w-full outline-none min-h-[44px] appearance-none transition-[border-color,box-shadow] duration-150 placeholder:text-slate-400 focus:border-indigo-500 focus:[box-shadow:0_0_0_3px_rgba(79,70,229,0.12)]',
-  select:   'bg-white border border-slate-200 rounded-xl text-slate-900 text-[14px] px-[13px] py-3 w-full outline-none min-h-[44px] appearance-none cursor-pointer transition-[border-color] duration-150 focus:border-indigo-500 [background-image:url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'12\' height=\'8\' fill=\'none\'%3E%3Cpath d=\'M1 1l5 5 5-5\' stroke=\'%2394A3B8\' stroke-width=\'1.5\' stroke-linecap=\'round\'/%3E%3C/svg%3E")] bg-no-repeat [background-position:right_13px_center] pr-9',
-  textarea: 'bg-white border border-slate-200 rounded-xl text-slate-900 text-[14px] px-[13px] py-3 w-full outline-none appearance-none resize-y min-h-[80px] leading-[1.6] transition-[border-color,box-shadow] duration-150 placeholder:text-slate-400 focus:border-indigo-500 focus:[box-shadow:0_0_0_3px_rgba(79,70,229,0.12)]',
+  input:    'bg-white border border-slate-200 rounded-xl text-slate-900 text-[14px] px-[13px] py-3 w-full outline-none min-h-[44px] appearance-none transition-[border-color,box-shadow] duration-150 placeholder:text-slate-400 focus:border-slate-500 focus:[box-shadow:0_0_0_3px_rgba(51,65,85,0.10)]',
+  select:   'bg-white border border-slate-200 rounded-xl text-slate-900 text-[14px] px-[13px] py-3 w-full outline-none min-h-[44px] appearance-none cursor-pointer transition-[border-color] duration-150 focus:border-slate-500 [background-image:url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'12\' height=\'8\' fill=\'none\'%3E%3Cpath d=\'M1 1l5 5 5-5\' stroke=\'%2394A3B8\' stroke-width=\'1.5\' stroke-linecap=\'round\'/%3E%3C/svg%3E")] bg-no-repeat [background-position:right_13px_center] pr-9',
+  textarea: 'bg-white border border-slate-200 rounded-xl text-slate-900 text-[14px] px-[13px] py-3 w-full outline-none appearance-none resize-y min-h-[80px] leading-[1.6] transition-[border-color,box-shadow] duration-150 placeholder:text-slate-400 focus:border-slate-500 focus:[box-shadow:0_0_0_3px_rgba(51,65,85,0.10)]',
   card:     'p-4 grid gap-4 border border-slate-200 bg-white rounded-2xl shadow-[0_1px_2px_rgba(15,23,42,0.04)]',
   label:    'flex flex-col gap-[6px] text-[11px] tracking-[0.15em] uppercase text-slate-500 font-semibold',
-  secHead:  'flex items-center gap-2 text-[10px] uppercase tracking-[0.18em] text-indigo-600 font-semibold',
+  secHead:  'flex items-center gap-2 text-[10px] uppercase tracking-[0.18em] text-slate-700 font-semibold',
   // pr-[44px] leaves room for the right-side picker toggle button
-  dateTime: 'bg-white border border-slate-200 rounded-xl text-slate-900 text-[14px] pl-[42px] pr-[44px] py-3 w-full outline-none min-h-[44px] appearance-none transition-[border-color,box-shadow] duration-150 focus:border-indigo-500 focus:[box-shadow:0_0_0_3px_rgba(79,70,229,0.12)] placeholder:text-slate-400 font-mono',
+  dateTime: 'bg-white border border-slate-200 rounded-xl text-slate-900 text-[14px] pl-[42px] pr-[44px] py-3 w-full outline-none min-h-[44px] appearance-none transition-[border-color,box-shadow] duration-150 focus:border-slate-500 focus:[box-shadow:0_0_0_3px_rgba(51,65,85,0.10)] placeholder:text-slate-400 font-mono',
 }
 
 // ─── Date helpers ──────────────────────────────────────────────────────────────
@@ -85,7 +85,7 @@ function CalendarIcon({ active }) {
     <svg
       width="16" height="16" viewBox="0 0 16 16" fill="none"
       xmlns="http://www.w3.org/2000/svg"
-      style={{ color: active ? '#4F46E5' : '#64748B', transition: 'color 150ms', display: 'block' }}
+      style={{ color: active ? '#334155' : '#64748B', transition: 'color 150ms', display: 'block' }}
     >
       <rect x="1.5" y="2.5" width="13" height="12" rx="2"
         stroke="currentColor" strokeWidth="1.25" />
@@ -107,7 +107,7 @@ function ClockIcon({ active }) {
     <svg
       width="16" height="16" viewBox="0 0 16 16" fill="none"
       xmlns="http://www.w3.org/2000/svg"
-      style={{ color: active ? '#4F46E5' : '#64748B', transition: 'color 150ms', display: 'block' }}
+      style={{ color: active ? '#334155' : '#64748B', transition: 'color 150ms', display: 'block' }}
     >
       <circle cx="8" cy="8" r="6.5" stroke="currentColor" strokeWidth="1.25" />
       <path d="M8 4.5V8l2.4 1.6" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" strokeLinejoin="round" />
@@ -218,10 +218,10 @@ function CalendarPicker({ value, onChange, onClose }) {
               style={{
                 height: 32,
                 width: '100%',
-                border: sel ? 'none' : today_ ? '1px solid rgba(79,70,229,0.4)' : 'none',
+                border: sel ? 'none' : today_ ? '1px solid rgba(51,65,85,0.4)' : 'none',
                 borderRadius: 8,
-                background: sel ? '#4F46E5' : 'transparent',
-                color: sel ? '#FFFFFF' : today_ ? '#4F46E5' : '#475569',
+                background: sel ? '#334155' : 'transparent',
+                color: sel ? '#FFFFFF' : today_ ? '#334155' : '#475569',
                 fontSize: 12,
                 fontFamily: 'monospace',
                 fontWeight: sel ? 700 : 400,
@@ -229,7 +229,7 @@ function CalendarPicker({ value, onChange, onClose }) {
                 transition: 'background 120ms, color 120ms',
               }}
               onMouseEnter={e => { if (!sel) { e.currentTarget.style.background='#E2E8F0'; e.currentTarget.style.color='#0F172A' } }}
-              onMouseLeave={e => { if (!sel) { e.currentTarget.style.background='transparent'; e.currentTarget.style.color = today_ ? '#4F46E5' : '#475569' } }}
+              onMouseLeave={e => { if (!sel) { e.currentTarget.style.background='transparent'; e.currentTarget.style.color = today_ ? '#334155' : '#475569' } }}
             >
               {d}
             </button>
@@ -242,7 +242,7 @@ function CalendarPicker({ value, onChange, onClose }) {
         <button
           type="button" onClick={goToday}
           style={{ width:'100%', background:'transparent', border:'none', color:'#94A3B8', fontSize:10, textTransform:'uppercase', letterSpacing:'0.1em', cursor:'pointer', padding:'4px 0', transition:'color 150ms' }}
-          onMouseEnter={e => e.currentTarget.style.color='#4F46E5'}
+          onMouseEnter={e => e.currentTarget.style.color='#334155'}
           onMouseLeave={e => e.currentTarget.style.color='#94A3B8'}
         >
           Today
@@ -322,10 +322,10 @@ function DateField({ value, onChange }) {
           position: 'absolute', right: 10, top: '50%', transform: 'translateY(-50%)',
           width: 28, height: 28,
           display: 'flex', alignItems: 'center', justifyContent: 'center',
-          background: open ? 'rgba(79,70,229,0.10)' : 'transparent',
+          background: open ? 'rgba(51,65,85,0.08)' : 'transparent',
           border: 'none',
           borderRadius: 8,
-          color: open ? '#4F46E5' : '#94A3B8',
+          color: open ? '#334155' : '#94A3B8',
           cursor: 'pointer',
           transition: 'background 150ms, color 150ms',
           zIndex: 10,
@@ -465,13 +465,13 @@ function TimePicker({ value, onChange, onClose }) {
           type="button"
           onClick={() => { onChange(roundToNextQuarter()); onClose() }}
           style={{
-            background: '#EEF2FF', border: '1px solid #C7D2FE',
-            color: '#4F46E5', fontSize: 9, fontWeight: 700, textTransform: 'uppercase',
+            background: '#F1F5F9', border: '1px solid #CBD5E1',
+            color: '#334155', fontSize: 9, fontWeight: 700, textTransform: 'uppercase',
             letterSpacing: '0.12em', cursor: 'pointer', padding: '4px 10px',
             borderRadius: 6, transition: 'background 150ms',
           }}
-          onMouseEnter={e => { e.currentTarget.style.background='#E0E7FF' }}
-          onMouseLeave={e => { e.currentTarget.style.background='#EEF2FF' }}
+          onMouseEnter={e => { e.currentTarget.style.background='#E2E8F0' }}
+          onMouseLeave={e => { e.currentTarget.style.background='#F1F5F9' }}
         >
           Now
         </button>
@@ -480,7 +480,7 @@ function TimePicker({ value, onChange, onClose }) {
       {/* Wheel */}
       <div className="relative" style={{ height: 196 }}>
         {/* Shared selection pill spanning all columns */}
-        <div className="pointer-events-none absolute inset-x-3 top-1/2 -translate-y-1/2 h-[42px] rounded-2xl bg-indigo-50" />
+        <div className="pointer-events-none absolute inset-x-3 top-1/2 -translate-y-1/2 h-[42px] rounded-2xl bg-slate-100" />
         {/* Edge fades */}
         <div className="pointer-events-none absolute inset-x-0 top-0 h-[64px] z-10" style={{ background: 'linear-gradient(to bottom, #FFFFFF 10%, transparent 100%)' }} />
         <div className="pointer-events-none absolute inset-x-0 bottom-0 h-[64px] z-10" style={{ background: 'linear-gradient(to top, #FFFFFF 10%, transparent 100%)' }} />
@@ -507,18 +507,18 @@ function TimePicker({ value, onChange, onClose }) {
 
       {/* Footer */}
       <div className="flex items-center justify-between border-t border-[#E2E8F0] px-4 py-3 gap-3">
-        <span className="font-mono text-[16px] font-bold text-[#4F46E5] tracking-wider">
+        <span className="font-mono text-[16px] font-bold text-[#334155] tracking-wider">
           {toReadableTime(value) || '--:-- --'}
         </span>
         <button
           type="button" onClick={onClose}
           style={{
-            padding: '7px 18px', borderRadius: 8, background: '#4F46E5', border: 'none',
+            padding: '7px 18px', borderRadius: 8, background: '#334155', border: 'none',
             color: '#FFFFFF', fontSize: 10, fontWeight: 700, textTransform: 'uppercase',
             letterSpacing: '0.1em', cursor: 'pointer', transition: 'background 150ms, transform 100ms',
           }}
-          onMouseEnter={e => { e.currentTarget.style.background='#4338CA' }}
-          onMouseLeave={e => { e.currentTarget.style.background='#4F46E5' }}
+          onMouseEnter={e => { e.currentTarget.style.background='#1E293B' }}
+          onMouseLeave={e => { e.currentTarget.style.background='#334155' }}
           onMouseDown={e => { e.currentTarget.style.transform='scale(0.96)' }}
           onMouseUp={e => { e.currentTarget.style.transform='scale(1)' }}
         >
@@ -582,10 +582,10 @@ function TimeField({ value, onChange }) {
           position: 'absolute', right: 10, top: '50%', transform: 'translateY(-50%)',
           width: 28, height: 28,
           display: 'flex', alignItems: 'center', justifyContent: 'center',
-          background: open ? 'rgba(79,70,229,0.10)' : 'transparent',
+          background: open ? 'rgba(51,65,85,0.08)' : 'transparent',
           border: 'none',
           borderRadius: 8,
-          color: open ? '#4F46E5' : '#94A3B8',
+          color: open ? '#334155' : '#94A3B8',
           cursor: 'pointer',
           transition: 'background 150ms, color 150ms',
           zIndex: 10,
@@ -616,7 +616,7 @@ function TimeField({ value, onChange }) {
 function SecHead({ n, children }) {
   return (
     <div className={P.secHead}>
-      {n && <span className="text-[#4F46E5]/35 font-mono">{n}</span>}
+      {n && <span className="text-[#334155]/35 font-mono">{n}</span>}
       {n && <span className="text-[#E2E8F0]">/</span>}
       {children}
     </div>
@@ -635,7 +635,7 @@ function Field({ label, children }) {
 function CharCount({ value, max }) {
   const len = (value || '').length
   return (
-    <span className={`text-right text-[10px] tabular-nums ${len > max * 0.8 ? 'text-[#4F46E5]/60' : 'text-[#64748B]'}`}>
+    <span className={`text-right text-[10px] tabular-nums ${len > max * 0.8 ? 'text-[#334155]/60' : 'text-[#64748B]'}`}>
       {len}/{max}
     </span>
   )
@@ -769,7 +769,7 @@ export default function NewMeetingPage({ app }) {
           <Field label="Meeting header">
             <div ref={headerWrapRef} className="relative">
               <input
-                className={`${P.input} pr-11 ${headerOpen ? 'border-indigo-500 [box-shadow:0_0_0_3px_rgba(79,70,229,0.12)]' : ''}`}
+                className={`${P.input} pr-11 ${headerOpen ? 'border-slate-500 [box-shadow:0_0_0_3px_rgba(51,65,85,0.10)]' : ''}`}
                 value={app.meetingForm.meetingHeader}
                 placeholder="e.g. Project A"
                 onFocus={() => setHeaderOpen(true)}
@@ -781,7 +781,7 @@ export default function NewMeetingPage({ app }) {
               <button
                 type="button"
                 className={`absolute right-3 top-1/2 -translate-y-1/2 w-7 h-7 rounded-lg flex items-center justify-center text-[12px] transition-colors ${
-                  headerOpen ? 'text-indigo-600 bg-indigo-50' : 'text-slate-500 hover:text-slate-700 hover:bg-slate-50'
+                  headerOpen ? 'text-slate-700 bg-slate-100' : 'text-slate-500 hover:text-slate-700 hover:bg-slate-50'
                 }`}
                 onClick={() => setHeaderOpen((open) => !open)}
                 aria-label="Toggle meeting header suggestions"
@@ -797,7 +797,7 @@ export default function NewMeetingPage({ app }) {
                       <button
                         key={header}
                         type="button"
-                        className="w-full text-left px-3 py-3 rounded-lg text-slate-700 text-[13px] font-semibold hover:bg-indigo-50 hover:text-indigo-700 focus:bg-indigo-50 focus:text-indigo-700 outline-none transition-colors"
+                        className="w-full text-left px-3 py-3 rounded-lg text-slate-700 text-[13px] font-semibold hover:bg-slate-100 hover:text-slate-800 focus:bg-slate-100 focus:text-slate-800 outline-none transition-colors"
                         onMouseDown={(e) => e.preventDefault()}
                         onClick={() => {
                           app.setMeetingForm((c) => ({ ...c, meetingHeader: header }))
@@ -842,7 +842,7 @@ export default function NewMeetingPage({ app }) {
         {/* Add attendee */}
         <div className="grid gap-4 p-4 rounded-xl border border-[#E2E8F0] bg-[#F8FAFC]">
           <div>
-            <span className="uppercase tracking-[0.15em] text-[10px] text-[#4F46E5]/70 font-semibold block">Add attendee</span>
+            <span className="uppercase tracking-[0.15em] text-[10px] text-[#334155]/70 font-semibold block">Add attendee</span>
             <span className="text-[#475569] text-[11px]">Select a saved person or add an external attendee</span>
           </div>
 
@@ -893,7 +893,7 @@ export default function NewMeetingPage({ app }) {
         <div className="grid gap-3 p-4 rounded-xl border border-[#E2E8F0] bg-[#F8FAFC]">
           <div className="flex items-center justify-between gap-3">
             <div>
-              <span className="uppercase tracking-[0.15em] text-[10px] text-[#4F46E5]/70 font-semibold block">Selected attendees</span>
+              <span className="uppercase tracking-[0.15em] text-[10px] text-[#334155]/70 font-semibold block">Selected attendees</span>
               <span className="text-[#475569] text-[11px]">Caller is included automatically</span>
             </div>
             <span className="px-[10px] py-[4px] rounded-full bg-[#FFFFFF] border border-[#E2E8F0] text-[10px] uppercase tracking-[0.1em] text-[#94A3B8]">
@@ -906,7 +906,7 @@ export default function NewMeetingPage({ app }) {
                 <div key={attendee.id}
                   className="flex items-start justify-between gap-3 px-3 py-[9px] rounded-lg border border-[#E2E8F0] bg-[#F8FAFC]">
                   <div className="flex items-start gap-[10px] min-w-0 flex-1">
-                    <div className="w-7 h-7 rounded-full bg-[#E2E8F0] border border-[#E2E8F0] flex items-center justify-center text-[9px] font-bold text-[#4F46E5] shrink-0 mt-[1px]">
+                    <div className="w-7 h-7 rounded-full bg-[#E2E8F0] border border-[#E2E8F0] flex items-center justify-center text-[9px] font-bold text-[#334155] shrink-0 mt-[1px]">
                       {attendee.name.split(' ').map((n) => n[0]).join('').slice(0, 2).toUpperCase()}
                     </div>
                     <div className="min-w-0 flex-1">
@@ -961,11 +961,11 @@ export default function NewMeetingPage({ app }) {
 
         {/* Confirmation strip */}
         {(dateLabel || timeLabel) && (
-          <div className="flex items-center gap-3 px-4 py-3 rounded-xl bg-[#4F46E5]/[0.05] border border-[#4F46E5]/15">
-            <span className="text-[#4F46E5] text-[13px] shrink-0">✓</span>
-            <p className="m-0 text-[12px] text-[#4F46E5]/70 leading-snug">
+          <div className="flex items-center gap-3 px-4 py-3 rounded-xl bg-[#334155]/[0.05] border border-[#334155]/15">
+            <span className="text-[#334155] text-[13px] shrink-0">✓</span>
+            <p className="m-0 text-[12px] text-[#334155]/70 leading-snug">
               {dateLabel && timeLabel
-                ? <>{dateLabel} <span className="text-[#4F46E5]/35 mx-1">·</span> {timeLabel}</>
+                ? <>{dateLabel} <span className="text-[#334155]/35 mx-1">·</span> {timeLabel}</>
                 : dateLabel || timeLabel}
             </p>
           </div>
@@ -1027,7 +1027,7 @@ export default function NewMeetingPage({ app }) {
             type="checkbox"
             checked={app.meetingForm.includeAdditionalPoints !== false}
             onChange={(e) => app.setMeetingForm((c) => ({ ...c, includeAdditionalPoints: e.target.checked }))}
-            className="mt-[2px] h-4 w-4 min-h-0 accent-[#4F46E5] cursor-pointer"
+            className="mt-[2px] h-4 w-4 min-h-0 accent-[#334155] cursor-pointer"
           />
           <span className="grid gap-[3px] normal-case tracking-normal">
             <span className="text-[#0F172A] text-[12px] font-semibold">Add additional points section</span>
@@ -1040,7 +1040,7 @@ export default function NewMeetingPage({ app }) {
         {purposes.map((purpose, index) => (
           <div key={index} className="grid gap-3 p-4 rounded-xl border border-[#E2E8F0] bg-[#F8FAFC]">
             <div className="flex items-center justify-between gap-3">
-              <span className="uppercase tracking-[0.15em] text-[10px] text-[#4F46E5]/70 font-semibold">
+              <span className="uppercase tracking-[0.15em] text-[10px] text-[#334155]/70 font-semibold">
                 Purpose {index + 1}
               </span>
               {purposes.length > 1 && (

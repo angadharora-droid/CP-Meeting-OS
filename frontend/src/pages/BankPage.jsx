@@ -4,8 +4,8 @@ import { buildNotice, getMeetingCallerLabel, getMeetingModeLabel, getMeetingVenu
 
 /* ─── Design tokens ──────────────────────────────────────────── */
 const P = {
-  input:    'bg-[#FFFFFF] border border-[#E2E8F0] rounded-xl text-[#0F172A] text-[14px] px-[13px] py-3 w-full outline-none min-h-[44px] appearance-none transition-[border-color,box-shadow] duration-150 placeholder:text-[#E2E8F0] focus:border-[#4F46E5]/45 focus:[box-shadow:0_0_0_3px_rgba(79,70,229,0.06)]',
-  select:   'bg-[#FFFFFF] border border-[#E2E8F0] rounded-xl text-[#0F172A] text-[14px] px-[13px] py-3 w-full outline-none min-h-[44px] appearance-none cursor-pointer transition-[border-color] duration-150 focus:border-[#4F46E5]/45 [background-image:url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'12\' height=\'8\' fill=\'none\'%3E%3Cpath d=\'M1 1l5 5 5-5\' stroke=\'%23555\' stroke-width=\'1.5\' stroke-linecap=\'round\'/%3E%3C/svg%3E")] bg-no-repeat [background-position:right_13px_center] pr-9',
+  input:    'bg-[#FFFFFF] border border-[#E2E8F0] rounded-xl text-[#0F172A] text-[14px] px-[13px] py-3 w-full outline-none min-h-[44px] appearance-none transition-[border-color,box-shadow] duration-150 placeholder:text-[#E2E8F0] focus:border-[#334155]/45 focus:[box-shadow:0_0_0_3px_rgba(51,65,85,0.10)]',
+  select:   'bg-[#FFFFFF] border border-[#E2E8F0] rounded-xl text-[#0F172A] text-[14px] px-[13px] py-3 w-full outline-none min-h-[44px] appearance-none cursor-pointer transition-[border-color] duration-150 focus:border-[#334155]/45 [background-image:url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'12\' height=\'8\' fill=\'none\'%3E%3Cpath d=\'M1 1l5 5 5-5\' stroke=\'%23555\' stroke-width=\'1.5\' stroke-linecap=\'round\'/%3E%3C/svg%3E")] bg-no-repeat [background-position:right_13px_center] pr-9',
   label:    'flex flex-col gap-[6px] text-[11px] tracking-[0.15em] uppercase text-[#64748B]',
   dateText: 'bg-transparent text-[#0F172A] text-[13px] pl-[36px] pr-[36px] py-3 w-full outline-none min-h-[44px] appearance-none placeholder:text-[#E2E8F0] font-mono',
 }
@@ -69,7 +69,7 @@ function CalendarIcon({ active }) {
     <svg
       width="15" height="15" viewBox="0 0 16 16" fill="none"
       xmlns="http://www.w3.org/2000/svg"
-      style={{ color: active ? '#4F46E5' : '#64748B', transition: 'color 150ms', display: 'block' }}
+      style={{ color: active ? '#334155' : '#64748B', transition: 'color 150ms', display: 'block' }}
     >
       <rect x="1.5" y="2.5" width="13" height="12" rx="2"
         stroke="currentColor" strokeWidth="1.25" />
@@ -183,15 +183,15 @@ function CalendarPicker({ value, onChange, onClose }) {
             <button key={d} type="button" onClick={() => selectDay(d)}
               style={{
                 height:32, width:'100%',
-                border: sel ? 'none' : today_ ? '1px solid rgba(79,70,229,0.4)' : 'none',
+                border: sel ? 'none' : today_ ? '1px solid rgba(51,65,85,0.4)' : 'none',
                 borderRadius:8,
-                background: sel ? '#4F46E5' : 'transparent',
-                color: sel ? '#FFFFFF' : today_ ? '#4F46E5' : '#475569',
+                background: sel ? '#334155' : 'transparent',
+                color: sel ? '#FFFFFF' : today_ ? '#334155' : '#475569',
                 fontSize:12, fontFamily:'monospace', fontWeight: sel ? 700 : 400,
                 cursor:'pointer', transition:'background 120ms, color 120ms',
               }}
               onMouseEnter={e => { if (!sel) { e.currentTarget.style.background='#E2E8F0'; e.currentTarget.style.color='#0F172A' } }}
-              onMouseLeave={e => { if (!sel) { e.currentTarget.style.background='transparent'; e.currentTarget.style.color = today_ ? '#4F46E5' : '#475569' } }}
+              onMouseLeave={e => { if (!sel) { e.currentTarget.style.background='transparent'; e.currentTarget.style.color = today_ ? '#334155' : '#475569' } }}
             >
               {d}
             </button>
@@ -203,7 +203,7 @@ function CalendarPicker({ value, onChange, onClose }) {
       <div style={{ borderTop:'1px solid #E2E8F0', padding:'6px 12px 8px' }}>
         <button type="button" onClick={goToday}
           style={{ width:'100%', background:'transparent', border:'none', color:'#94A3B8', fontSize:10, textTransform:'uppercase', letterSpacing:'0.1em', cursor:'pointer', padding:'4px 0', transition:'color 150ms' }}
-          onMouseEnter={e => e.currentTarget.style.color='#4F46E5'}
+          onMouseEnter={e => e.currentTarget.style.color='#334155'}
           onMouseLeave={e => e.currentTarget.style.color='#94A3B8'}
         >
           Today
@@ -313,9 +313,9 @@ function DateFilterField({ value, onChange }) {
             position:'absolute', right:8, top:'50%', transform:'translateY(-50%)',
             width:26, height:26,
             display:'flex', alignItems:'center', justifyContent:'center',
-            background: open ? 'rgba(79,70,229,0.12)' : 'transparent',
+            background: open ? 'rgba(51,65,85,0.10)' : 'transparent',
             border:'none', borderRadius:7,
-            color: open ? '#4F46E5' : '#94A3B8',
+            color: open ? '#334155' : '#94A3B8',
             cursor:'pointer', transition:'background 150ms, color 150ms', zIndex:10,
           }}
           onMouseEnter={e => { if (!open) { e.currentTarget.style.background='#E2E8F0'; e.currentTarget.style.color='#475569' } }}
@@ -354,7 +354,7 @@ function AttendeeChip({ name }) {
   const initials = (name || '?').split(' ').map((n) => n[0]).join('').slice(0, 2).toUpperCase()
   return (
     <div className="flex items-center gap-[6px] px-[9px] py-[5px] rounded-lg bg-[#FFFFFF] border border-[#E2E8F0] hover:border-[#94A3B8] transition-colors">
-      <div className="w-5 h-5 rounded-full bg-[#F8FAFC] border border-[#E2E8F0] flex items-center justify-center text-[8px] font-black text-[#4F46E5] shrink-0">
+      <div className="w-5 h-5 rounded-full bg-[#F8FAFC] border border-[#E2E8F0] flex items-center justify-center text-[8px] font-black text-[#334155] shrink-0">
         {initials}
       </div>
       <span className="text-[#475569] text-[11px] leading-none">{name}</span>
@@ -399,7 +399,7 @@ function ActionPointList({ points }) {
     <div className="grid gap-2">
       <SectionLabel label="Action points" />
       {validPoints.map((point, index) => (
-        <div key={point.taskId || index} className="p-3 rounded-[10px] border border-[#4F46E5]/12 bg-[#4F46E5]/[0.035] grid gap-[6px]">
+        <div key={point.taskId || index} className="p-3 rounded-[10px] border border-[#334155]/12 bg-[#334155]/[0.035] grid gap-[6px]">
           <p className="m-0 text-[#475569] text-[12.5px] leading-[1.65] whitespace-pre-line">{point.task}</p>
           {(point.assignedTo || point.assignedToDesig || point.assignedToMobile || point.dueDate) && (
             <div className="flex flex-wrap gap-x-3 gap-y-1 text-[10.5px] text-[#64748B]">
@@ -561,7 +561,7 @@ function MeetingCard({ meeting, onPreview, user }) {
                 <SectionLabel label="Purposes" />
                 {meeting.topics.filter((t) => t.purpose || t.topic).map((t, i) => (
                   <div key={i} className="p-3 rounded-[10px] border border-[#E2E8F0] bg-[#F8FAFC] grid gap-2">
-                    <span className="text-[10px] uppercase tracking-[0.12em] text-[#4F46E5]/50 font-semibold">
+                    <span className="text-[10px] uppercase tracking-[0.12em] text-[#334155]/50 font-semibold">
                       Purpose {i + 1}
                     </span>
                     <div>
@@ -625,7 +625,7 @@ function MeetingCard({ meeting, onPreview, user }) {
             )}
             {onPreview && (
               <button
-                className="text-left text-[10px] uppercase tracking-[0.1em] text-[#4F46E5]/40 hover:text-[#4F46E5]/70 transition-colors cursor-pointer mt-[-2px]"
+                className="text-left text-[10px] uppercase tracking-[0.1em] text-[#334155]/40 hover:text-[#334155]/70 transition-colors cursor-pointer mt-[-2px]"
                 onClick={() => onPreview(meeting)}
               >
                 Preview notice ↗
@@ -649,7 +649,7 @@ function MeetingCard({ meeting, onPreview, user }) {
 /* ─── Filter pill ────────────────────────────────────────────── */
 function FilterPill({ label, count, active, color, onClick }) {
   const activeMap = {
-    all:       'bg-indigo-50 text-indigo-700 border-indigo-200',
+    all:       'bg-slate-100 text-slate-800 border-slate-300',
     Closed:    'bg-emerald-50 text-emerald-700 border-emerald-200',
     Postponed: 'bg-amber-50 text-amber-700 border-amber-200',
     Cancelled: 'bg-red-50 text-red-700 border-red-200',
@@ -710,7 +710,7 @@ function MeetingHeaderGroup({ group, children }) {
             {group.meetings.length} {group.meetings.length === 1 ? 'meeting' : 'meetings'}
           </span>
           {group.openCount > 0 && (
-            <span className="px-[9px] py-[3px] rounded-full bg-[#4F46E5]/[0.07] border border-[#4F46E5]/[0.15] text-[#4F46E5]/60 text-[10px] uppercase tracking-[0.1em] font-semibold">
+            <span className="px-[9px] py-[3px] rounded-full bg-[#334155]/[0.07] border border-[#334155]/[0.15] text-[#334155]/60 text-[10px] uppercase tracking-[0.1em] font-semibold">
               {group.openCount} open
             </span>
           )}
@@ -742,12 +742,12 @@ function TabBar({ active, onChange, bankCount, headerCount }) {
           onClick={() => onChange(t.id)}
           className={`flex-1 flex items-center justify-center gap-[6px] px-4 py-[9px] rounded-xl text-[11.5px] font-semibold tracking-tight transition-all duration-150 cursor-pointer ${
             active === t.id
-              ? 'bg-indigo-50 border border-indigo-200 text-indigo-700 shadow-[0_1px_2px_rgba(15,23,42,0.04)]'
+              ? 'bg-slate-100 border border-slate-300 text-slate-800 shadow-[0_1px_2px_rgba(15,23,42,0.04)]'
               : 'bg-transparent border border-transparent text-[#64748B] hover:text-[#475569]'
           }`}
         >
           {t.label}
-          <span className={`text-[9px] font-mono tabular-nums transition-colors ${active === t.id ? 'text-indigo-500' : 'text-slate-400'}`}>
+          <span className={`text-[9px] font-mono tabular-nums transition-colors ${active === t.id ? 'text-slate-500' : 'text-slate-400'}`}>
             {t.count}
           </span>
         </button>
@@ -862,7 +862,7 @@ function BankTab({ app }) {
         <button
           onClick={exportMeetings}
           disabled={!meetings.length}
-          className="shrink-0 min-h-[38px] px-4 py-2 rounded-xl bg-transparent text-[#4F46E5]/60 border border-[#4F46E5]/20 text-[10px] tracking-[0.08em] uppercase cursor-pointer transition-all hover:bg-[#4F46E5]/[0.06] hover:text-[#4F46E5] hover:border-[#4F46E5]/30 disabled:opacity-30 disabled:cursor-not-allowed"
+          className="shrink-0 min-h-[38px] px-4 py-2 rounded-xl bg-transparent text-[#334155]/60 border border-[#334155]/20 text-[10px] tracking-[0.08em] uppercase cursor-pointer transition-all hover:bg-[#334155]/[0.06] hover:text-[#334155] hover:border-[#334155]/30 disabled:opacity-30 disabled:cursor-not-allowed"
         >
           Export CSV
         </button>
@@ -1025,7 +1025,7 @@ export default function BankPage({ app }) {
 
       {/* ── Hero ── */}
       <div className="relative overflow-hidden p-5 border border-slate-200 bg-white rounded-2xl flex items-start justify-between gap-4 shadow-[0_1px_2px_rgba(15,23,42,0.04)]">
-        <div className="pointer-events-none absolute -top-8 -right-8 w-36 h-36 rounded-full bg-[radial-gradient(circle,rgba(79,70,229,0.10)_0%,transparent_70%)]" />
+        <div className="pointer-events-none absolute -top-8 -right-8 w-36 h-36 rounded-full bg-[radial-gradient(circle,rgba(51,65,85,0.08)_0%,transparent_70%)]" />
         <div>
           <p className="m-0 mb-[5px] uppercase tracking-[0.2em] text-[10px] text-slate-500 font-semibold">
             {app.orgName || 'Organisation'}

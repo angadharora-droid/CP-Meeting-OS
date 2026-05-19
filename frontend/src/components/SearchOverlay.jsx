@@ -25,7 +25,7 @@ function Initials({ name }) {
     .slice(0, 2)
     .toUpperCase()
   return (
-    <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-indigo-100 bg-indigo-50 text-[11px] font-bold text-indigo-600">
+    <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-slate-200 bg-slate-100 text-[11px] font-bold text-slate-700">
       {letters}
     </div>
   )
@@ -46,7 +46,7 @@ function Section({ title, count, children }) {
   return (
     <div className="grid gap-2">
       <div className="flex items-center gap-2 px-1">
-        <span className="text-[10px] font-bold uppercase tracking-[0.18em] text-indigo-600">{title}</span>
+        <span className="text-[10px] font-bold uppercase tracking-[0.18em] text-slate-700">{title}</span>
         <span className="text-[10px] text-slate-400 font-medium">{count}</span>
       </div>
       {children}
@@ -78,7 +78,7 @@ export default function SearchOverlay({ open, query, onQueryChange, onClose, mee
         <div className="mx-auto max-w-[720px] p-4 pb-10">
           <div className="sticky top-0 z-10 mb-4 pt-1">
             <div className="surface-panel flex items-center gap-3 rounded-2xl px-4 py-3">
-              <span className="shrink-0 text-[10px] font-bold uppercase tracking-[0.16em] text-indigo-600">Search</span>
+              <span className="shrink-0 text-[10px] font-bold uppercase tracking-[0.16em] text-slate-700">Search</span>
               <input
                 ref={inputRef}
                 value={query}

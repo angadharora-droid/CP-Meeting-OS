@@ -131,7 +131,7 @@ function MeetingDetail({ meeting, onClose }) {
                     key={i}
                     className={`flex items-start gap-[10px] py-[7px] ${i < attendees.length - 1 ? 'border-b border-slate-200' : ''}`}
                   >
-                    <div className="w-[22px] h-[22px] rounded-full bg-indigo-50 border border-indigo-100 flex items-center justify-center text-[8px] font-bold text-indigo-600 shrink-0 mt-[1px]">
+                    <div className="w-[22px] h-[22px] rounded-full bg-slate-100 border border-slate-200 flex items-center justify-center text-[8px] font-bold text-slate-700 shrink-0 mt-[1px]">
                       {initials(a.name)}
                     </div>
                     <div className="flex-1 min-w-0">
@@ -157,7 +157,7 @@ function MeetingDetail({ meeting, onClose }) {
               </div>
               {meeting.topics.filter((t) => t.purpose || t.topic).map((t, i) => (
                 <div key={i} className="p-4 rounded-xl bg-slate-50 border border-slate-200 grid gap-3">
-                  <div className="text-[11px] font-semibold text-indigo-600 uppercase tracking-[0.1em]">
+                  <div className="text-[11px] font-semibold text-slate-700 uppercase tracking-[0.1em]">
                     Purpose {i + 1}
                   </div>
                   <TextBlock label="Purpose" value={t.purpose || t.topic} />
@@ -216,7 +216,7 @@ export default function DashboardPage({ app }) {
       {/* ── Hero ── */}
       <div className="relative overflow-hidden p-5 border border-slate-200 bg-white rounded-3xl flex items-start justify-between gap-4 shadow-[0_1px_2px_rgba(15,23,42,0.04)]">
         {/* Subtle accent glow */}
-        <div className="pointer-events-none absolute -top-10 -right-10 w-40 h-40 rounded-full bg-[radial-gradient(circle,rgba(79,70,229,0.10)_0%,transparent_70%)]" />
+        <div className="pointer-events-none absolute -top-10 -right-10 w-40 h-40 rounded-full bg-[radial-gradient(circle,rgba(15,23,42,0.06)_0%,transparent_70%)]" />
         <div className="relative">
           <p className="m-0 mb-[6px] uppercase tracking-[0.2em] text-[10px] text-slate-500 font-semibold">
             {toDateLabel(today)}
@@ -224,7 +224,7 @@ export default function DashboardPage({ app }) {
           <h1 className="text-[26px] font-bold tracking-tight leading-none text-slate-900">Dashboard</h1>
           <p className="m-0 mt-[10px] text-slate-600 text-[13px] leading-snug flex items-center gap-[6px]">
             {app.todayMeetings.length > 0 && (
-              <span className="inline-block w-[6px] h-[6px] rounded-full bg-indigo-600 shrink-0" />
+              <span className="inline-block w-[6px] h-[6px] rounded-full bg-slate-700 shrink-0" />
             )}
             {app.todayMeetings.length
               ? `${app.todayMeetings.length} meeting${app.todayMeetings.length !== 1 ? 's' : ''} scheduled today`
@@ -232,7 +232,7 @@ export default function DashboardPage({ app }) {
           </p>
         </div>
         <button
-          className="relative shrink-0 px-[14px] py-[8px] text-[11px] font-semibold uppercase tracking-[0.08em] rounded-full bg-indigo-600 text-white hover:bg-indigo-700 active:scale-[0.96] cursor-pointer transition-all shadow-[0_4px_12px_rgba(79,70,229,0.22)]"
+          className="relative shrink-0 px-[14px] py-[8px] text-[11px] font-semibold uppercase tracking-[0.08em] rounded-full bg-slate-700 text-white hover:bg-slate-800 active:scale-[0.96] cursor-pointer transition-all shadow-[0_4px_12px_rgba(15,23,42,0.14)]"
           onClick={() => navigate('/new-meeting')}
         >
           ＋ New meeting
@@ -316,12 +316,12 @@ export default function DashboardPage({ app }) {
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
           <button
-            className="p-4 rounded-2xl bg-indigo-50 border border-indigo-200 text-left hover:bg-indigo-100 active:scale-[0.97] transition-all cursor-pointer"
+            className="p-4 rounded-2xl bg-slate-100 border border-slate-300 text-left hover:bg-slate-200 active:scale-[0.97] transition-all cursor-pointer"
             onClick={() => navigate('/new-meeting')}
           >
-            <div className="text-indigo-600 text-[20px] mb-[10px] leading-none">＋</div>
-            <div className="text-indigo-700 text-[12.5px] font-bold mb-[3px]">New Meeting</div>
-            <div className="text-indigo-600/70 text-[10.5px]">Schedule a meeting</div>
+            <div className="text-slate-700 text-[20px] mb-[10px] leading-none">＋</div>
+            <div className="text-slate-800 text-[12.5px] font-bold mb-[3px]">New Meeting</div>
+            <div className="text-slate-700/70 text-[10.5px]">Schedule a meeting</div>
           </button>
           <button
             className="p-4 rounded-2xl bg-white border border-slate-200 text-left hover:bg-slate-50 hover:border-slate-300 active:scale-[0.97] transition-all cursor-pointer"
