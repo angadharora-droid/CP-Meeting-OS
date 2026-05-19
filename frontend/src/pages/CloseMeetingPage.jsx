@@ -3,22 +3,22 @@ import { useRef, useState } from 'react'
 import { DateField, TimeField } from '../components/DateTimePickers'
 
 const P = {
-  primary:  'w-full min-h-[48px] px-5 py-[13px] rounded-xl bg-[#AACC33] text-black font-bold text-[13px] tracking-[0.08em] uppercase cursor-pointer border-none transition-all hover:bg-[#BADA44] active:scale-[0.98] disabled:opacity-30 disabled:cursor-not-allowed disabled:active:scale-100 shadow-[0_0_16px_rgba(170,204,51,0.15)]',
-  ghost:    'w-full min-h-[44px] px-4 py-3 rounded-xl bg-transparent text-[#F0F0F0] border border-[#252525] text-[12px] tracking-[0.06em] cursor-pointer transition-colors hover:border-[#3a3a3a] hover:bg-white/[0.02]',
-  danger:   'bg-transparent border-none text-[#FF5A5A]/70 text-[11px] tracking-[0.08em] uppercase cursor-pointer p-0 transition-colors hover:text-[#FF5A5A]',
-  input:    'bg-[#141414] border border-[#262626] rounded-xl text-[#F0F0F0] text-[14px] px-[13px] py-3 w-full outline-none min-h-[44px] appearance-none transition-[border-color,box-shadow] duration-150 placeholder:text-[#2e2e2e] focus:border-[#AACC33]/45 focus:[box-shadow:0_0_0_3px_rgba(170,204,51,0.06)]',
-  select:   'bg-[#141414] border border-[#262626] rounded-xl text-[#F0F0F0] text-[14px] px-[13px] py-3 w-full outline-none min-h-[44px] appearance-none cursor-pointer transition-[border-color] duration-150 focus:border-[#AACC33]/45 [background-image:url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'12\' height=\'8\' fill=\'none\'%3E%3Cpath d=\'M1 1l5 5 5-5\' stroke=\'%23555\' stroke-width=\'1.5\' stroke-linecap=\'round\'/%3E%3C/svg%3E")] bg-no-repeat [background-position:right_13px_center] pr-9 [color-scheme:dark]',
-  textarea: 'bg-[#141414] border border-[#262626] rounded-xl text-[#F0F0F0] text-[14px] px-[13px] py-3 w-full outline-none appearance-none resize-y min-h-[80px] leading-[1.6] transition-[border-color,box-shadow] duration-150 placeholder:text-[#2e2e2e] focus:border-[#AACC33]/45 focus:[box-shadow:0_0_0_3px_rgba(170,204,51,0.06)]',
-  card:     'p-4 grid gap-4 border border-[#1e1e1e] bg-[#0e0e0e] rounded-2xl',
-  label:    'flex flex-col gap-[6px] text-[11px] tracking-[0.15em] uppercase text-[#555]',
-  secHead:  'flex items-center gap-2 text-[10px] uppercase tracking-[0.18em] text-[#AACC33] font-semibold',
+  primary:  'w-full min-h-[48px] px-5 py-[13px] rounded-xl bg-indigo-600 text-white font-semibold text-[13px] tracking-[0.08em] uppercase cursor-pointer border-none transition-all hover:bg-indigo-700 active:scale-[0.98] disabled:opacity-40 disabled:cursor-not-allowed disabled:active:scale-100 shadow-[0_1px_2px_rgba(15,23,42,0.06),0_4px_12px_rgba(79,70,229,0.18)]',
+  ghost:    'w-full min-h-[44px] px-4 py-3 rounded-xl bg-white text-slate-700 border border-slate-200 text-[12px] tracking-[0.06em] cursor-pointer transition-colors hover:border-slate-300 hover:bg-slate-50 font-medium disabled:opacity-50 disabled:cursor-not-allowed',
+  danger:   'bg-transparent border-none text-red-500 text-[11px] tracking-[0.08em] uppercase cursor-pointer p-0 transition-colors hover:text-red-700 font-semibold',
+  input:    'bg-white border border-slate-200 rounded-xl text-slate-900 text-[14px] px-[13px] py-3 w-full outline-none min-h-[44px] appearance-none transition-[border-color,box-shadow] duration-150 placeholder:text-slate-400 focus:border-indigo-500 focus:[box-shadow:0_0_0_3px_rgba(79,70,229,0.12)]',
+  select:   'bg-white border border-slate-200 rounded-xl text-slate-900 text-[14px] px-[13px] py-3 w-full outline-none min-h-[44px] appearance-none cursor-pointer transition-[border-color] duration-150 focus:border-indigo-500 [background-image:url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'12\' height=\'8\' fill=\'none\'%3E%3Cpath d=\'M1 1l5 5 5-5\' stroke=\'%2394A3B8\' stroke-width=\'1.5\' stroke-linecap=\'round\'/%3E%3C/svg%3E")] bg-no-repeat [background-position:right_13px_center] pr-9',
+  textarea: 'bg-white border border-slate-200 rounded-xl text-slate-900 text-[14px] px-[13px] py-3 w-full outline-none appearance-none resize-y min-h-[80px] leading-[1.6] transition-[border-color,box-shadow] duration-150 placeholder:text-slate-400 focus:border-indigo-500 focus:[box-shadow:0_0_0_3px_rgba(79,70,229,0.12)]',
+  card:     'p-4 grid gap-4 border border-slate-200 bg-white rounded-2xl shadow-[0_1px_2px_rgba(15,23,42,0.04)]',
+  label:    'flex flex-col gap-[6px] text-[11px] tracking-[0.15em] uppercase text-slate-500 font-semibold',
+  secHead:  'flex items-center gap-2 text-[10px] uppercase tracking-[0.18em] text-indigo-600 font-semibold',
 }
 
 function SecHead({ n, children }) {
   return (
     <div className={P.secHead}>
-      {n && <span className="text-[#AACC33]/35 font-mono">{n}</span>}
-      {n && <span className="text-[#222]">/</span>}
+      {n && <span className="text-indigo-300 font-mono">{n}</span>}
+      {n && <span className="text-slate-300">/</span>}
       {children}
     </div>
   )
@@ -52,16 +52,16 @@ export default function CloseMeetingPage({ app }) {
       <div className={P.card}>
         <div className="flex items-start justify-between gap-3">
           <div>
-            <p className="m-0 mb-[5px] uppercase tracking-[0.2em] text-[10px] text-[#555]">Centre Point Hospitality</p>
-            <h1 className="m-0 font-bold text-[22px] text-[#F0F0F0] leading-tight">Close Meeting</h1>
-            <p className="m-0 mt-[6px] text-[#666] text-[13px] leading-[1.6]">
+            <p className="m-0 mb-[5px] uppercase tracking-[0.2em] text-[10px] text-slate-500 font-semibold">Centre Point Hospitality</p>
+            <h1 className="m-0 font-bold text-[22px] text-slate-900 leading-tight tracking-tight">Close Meeting</h1>
+            <p className="m-0 mt-[6px] text-slate-600 text-[13px] leading-[1.6]">
               Capture concluding notes, action points, and follow-up details.
             </p>
           </div>
-          <div className={`shrink-0 px-3 py-[6px] text-[10px] uppercase tracking-[0.12em] rounded-full border ${
+          <div className={`shrink-0 px-3 py-[6px] text-[10px] uppercase tracking-[0.12em] rounded-full border font-semibold ${
             app.overdueCount
-              ? 'text-[#FF5A5A] bg-[#FF5A5A]/8 border-[#FF5A5A]/18'
-              : 'text-[#3a3a3a] bg-white/[0.02] border-[#1e1e1e]'
+              ? 'text-red-700 bg-red-50 border-red-200'
+              : 'text-slate-500 bg-slate-50 border-slate-200'
           }`}>
             {app.overdueCount ? `${app.overdueCount} overdue` : 'All clear'}
           </div>
@@ -85,12 +85,12 @@ export default function CloseMeetingPage({ app }) {
         </Field>
 
         {app.activeMeeting && (
-          <div className="grid gap-[5px] p-4 rounded-xl bg-[#080808] border border-[#1e1e1e]">
+          <div className="grid gap-[5px] p-4 rounded-xl bg-slate-50 border border-slate-200">
             <div className="flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full bg-[#AACC33] shadow-[0_0_6px_rgba(170,204,51,0.6)]" />
-              <span className="text-[#F0F0F0] font-semibold text-[14px]">{app.activeMeeting.title}</span>
+              <span className="w-2 h-2 rounded-full bg-indigo-600" />
+              <span className="text-slate-900 font-semibold text-[14px]">{app.activeMeeting.title}</span>
             </div>
-              <span className="text-[#666] text-[12px] pl-4">
+              <span className="text-slate-600 text-[12px] pl-4">
                 {toDateLabel(app.activeMeeting.date)}{app.activeMeeting.time ? ` · ${app.activeMeeting.time}` : ''}
                 {` · ${getMeetingCallerLabel(app.activeMeeting, app.user)}`}
             </span>
@@ -113,22 +113,22 @@ export default function CloseMeetingPage({ app }) {
       <details ref={actionPointsRef} className={P.card}>
         <summary className="list-none cursor-pointer select-none flex items-center justify-between gap-4">
           <SecHead n="03">Action Points</SecHead>
-          <span className="text-[#3a3a3a] text-[10px] uppercase tracking-[0.1em]">
-            <span className="text-[#555] text-[10px] uppercase tracking-[0.1em]">{app.actionPoints.length ? `${app.actionPoints.length} added` : 'Click to expand'}</span>
+          <span className="text-slate-400 text-[10px] uppercase tracking-[0.1em]">
+            <span className="text-slate-500 text-[10px] uppercase tracking-[0.1em] font-semibold">{app.actionPoints.length ? `${app.actionPoints.length} added` : 'Click to expand'}</span>
           </span>
         </summary>
 
         <div className="grid gap-4 pt-2">
           {app.actionPoints.length === 0 && (
-            <div className="py-5 px-4 border border-dashed border-[#1e1e1e] rounded-xl text-[#555] text-[12px] text-center leading-[1.6]">
+            <div className="py-5 px-4 border border-dashed border-slate-300 rounded-xl text-slate-500 text-[12px] text-center leading-[1.6]">
               No action points yet — add one below
             </div>
           )}
 
           {app.actionPoints.map((row, index) => (
-            <div key={row.taskId} className="p-4 grid gap-4 border border-[#1e1e1e] bg-[#080808] rounded-xl">
+            <div key={row.taskId} className="p-4 grid gap-4 border border-slate-200 bg-slate-50 rounded-xl">
               <div className="flex items-center justify-between gap-3">
-                <span className="uppercase tracking-[0.15em] text-[10px] text-[#AACC33]/50 font-semibold">
+                <span className="uppercase tracking-[0.15em] text-[10px] text-indigo-600 font-semibold">
                   Point {index + 1}
                 </span>
                 <button className={P.danger} onClick={() => app.removeActionPoint(row.taskId)}>Remove</button>
@@ -188,17 +188,17 @@ export default function CloseMeetingPage({ app }) {
 
         <label className="flex items-center gap-3 cursor-pointer">
           <div className={`w-5 h-5 rounded-md border flex items-center justify-center transition-all ${
-            app.followup ? 'bg-[#AACC33] border-[#AACC33]' : 'bg-transparent border-[#333]'
+            app.followup ? 'bg-indigo-600 border-indigo-600' : 'bg-white border-slate-300'
           }`}>
-            {app.followup && <span className="text-black text-[11px] font-bold leading-none">✓</span>}
+            {app.followup && <span className="text-white text-[11px] font-bold leading-none">✓</span>}
             <input type="checkbox" className="sr-only" checked={app.followup}
               onChange={(e) => app.setFollowup(e.target.checked)} />
           </div>
-          <span className="text-[#F0F0F0] text-[13px]">Schedule a follow-up meeting</span>
+          <span className="text-slate-900 text-[13px] font-medium">Schedule a follow-up meeting</span>
         </label>
 
         {app.followup && (
-          <div className="grid gap-4 pt-2 border-t border-[#1a1a1a] mt-1">
+          <div className="grid gap-4 pt-2 border-t border-slate-200 mt-1">
             <div className="grid gap-3 sm:grid-cols-2">
               <Field label="Follow-up date">
                 <DateField
@@ -226,13 +226,13 @@ export default function CloseMeetingPage({ app }) {
           </div>
         )}
 
-        <div className="h-px bg-[#1a1a1a]" />
+        <div className="h-px bg-slate-200" />
 
         <button className={P.primary} onClick={app.closeMeeting} disabled={!app.closeMeetingId}>
           Save &amp; Close Meeting →
         </button>
         {!app.closeMeetingId && (
-          <p className="text-[11px] text-[#555] text-center m-0">Select a meeting above to continue</p>
+          <p className="text-[11px] text-slate-500 text-center m-0">Select a meeting above to continue</p>
         )}
       </div>
 
@@ -240,15 +240,15 @@ export default function CloseMeetingPage({ app }) {
       <details className={P.card}>
         <summary className="list-none cursor-pointer select-none flex items-center justify-between gap-4">
           <SecHead n="05">Postpone or Cancel</SecHead>
-          <span className="text-[#555] text-[10px] uppercase tracking-[0.1em]">Expand</span>
+          <span className="text-slate-500 text-[10px] uppercase tracking-[0.1em] font-semibold">Expand</span>
         </summary>
 
         <div className="grid gap-4 pt-2">
           {/* Postpone */}
-          <div className="grid gap-3 p-4 rounded-xl border border-[#1e1e1e] bg-[#080808]">
+          <div className="grid gap-3 p-4 rounded-xl border border-slate-200 bg-slate-50">
             <div className="flex items-center justify-between gap-3">
-              <span className="uppercase tracking-[0.15em] text-[10px] text-[#AACC33]/50 font-semibold">Postpone</span>
-              <span className="text-[#555] text-[10px]">Caller or admin only</span>
+              <span className="uppercase tracking-[0.15em] text-[10px] text-indigo-600 font-semibold">Postpone</span>
+              <span className="text-slate-500 text-[10px]">Caller or admin only</span>
             </div>
             <div className="grid gap-3 sm:grid-cols-2">
               <Field label="New date">
@@ -281,10 +281,10 @@ export default function CloseMeetingPage({ app }) {
           </div>
 
           {/* Cancel */}
-          <div className="grid gap-3 p-4 rounded-xl border border-[#FF5A5A]/12 bg-[#FF5A5A]/[0.04]">
+          <div className="grid gap-3 p-4 rounded-xl border border-red-200 bg-red-50">
             <div className="flex items-center justify-between gap-3">
-              <span className="uppercase tracking-[0.15em] text-[10px] text-[#FF5A5A]/60 font-semibold">Cancel meeting</span>
-              <span className="text-[#555] text-[10px]">Caller or admin only</span>
+              <span className="uppercase tracking-[0.15em] text-[10px] text-red-700 font-semibold">Cancel meeting</span>
+              <span className="text-slate-500 text-[10px]">Caller or admin only</span>
             </div>
             <Field label="Cancellation reason">
               <textarea className={P.textarea} style={{ minHeight: '75px' }} value={cancelReason}
@@ -292,7 +292,7 @@ export default function CloseMeetingPage({ app }) {
                 onChange={(e) => setCancelReason(e.target.value)} />
             </Field>
             <button
-              className="min-h-[44px] px-4 py-3 rounded-xl bg-transparent text-[#FF5A5A] border border-[#FF5A5A]/20 text-[12px] tracking-[0.06em] cursor-pointer transition-colors hover:border-[#FF5A5A]/40 hover:bg-[#FF5A5A]/5 disabled:opacity-40 disabled:cursor-not-allowed"
+              className="min-h-[44px] px-4 py-3 rounded-xl bg-white text-red-700 border border-red-200 text-[12px] tracking-[0.06em] cursor-pointer transition-colors hover:border-red-300 hover:bg-red-50 disabled:opacity-40 disabled:cursor-not-allowed font-semibold"
               disabled={!app.closeMeetingId}
               onClick={() => app.cancelMeeting({ meetingId: app.closeMeetingId, reason: cancelReason })}>
               Cancel meeting

@@ -241,48 +241,48 @@ function App() {
   const isSuccess = app.toast && /saved|updated|created|done|success|connect|disconnect|sent|issued|removed|closed|postponed|cancelled/i.test(app.toast)
 
   return (
-    <div className="app-root min-h-dvh text-[#F0F0F0] text-sm">
+    <div className="app-root min-h-dvh text-[#0F172A] text-sm">
 
       {/* HEADER */}
-      <div className="sticky top-0 z-50 border-b border-white/[0.07] bg-[#080808]/92 px-3 py-2.5 backdrop-blur-xl sm:px-5">
+      <div className="sticky top-0 z-50 border-b border-slate-200/80 bg-white/85 px-3 py-2.5 backdrop-blur-xl sm:px-5">
         <div className="mx-auto flex min-h-[54px] w-full max-w-[1280px] items-center justify-between gap-3">
         <button
-          className="flex items-center gap-3 rounded-xl px-1.5 py-1 cursor-pointer hover:bg-white/[0.03] transition-colors"
+          className="flex items-center gap-3 rounded-xl px-1.5 py-1 cursor-pointer hover:bg-slate-100 transition-colors"
           onClick={() => navigate('/dashboard')}
         >
-          <div className="w-9 h-9 bg-[#AACC33] rounded-xl flex items-center justify-center text-black font-black text-[12px] shrink-0 shadow-[0_0_18px_rgba(170,204,51,0.18)]">
+          <div className="w-9 h-9 bg-gradient-to-br from-indigo-600 to-indigo-700 rounded-xl flex items-center justify-center text-white font-bold text-[12px] tracking-wider shrink-0 shadow-[0_4px_12px_rgba(79,70,229,0.22)]">
             MO
           </div>
           <span className="hidden sm:grid leading-tight text-left">
-            <span className="text-[12px] tracking-[0.13em] uppercase font-bold">Meeting OS</span>
-            <span className="text-[10px] text-white/35 tracking-[0.12em] uppercase">Centre Point</span>
+            <span className="text-[12px] tracking-[0.06em] font-semibold text-slate-900">Meeting OS</span>
+            <span className="text-[10px] text-slate-500 tracking-[0.12em] uppercase">Centre Point</span>
           </span>
         </button>
 
         <div className="flex gap-2 items-center">
           <button
             onClick={() => app.setSearchOpen(true)}
-            className="flex min-h-[38px] items-center gap-2 rounded-xl border border-white/[0.08] bg-white/[0.035] px-3 text-[11px] text-white/55 cursor-pointer hover:border-white/[0.14] hover:bg-white/[0.055] hover:text-white/80 transition-all"
+            className="flex min-h-[38px] items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 text-[11px] text-slate-500 cursor-pointer hover:border-slate-300 hover:bg-slate-50 hover:text-slate-700 transition-all"
           >
             <span>Search</span>
-            <kbd className="hidden sm:flex items-center px-[6px] py-[2px] rounded-md bg-black/30 border border-white/[0.08] text-[9px] text-white/35 font-mono tracking-wider">Ctrl K</kbd>
+            <kbd className="hidden sm:flex items-center px-[6px] py-[2px] rounded-md bg-slate-100 border border-slate-200 text-[9px] text-slate-500 font-mono tracking-wider">Ctrl K</kbd>
           </button>
 
           <div className="hidden sm:grid text-right leading-tight">
-            <span className="text-[11px] text-[#F0F0F0] font-medium">{app.user?.name}</span>
-            <span className="text-[10px] text-[#666] uppercase tracking-[0.12em]">{app.user?.role}</span>
+            <span className="text-[11px] text-slate-900 font-semibold">{app.user?.name}</span>
+            <span className="text-[10px] text-slate-500 uppercase tracking-[0.12em]">{app.user?.role}</span>
           </div>
 
           <button
             onClick={() => navigate('/new-meeting')}
-            className="min-h-[38px] bg-[#AACC33] text-black rounded-xl px-3 text-[11px] cursor-pointer font-bold whitespace-nowrap hover:bg-[#BADA44] active:scale-[0.97] transition-all border-none"
+            className="min-h-[38px] bg-indigo-600 text-white rounded-xl px-3 text-[11px] cursor-pointer font-semibold whitespace-nowrap hover:bg-indigo-700 active:scale-[0.97] transition-all border-none shadow-[0_1px_2px_rgba(15,23,42,0.06),0_4px_10px_rgba(79,70,229,0.18)]"
           >
             + Meeting
           </button>
           <button
             onClick={app.logout}
             title="Logout"
-            className="min-h-[38px] bg-transparent border border-white/[0.07] text-white/35 rounded-xl px-3 text-[11px] cursor-pointer hover:border-white/[0.14] hover:text-white/70 transition-colors"
+            className="min-h-[38px] bg-white border border-slate-200 text-slate-500 rounded-xl px-3 text-[11px] cursor-pointer hover:border-slate-300 hover:text-slate-700 transition-colors"
           >
             Exit
           </button>
@@ -291,24 +291,24 @@ function App() {
       </div>
 
       {/* NAV */}
-      <div className="sticky top-[75px] z-40 border-b border-white/[0.06] bg-[#080808]/88 backdrop-blur-xl">
+      <div className="sticky top-[75px] z-40 border-b border-slate-200/80 bg-white/80 backdrop-blur-xl">
         <div className="mx-auto flex w-full max-w-[1280px] overflow-x-auto scrollbar-none px-2 sm:px-4">
         {navItems.map(({ key, label, badge }) => (
           <button
             key={key}
             onClick={() => navigate(`/${key}`)}
-            className={`relative px-4 py-[12px] text-[10.5px] tracking-[0.11em] uppercase cursor-pointer border-none bg-transparent whitespace-nowrap shrink-0 transition-colors ${
-              page === key ? 'text-[#AACC33]' : 'text-white/38 hover:text-white/70'
+            className={`relative px-4 py-[12px] text-[10.5px] tracking-[0.11em] uppercase cursor-pointer border-none bg-transparent whitespace-nowrap shrink-0 transition-colors font-semibold ${
+              page === key ? 'text-indigo-600' : 'text-slate-500 hover:text-slate-900'
             }`}
           >
             {label}
             {badge ? (
-              <span className="ml-1.5 inline-flex items-center justify-center px-[5px] py-[1px] rounded-full bg-[#AACC33]/15 text-[#AACC33] text-[9px] font-bold min-w-[16px]">
+              <span className="ml-1.5 inline-flex items-center justify-center px-[5px] py-[1px] rounded-full bg-indigo-50 text-indigo-600 text-[9px] font-bold min-w-[16px]">
                 {badge}
               </span>
             ) : null}
             {page === key && (
-              <span className="absolute bottom-0 left-3 right-3 h-[2px] rounded-full bg-[#AACC33] shadow-[0_0_10px_rgba(170,204,51,0.4)]" />
+              <span className="absolute bottom-0 left-3 right-3 h-[2px] rounded-full bg-indigo-600" />
             )}
           </button>
         ))}
@@ -318,7 +318,7 @@ function App() {
       {/* OVERDUE BANNER */}
       {app.overdueCount > 0 && (
         <button
-          className="w-full px-6 py-[9px] bg-[#ff4444]/7 border-b border-[#ff4444]/12 text-[#ff6666] text-[11px] text-center hover:bg-[#ff4444]/10 transition-colors cursor-pointer tracking-[0.03em]"
+          className="w-full px-6 py-[9px] bg-red-50 border-b border-red-100 text-red-700 text-[11px] text-center hover:bg-red-100 transition-colors cursor-pointer tracking-[0.03em] font-medium"
           onClick={() => { app.setTaskFilter?.('Overdue'); navigate('/tracker') }}
         >
           ⚠ {app.overdueCount} overdue action point{app.overdueCount > 1 ? 's' : ''} — tap to review
@@ -327,12 +327,12 @@ function App() {
 
       {/* TOAST */}
       {app.toast && (
-        <div className={`fixed bottom-6 left-1/2 animate-toast rounded-xl px-5 py-[10px] text-[12px] z-[999] max-w-[92vw] text-center shadow-2xl flex items-center gap-2 ${
+        <div className={`fixed bottom-6 left-1/2 animate-toast rounded-xl px-5 py-[10px] text-[12px] z-[999] max-w-[92vw] text-center shadow-[0_10px_30px_rgba(15,23,42,0.12)] flex items-center gap-2 font-medium ${
           isError
-            ? 'bg-[#190808] border border-[#ff4444]/25 text-[#ff8888]'
+            ? 'bg-red-50 border border-red-200 text-red-700'
             : isSuccess
-            ? 'bg-[#0e1408] border border-[#AACC33]/25 text-[#AACC33]'
-            : 'bg-[#131313] border border-[#252525] text-[#F0F0F0]'
+            ? 'bg-emerald-50 border border-emerald-200 text-emerald-700'
+            : 'bg-white border border-slate-200 text-slate-900'
         }`}>
           {isError ? '✕ ' : isSuccess ? '✓ ' : ''}{app.toast}
         </div>
@@ -351,15 +351,15 @@ function App() {
 
       {/* DOCUMENT PREVIEW MODAL */}
       {app.preview && (
-        <section className="document-preview fixed inset-0 z-[1000] bg-black/90 p-4 grid place-items-center animate-fade-in backdrop-blur-sm">
-          <div className="document-preview-shell w-full max-w-[780px] max-h-[88dvh] grid grid-rows-[auto_1fr_auto] gap-3 border border-[#252525] bg-[#0d0d0d] rounded-2xl p-5 shadow-2xl">
+        <section className="document-preview fixed inset-0 z-[1000] bg-slate-900/40 p-4 grid place-items-center animate-fade-in backdrop-blur-sm">
+          <div className="document-preview-shell w-full max-w-[780px] max-h-[88dvh] grid grid-rows-[auto_1fr_auto] gap-3 border border-slate-200 bg-white rounded-2xl p-5 shadow-[0_24px_60px_rgba(15,23,42,0.18)]">
             <div className="document-preview-header flex items-center justify-between gap-3">
               <div>
-                <p className="m-0 text-[10px] uppercase tracking-[0.18em] text-[#777] mb-[3px]">Document preview</p>
-                <h2 className="m-0 text-[16px] leading-tight">{app.preview.title}</h2>
+                <p className="m-0 text-[10px] uppercase tracking-[0.18em] text-slate-500 mb-[3px] font-semibold">Document preview</p>
+                <h2 className="m-0 text-[16px] leading-tight text-slate-900 font-semibold">{app.preview.title}</h2>
               </div>
               <button
-                className="flex items-center gap-1 bg-transparent border border-[#252525] text-[#555] rounded-lg px-3 py-[7px] text-[11px] cursor-pointer hover:border-[#3a3a3a] hover:text-[#aaa] transition-colors"
+                className="flex items-center gap-1 bg-white border border-slate-200 text-slate-500 rounded-lg px-3 py-[7px] text-[11px] cursor-pointer hover:border-slate-300 hover:text-slate-700 transition-colors"
                 onClick={() => app.setPreview(null)}
               >
                 ✕ Close
@@ -370,32 +370,32 @@ function App() {
             ) : (
               <>
                 <textarea
-                  className="document-preview-page document-preview-edit m-0 p-4 rounded-xl bg-[#070707] border border-[#181818] overflow-auto whitespace-pre-wrap text-[12px] leading-[1.9] text-[#bbb] font-mono resize-none outline-none"
+                  className="document-preview-page document-preview-edit m-0 p-4 rounded-xl bg-slate-50 border border-slate-200 overflow-auto whitespace-pre-wrap text-[12px] leading-[1.9] text-slate-700 font-mono resize-none outline-none"
                   value={app.preview.content}
                   onChange={(e) => app.setPreview((current) => (
                     current ? { ...current, content: e.target.value } : current
                   ))}
                 />
-                <pre className="document-preview-page document-preview-print-page m-0 p-4 rounded-xl bg-[#070707] border border-[#181818] overflow-auto whitespace-pre-wrap text-[12px] leading-[1.9] text-[#bbb] font-mono">
+                <pre className="document-preview-page document-preview-print-page m-0 p-4 rounded-xl bg-slate-50 border border-slate-200 overflow-auto whitespace-pre-wrap text-[12px] leading-[1.9] text-slate-700 font-mono">
                   {app.preview.content}
                 </pre>
               </>
             )}
             <div className="document-preview-actions flex gap-2">
               <button
-                className="flex-1 bg-[#AACC33] border-none text-black rounded-xl px-4 py-[11px] text-[12px] cursor-pointer font-bold hover:bg-[#BADA44] active:scale-[0.98] transition-all"
+                className="flex-1 bg-indigo-600 border-none text-white rounded-xl px-4 py-[11px] text-[12px] cursor-pointer font-semibold hover:bg-indigo-700 active:scale-[0.98] transition-all shadow-[0_1px_2px_rgba(15,23,42,0.06),0_4px_10px_rgba(79,70,229,0.18)]"
                 onClick={() => app.copyText(app.preview.content)}
               >
                 Copy to clipboard
               </button>
               <button
-                className="bg-transparent border border-[#252525] text-[#555] rounded-xl px-4 py-[11px] text-[12px] cursor-pointer hover:border-[#3a3a3a] hover:text-[#aaa] transition-colors"
+                className="bg-white border border-slate-200 text-slate-700 rounded-xl px-4 py-[11px] text-[12px] cursor-pointer hover:border-slate-300 hover:bg-slate-50 transition-colors font-medium"
                 onClick={() => window.print()}
               >
                 Print
               </button>
               <button
-                className="bg-transparent border border-[#252525] text-[#555] rounded-xl px-4 py-[11px] text-[12px] cursor-pointer hover:border-[#3a3a3a] hover:text-[#aaa] transition-colors"
+                className="bg-white border border-slate-200 text-slate-500 rounded-xl px-4 py-[11px] text-[12px] cursor-pointer hover:border-slate-300 hover:text-slate-700 transition-colors font-medium"
                 onClick={() => app.setPreview(null)}
               >
                 Dismiss

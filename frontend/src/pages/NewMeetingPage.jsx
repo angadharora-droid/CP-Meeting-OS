@@ -2,17 +2,17 @@ import { buildForm, buildNotice, toDateLabel, parseUserDateInput } from '../lib/
 import { useEffect, useMemo, useRef, useState } from 'react'
 
 const P = {
-  primary:  'w-full min-h-[48px] px-5 py-[13px] rounded-xl bg-[#AACC33] text-black font-bold text-[13px] tracking-[0.08em] uppercase cursor-pointer border-none transition-all hover:bg-[#BADA44] active:scale-[0.98] disabled:opacity-30 disabled:cursor-not-allowed disabled:active:scale-100',
-  ghost:    'w-full min-h-[44px] px-4 py-3 rounded-xl bg-transparent text-[#F0F0F0] border border-[#252525] text-[12px] tracking-[0.06em] cursor-pointer transition-colors hover:border-[#3a3a3a] hover:bg-white/[0.02]',
-  ghostSm:  'min-h-[38px] px-4 py-2 rounded-xl bg-transparent text-[#F0F0F0] border border-[#252525] text-[11px] tracking-[0.06em] cursor-pointer transition-colors hover:border-[#3a3a3a]',
-  input:    'bg-[#141414] border border-[#262626] rounded-xl text-[#F0F0F0] text-[14px] px-[13px] py-3 w-full outline-none min-h-[44px] appearance-none transition-[border-color,box-shadow] duration-150 placeholder:text-[#2e2e2e] focus:border-[#AACC33]/45 focus:[box-shadow:0_0_0_3px_rgba(170,204,51,0.06)]',
-  select:   'bg-[#141414] border border-[#262626] rounded-xl text-[#F0F0F0] text-[14px] px-[13px] py-3 w-full outline-none min-h-[44px] appearance-none cursor-pointer transition-[border-color] duration-150 focus:border-[#AACC33]/45 [background-image:url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'12\' height=\'8\' fill=\'none\'%3E%3Cpath d=\'M1 1l5 5 5-5\' stroke=\'%23555\' stroke-width=\'1.5\' stroke-linecap=\'round\'/%3E%3C/svg%3E")] bg-no-repeat [background-position:right_13px_center] pr-9 [color-scheme:dark]',
-  textarea: 'bg-[#141414] border border-[#262626] rounded-xl text-[#F0F0F0] text-[14px] px-[13px] py-3 w-full outline-none appearance-none resize-y min-h-[80px] leading-[1.6] transition-[border-color,box-shadow] duration-150 placeholder:text-[#2e2e2e] focus:border-[#AACC33]/45 focus:[box-shadow:0_0_0_3px_rgba(170,204,51,0.06)]',
-  card:     'p-4 grid gap-4 border border-[#1e1e1e] bg-[#0e0e0e] rounded-2xl',
-  label:    'flex flex-col gap-[6px] text-[11px] tracking-[0.15em] uppercase text-[#555]',
-  secHead:  'flex items-center gap-2 text-[10px] uppercase tracking-[0.18em] text-[#AACC33] font-semibold',
+  primary:  'w-full min-h-[48px] px-5 py-[13px] rounded-xl bg-indigo-600 text-white font-semibold text-[13px] tracking-[0.08em] uppercase cursor-pointer border-none transition-all hover:bg-indigo-700 active:scale-[0.98] disabled:opacity-40 disabled:cursor-not-allowed disabled:active:scale-100 shadow-[0_1px_2px_rgba(15,23,42,0.06),0_4px_12px_rgba(79,70,229,0.18)]',
+  ghost:    'w-full min-h-[44px] px-4 py-3 rounded-xl bg-white text-slate-700 border border-slate-200 text-[12px] tracking-[0.06em] cursor-pointer transition-colors hover:border-slate-300 hover:bg-slate-50 font-medium',
+  ghostSm:  'min-h-[38px] px-4 py-2 rounded-xl bg-white text-slate-700 border border-slate-200 text-[11px] tracking-[0.06em] cursor-pointer transition-colors hover:border-slate-300 hover:bg-slate-50 font-medium',
+  input:    'bg-white border border-slate-200 rounded-xl text-slate-900 text-[14px] px-[13px] py-3 w-full outline-none min-h-[44px] appearance-none transition-[border-color,box-shadow] duration-150 placeholder:text-slate-400 focus:border-indigo-500 focus:[box-shadow:0_0_0_3px_rgba(79,70,229,0.12)]',
+  select:   'bg-white border border-slate-200 rounded-xl text-slate-900 text-[14px] px-[13px] py-3 w-full outline-none min-h-[44px] appearance-none cursor-pointer transition-[border-color] duration-150 focus:border-indigo-500 [background-image:url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'12\' height=\'8\' fill=\'none\'%3E%3Cpath d=\'M1 1l5 5 5-5\' stroke=\'%2394A3B8\' stroke-width=\'1.5\' stroke-linecap=\'round\'/%3E%3C/svg%3E")] bg-no-repeat [background-position:right_13px_center] pr-9',
+  textarea: 'bg-white border border-slate-200 rounded-xl text-slate-900 text-[14px] px-[13px] py-3 w-full outline-none appearance-none resize-y min-h-[80px] leading-[1.6] transition-[border-color,box-shadow] duration-150 placeholder:text-slate-400 focus:border-indigo-500 focus:[box-shadow:0_0_0_3px_rgba(79,70,229,0.12)]',
+  card:     'p-4 grid gap-4 border border-slate-200 bg-white rounded-2xl shadow-[0_1px_2px_rgba(15,23,42,0.04)]',
+  label:    'flex flex-col gap-[6px] text-[11px] tracking-[0.15em] uppercase text-slate-500 font-semibold',
+  secHead:  'flex items-center gap-2 text-[10px] uppercase tracking-[0.18em] text-indigo-600 font-semibold',
   // pr-[44px] leaves room for the right-side picker toggle button
-  dateTime: 'bg-[#141414] border border-[#262626] rounded-xl text-[#F0F0F0] text-[14px] pl-[42px] pr-[44px] py-3 w-full outline-none min-h-[44px] appearance-none transition-[border-color,box-shadow] duration-150 [color-scheme:dark] focus:border-[#AACC33]/45 focus:[box-shadow:0_0_0_3px_rgba(170,204,51,0.06)] placeholder:text-[#2e2e2e] font-mono',
+  dateTime: 'bg-white border border-slate-200 rounded-xl text-slate-900 text-[14px] pl-[42px] pr-[44px] py-3 w-full outline-none min-h-[44px] appearance-none transition-[border-color,box-shadow] duration-150 focus:border-indigo-500 focus:[box-shadow:0_0_0_3px_rgba(79,70,229,0.12)] placeholder:text-slate-400 font-mono',
 }
 
 // ─── Date helpers ──────────────────────────────────────────────────────────────
@@ -85,7 +85,7 @@ function CalendarIcon({ active }) {
     <svg
       width="16" height="16" viewBox="0 0 16 16" fill="none"
       xmlns="http://www.w3.org/2000/svg"
-      style={{ color: active ? '#AACC33' : '#555', transition: 'color 150ms', display: 'block' }}
+      style={{ color: active ? '#4F46E5' : '#64748B', transition: 'color 150ms', display: 'block' }}
     >
       <rect x="1.5" y="2.5" width="13" height="12" rx="2"
         stroke="currentColor" strokeWidth="1.25" />
@@ -107,7 +107,7 @@ function ClockIcon({ active }) {
     <svg
       width="16" height="16" viewBox="0 0 16 16" fill="none"
       xmlns="http://www.w3.org/2000/svg"
-      style={{ color: active ? '#AACC33' : '#555', transition: 'color 150ms', display: 'block' }}
+      style={{ color: active ? '#4F46E5' : '#64748B', transition: 'color 150ms', display: 'block' }}
     >
       <circle cx="8" cy="8" r="6.5" stroke="currentColor" strokeWidth="1.25" />
       <path d="M8 4.5V8l2.4 1.6" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" strokeLinejoin="round" />
@@ -167,38 +167,38 @@ function CalendarPicker({ value, onChange, onClose }) {
         top: 'calc(100% + 6px)',
         left: 0,
         width: '276px',
-        background: '#111',
-        border: '1px solid #262626',
+        background: '#FFFFFF',
+        border: '1px solid #E2E8F0',
         borderRadius: '16px',
         boxShadow: '0 8px 40px rgba(0,0,0,0.65)',
         overflow: 'hidden',
       }}
     >
       {/* Month navigation */}
-      <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', padding:'10px 14px', borderBottom:'1px solid #1e1e1e' }}>
+      <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', padding:'10px 14px', borderBottom:'1px solid #E2E8F0' }}>
         <button
           type="button" onClick={prevMonth}
-          style={{ width:28, height:28, display:'flex', alignItems:'center', justifyContent:'center', background:'transparent', border:'none', borderRadius:8, color:'#555', fontSize:16, cursor:'pointer', transition:'color 150ms,background 150ms' }}
-          onMouseEnter={e => { e.currentTarget.style.background='#1e1e1e'; e.currentTarget.style.color='#F0F0F0' }}
-          onMouseLeave={e => { e.currentTarget.style.background='transparent'; e.currentTarget.style.color='#555' }}
+          style={{ width:28, height:28, display:'flex', alignItems:'center', justifyContent:'center', background:'transparent', border:'none', borderRadius:8, color:'#64748B', fontSize:16, cursor:'pointer', transition:'color 150ms,background 150ms' }}
+          onMouseEnter={e => { e.currentTarget.style.background='#E2E8F0'; e.currentTarget.style.color='#0F172A' }}
+          onMouseLeave={e => { e.currentTarget.style.background='transparent'; e.currentTarget.style.color='#64748B' }}
         >‹</button>
 
-        <span style={{ color:'#F0F0F0', fontSize:13, fontWeight:600, letterSpacing:'0.02em' }}>
+        <span style={{ color:'#0F172A', fontSize:13, fontWeight:600, letterSpacing:'0.02em' }}>
           {MONTHS[viewMonth]} {viewYear}
         </span>
 
         <button
           type="button" onClick={nextMonth}
-          style={{ width:28, height:28, display:'flex', alignItems:'center', justifyContent:'center', background:'transparent', border:'none', borderRadius:8, color:'#555', fontSize:16, cursor:'pointer', transition:'color 150ms,background 150ms' }}
-          onMouseEnter={e => { e.currentTarget.style.background='#1e1e1e'; e.currentTarget.style.color='#F0F0F0' }}
-          onMouseLeave={e => { e.currentTarget.style.background='transparent'; e.currentTarget.style.color='#555' }}
+          style={{ width:28, height:28, display:'flex', alignItems:'center', justifyContent:'center', background:'transparent', border:'none', borderRadius:8, color:'#64748B', fontSize:16, cursor:'pointer', transition:'color 150ms,background 150ms' }}
+          onMouseEnter={e => { e.currentTarget.style.background='#E2E8F0'; e.currentTarget.style.color='#0F172A' }}
+          onMouseLeave={e => { e.currentTarget.style.background='transparent'; e.currentTarget.style.color='#64748B' }}
         >›</button>
       </div>
 
       {/* Day-of-week headers */}
       <div style={{ display:'grid', gridTemplateColumns:'repeat(7,1fr)', padding:'10px 12px 4px' }}>
         {DOW.map(d => (
-          <div key={d} style={{ textAlign:'center', fontSize:10, color:'#555', textTransform:'uppercase', letterSpacing:'0.08em', fontWeight:600 }}>
+          <div key={d} style={{ textAlign:'center', fontSize:10, color:'#64748B', textTransform:'uppercase', letterSpacing:'0.08em', fontWeight:600 }}>
             {d}
           </div>
         ))}
@@ -218,18 +218,18 @@ function CalendarPicker({ value, onChange, onClose }) {
               style={{
                 height: 32,
                 width: '100%',
-                border: sel ? 'none' : today_ ? '1px solid rgba(170,204,51,0.4)' : 'none',
+                border: sel ? 'none' : today_ ? '1px solid rgba(79,70,229,0.4)' : 'none',
                 borderRadius: 8,
-                background: sel ? '#AACC33' : 'transparent',
-                color: sel ? '#000' : today_ ? '#AACC33' : '#777',
+                background: sel ? '#4F46E5' : 'transparent',
+                color: sel ? '#FFFFFF' : today_ ? '#4F46E5' : '#475569',
                 fontSize: 12,
                 fontFamily: 'monospace',
                 fontWeight: sel ? 700 : 400,
                 cursor: 'pointer',
                 transition: 'background 120ms, color 120ms',
               }}
-              onMouseEnter={e => { if (!sel) { e.currentTarget.style.background='#1e1e1e'; e.currentTarget.style.color='#F0F0F0' } }}
-              onMouseLeave={e => { if (!sel) { e.currentTarget.style.background='transparent'; e.currentTarget.style.color = today_ ? '#AACC33' : '#777' } }}
+              onMouseEnter={e => { if (!sel) { e.currentTarget.style.background='#E2E8F0'; e.currentTarget.style.color='#0F172A' } }}
+              onMouseLeave={e => { if (!sel) { e.currentTarget.style.background='transparent'; e.currentTarget.style.color = today_ ? '#4F46E5' : '#475569' } }}
             >
               {d}
             </button>
@@ -238,12 +238,12 @@ function CalendarPicker({ value, onChange, onClose }) {
       </div>
 
       {/* Today shortcut */}
-      <div style={{ borderTop:'1px solid #1e1e1e', padding:'6px 12px 8px' }}>
+      <div style={{ borderTop:'1px solid #E2E8F0', padding:'6px 12px 8px' }}>
         <button
           type="button" onClick={goToday}
-          style={{ width:'100%', background:'transparent', border:'none', color:'#444', fontSize:10, textTransform:'uppercase', letterSpacing:'0.1em', cursor:'pointer', padding:'4px 0', transition:'color 150ms' }}
-          onMouseEnter={e => e.currentTarget.style.color='#AACC33'}
-          onMouseLeave={e => e.currentTarget.style.color='#444'}
+          style={{ width:'100%', background:'transparent', border:'none', color:'#94A3B8', fontSize:10, textTransform:'uppercase', letterSpacing:'0.1em', cursor:'pointer', padding:'4px 0', transition:'color 150ms' }}
+          onMouseEnter={e => e.currentTarget.style.color='#4F46E5'}
+          onMouseLeave={e => e.currentTarget.style.color='#94A3B8'}
         >
           Today
         </button>
@@ -322,16 +322,16 @@ function DateField({ value, onChange }) {
           position: 'absolute', right: 10, top: '50%', transform: 'translateY(-50%)',
           width: 28, height: 28,
           display: 'flex', alignItems: 'center', justifyContent: 'center',
-          background: open ? 'rgba(170,204,51,0.12)' : 'transparent',
+          background: open ? 'rgba(79,70,229,0.10)' : 'transparent',
           border: 'none',
           borderRadius: 8,
-          color: open ? '#AACC33' : '#444',
+          color: open ? '#4F46E5' : '#94A3B8',
           cursor: 'pointer',
           transition: 'background 150ms, color 150ms',
           zIndex: 10,
         }}
-        onMouseEnter={e => { if (!open) { e.currentTarget.style.background='#1e1e1e'; e.currentTarget.style.color='#888' } }}
-        onMouseLeave={e => { if (!open) { e.currentTarget.style.background='transparent'; e.currentTarget.style.color='#444' } }}
+        onMouseEnter={e => { if (!open) { e.currentTarget.style.background='#E2E8F0'; e.currentTarget.style.color='#475569' } }}
+        onMouseLeave={e => { if (!open) { e.currentTarget.style.background='transparent'; e.currentTarget.style.color='#94A3B8' } }}
         aria-label="Toggle calendar"
       >
         <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
@@ -423,8 +423,8 @@ function TimeColumn({ options, value, onChange, className = '', textAlign = 'cen
               style={{ textAlign }}
               className={`h-[38px] w-full font-mono transition-all duration-150 ${btnPaddingClass} ${
                 sel
-                  ? 'text-[#E8E8E8] text-[20px] font-bold'
-                  : 'text-[#353535] text-[15px] hover:text-[#555]'
+                  ? 'text-[#0F172A] text-[20px] font-bold'
+                  : 'text-[#94A3B8] text-[15px] hover:text-[#64748B]'
               }`}
             >
               {option.label}
@@ -454,24 +454,24 @@ function TimePicker({ value, onChange, onClose }) {
       onMouseDown={(e) => e.preventDefault()}
       style={{
         position: 'absolute', zIndex: 50, top: 'calc(100% + 6px)', left: 0,
-        width: '280px', background: '#111', border: '1px solid #242424',
+        width: '280px', background: '#FFFFFF', border: '1px solid #E2E8F0',
         borderRadius: '16px', boxShadow: '0 12px 48px rgba(0,0,0,0.72)', overflow: 'hidden',
       }}
     >
       {/* Header */}
-      <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', padding:'10px 14px', borderBottom:'1px solid #1a1a1a' }}>
-        <span style={{ color:'#444', fontSize:9, fontWeight:700, letterSpacing:'0.18em', textTransform:'uppercase' }}>Select time</span>
+      <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', padding:'10px 14px', borderBottom:'1px solid #E2E8F0' }}>
+        <span style={{ color:'#94A3B8', fontSize:9, fontWeight:700, letterSpacing:'0.18em', textTransform:'uppercase' }}>Select time</span>
         <button
           type="button"
           onClick={() => { onChange(roundToNextQuarter()); onClose() }}
           style={{
-            background: 'rgba(170,204,51,0.08)', border: '1px solid rgba(170,204,51,0.22)',
-            color: '#AACC33', fontSize: 9, fontWeight: 700, textTransform: 'uppercase',
+            background: '#EEF2FF', border: '1px solid #C7D2FE',
+            color: '#4F46E5', fontSize: 9, fontWeight: 700, textTransform: 'uppercase',
             letterSpacing: '0.12em', cursor: 'pointer', padding: '4px 10px',
             borderRadius: 6, transition: 'background 150ms',
           }}
-          onMouseEnter={e => { e.currentTarget.style.background='rgba(170,204,51,0.15)' }}
-          onMouseLeave={e => { e.currentTarget.style.background='rgba(170,204,51,0.08)' }}
+          onMouseEnter={e => { e.currentTarget.style.background='#E0E7FF' }}
+          onMouseLeave={e => { e.currentTarget.style.background='#EEF2FF' }}
         >
           Now
         </button>
@@ -480,10 +480,10 @@ function TimePicker({ value, onChange, onClose }) {
       {/* Wheel */}
       <div className="relative" style={{ height: 196 }}>
         {/* Shared selection pill spanning all columns */}
-        <div className="pointer-events-none absolute inset-x-3 top-1/2 -translate-y-1/2 h-[42px] rounded-2xl bg-white/[0.05]" />
+        <div className="pointer-events-none absolute inset-x-3 top-1/2 -translate-y-1/2 h-[42px] rounded-2xl bg-indigo-50" />
         {/* Edge fades */}
-        <div className="pointer-events-none absolute inset-x-0 top-0 h-[64px] z-10" style={{ background: 'linear-gradient(to bottom, #111 10%, transparent 100%)' }} />
-        <div className="pointer-events-none absolute inset-x-0 bottom-0 h-[64px] z-10" style={{ background: 'linear-gradient(to top, #111 10%, transparent 100%)' }} />
+        <div className="pointer-events-none absolute inset-x-0 top-0 h-[64px] z-10" style={{ background: 'linear-gradient(to bottom, #FFFFFF 10%, transparent 100%)' }} />
+        <div className="pointer-events-none absolute inset-x-0 bottom-0 h-[64px] z-10" style={{ background: 'linear-gradient(to top, #FFFFFF 10%, transparent 100%)' }} />
         {/* Columns */}
         <div className="flex h-full items-stretch">
           <TimeColumn
@@ -491,7 +491,7 @@ function TimePicker({ value, onChange, onClose }) {
             onChange={(hour) => update({ hour })}
             className="flex-1" textAlign="right" btnPaddingClass="pr-2"
           />
-          <div className="flex items-center justify-center w-5 shrink-0 text-[#444] text-[16px] font-bold pointer-events-none z-20 pb-px">:</div>
+          <div className="flex items-center justify-center w-5 shrink-0 text-[#94A3B8] text-[16px] font-bold pointer-events-none z-20 pb-px">:</div>
           <TimeColumn
             options={minuteOptions} value={selected.minute}
             onChange={(minute) => update({ minute })}
@@ -506,19 +506,19 @@ function TimePicker({ value, onChange, onClose }) {
       </div>
 
       {/* Footer */}
-      <div className="flex items-center justify-between border-t border-[#1a1a1a] px-4 py-3 gap-3">
-        <span className="font-mono text-[16px] font-bold text-[#AACC33] tracking-wider">
+      <div className="flex items-center justify-between border-t border-[#E2E8F0] px-4 py-3 gap-3">
+        <span className="font-mono text-[16px] font-bold text-[#4F46E5] tracking-wider">
           {toReadableTime(value) || '--:-- --'}
         </span>
         <button
           type="button" onClick={onClose}
           style={{
-            padding: '7px 18px', borderRadius: 8, background: '#AACC33', border: 'none',
-            color: '#000', fontSize: 10, fontWeight: 700, textTransform: 'uppercase',
+            padding: '7px 18px', borderRadius: 8, background: '#4F46E5', border: 'none',
+            color: '#FFFFFF', fontSize: 10, fontWeight: 700, textTransform: 'uppercase',
             letterSpacing: '0.1em', cursor: 'pointer', transition: 'background 150ms, transform 100ms',
           }}
-          onMouseEnter={e => { e.currentTarget.style.background='#BADA44' }}
-          onMouseLeave={e => { e.currentTarget.style.background='#AACC33' }}
+          onMouseEnter={e => { e.currentTarget.style.background='#4338CA' }}
+          onMouseLeave={e => { e.currentTarget.style.background='#4F46E5' }}
           onMouseDown={e => { e.currentTarget.style.transform='scale(0.96)' }}
           onMouseUp={e => { e.currentTarget.style.transform='scale(1)' }}
         >
@@ -582,16 +582,16 @@ function TimeField({ value, onChange }) {
           position: 'absolute', right: 10, top: '50%', transform: 'translateY(-50%)',
           width: 28, height: 28,
           display: 'flex', alignItems: 'center', justifyContent: 'center',
-          background: open ? 'rgba(170,204,51,0.12)' : 'transparent',
+          background: open ? 'rgba(79,70,229,0.10)' : 'transparent',
           border: 'none',
           borderRadius: 8,
-          color: open ? '#AACC33' : '#444',
+          color: open ? '#4F46E5' : '#94A3B8',
           cursor: 'pointer',
           transition: 'background 150ms, color 150ms',
           zIndex: 10,
         }}
-        onMouseEnter={e => { if (!open) { e.currentTarget.style.background='#1e1e1e'; e.currentTarget.style.color='#888' } }}
-        onMouseLeave={e => { if (!open) { e.currentTarget.style.background='transparent'; e.currentTarget.style.color='#444' } }}
+        onMouseEnter={e => { if (!open) { e.currentTarget.style.background='#E2E8F0'; e.currentTarget.style.color='#475569' } }}
+        onMouseLeave={e => { if (!open) { e.currentTarget.style.background='transparent'; e.currentTarget.style.color='#94A3B8' } }}
         aria-label="Toggle time picker"
       >
         <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
@@ -616,8 +616,8 @@ function TimeField({ value, onChange }) {
 function SecHead({ n, children }) {
   return (
     <div className={P.secHead}>
-      {n && <span className="text-[#AACC33]/35 font-mono">{n}</span>}
-      {n && <span className="text-[#222]">/</span>}
+      {n && <span className="text-[#4F46E5]/35 font-mono">{n}</span>}
+      {n && <span className="text-[#E2E8F0]">/</span>}
       {children}
     </div>
   )
@@ -635,7 +635,7 @@ function Field({ label, children }) {
 function CharCount({ value, max }) {
   const len = (value || '').length
   return (
-    <span className={`text-right text-[10px] tabular-nums ${len > max * 0.8 ? 'text-[#AACC33]/60' : 'text-[#555]'}`}>
+    <span className={`text-right text-[10px] tabular-nums ${len > max * 0.8 ? 'text-[#4F46E5]/60' : 'text-[#64748B]'}`}>
       {len}/{max}
     </span>
   )
@@ -750,11 +750,11 @@ export default function NewMeetingPage({ app }) {
       {/* Hero */}
       <div className={P.card} style={{ gap: '20px' }}>
         <div>
-          <p className="m-0 mb-[5px] uppercase tracking-[0.2em] text-[10px] text-[#555]">
+          <p className="m-0 mb-[5px] uppercase tracking-[0.2em] text-[10px] text-[#64748B]">
             {app.orgName || 'Organisation'}
           </p>
-          <h1 className="m-0 font-black text-[22px] text-[#F0F0F0] leading-tight tracking-tight">New Meeting</h1>
-          <p className="m-0 mt-[6px] text-[#666] text-[13px] leading-[1.6]">
+          <h1 className="m-0 font-black text-[22px] text-[#0F172A] leading-tight tracking-tight">New Meeting</h1>
+          <p className="m-0 mt-[6px] text-[#475569] text-[13px] leading-[1.6]">
             Fill the details below. A notice and agenda form are generated automatically.
           </p>
         </div>
@@ -769,7 +769,7 @@ export default function NewMeetingPage({ app }) {
           <Field label="Meeting header">
             <div ref={headerWrapRef} className="relative">
               <input
-                className={`${P.input} pr-11 ${headerOpen ? 'border-[#AACC33]/55 [box-shadow:0_0_0_3px_rgba(170,204,51,0.08)]' : ''}`}
+                className={`${P.input} pr-11 ${headerOpen ? 'border-indigo-500 [box-shadow:0_0_0_3px_rgba(79,70,229,0.12)]' : ''}`}
                 value={app.meetingForm.meetingHeader}
                 placeholder="e.g. Project A"
                 onFocus={() => setHeaderOpen(true)}
@@ -781,7 +781,7 @@ export default function NewMeetingPage({ app }) {
               <button
                 type="button"
                 className={`absolute right-3 top-1/2 -translate-y-1/2 w-7 h-7 rounded-lg flex items-center justify-center text-[12px] transition-colors ${
-                  headerOpen ? 'text-[#AACC33] bg-[#AACC33]/10' : 'text-[#555] hover:text-[#888] hover:bg-white/[0.04]'
+                  headerOpen ? 'text-indigo-600 bg-indigo-50' : 'text-slate-500 hover:text-slate-700 hover:bg-slate-50'
                 }`}
                 onClick={() => setHeaderOpen((open) => !open)}
                 aria-label="Toggle meeting header suggestions"
@@ -791,13 +791,13 @@ export default function NewMeetingPage({ app }) {
                 </svg>
               </button>
               {headerOpen && filteredMeetingHeaders.length > 0 && (
-                <div className="absolute z-40 mt-2 w-full overflow-hidden rounded-xl border border-[#262626] bg-[#101010] shadow-[0_16px_45px_rgba(0,0,0,0.55)]">
+                <div className="absolute z-40 mt-2 w-full overflow-hidden rounded-xl border border-slate-200 bg-white shadow-[0_16px_40px_rgba(15,23,42,0.12)]">
                   <div className="max-h-52 overflow-y-auto p-1">
                     {filteredMeetingHeaders.map((header) => (
                       <button
                         key={header}
                         type="button"
-                        className="w-full text-left px-3 py-3 rounded-lg text-[#d8d8d8] text-[13px] font-semibold hover:bg-[#AACC33]/10 hover:text-[#F0F0F0] focus:bg-[#AACC33]/10 focus:text-[#F0F0F0] outline-none transition-colors"
+                        className="w-full text-left px-3 py-3 rounded-lg text-slate-700 text-[13px] font-semibold hover:bg-indigo-50 hover:text-indigo-700 focus:bg-indigo-50 focus:text-indigo-700 outline-none transition-colors"
                         onMouseDown={(e) => e.preventDefault()}
                         onClick={() => {
                           app.setMeetingForm((c) => ({ ...c, meetingHeader: header }))
@@ -836,14 +836,14 @@ export default function NewMeetingPage({ app }) {
           </select>
         </Field>
 
-        <div className="h-px bg-[#1a1a1a]" />
+        <div className="h-px bg-[#E2E8F0]" />
         <SecHead>Attendees</SecHead>
 
         {/* Add attendee */}
-        <div className="grid gap-4 p-4 rounded-xl border border-[#1e1e1e] bg-[#080808]">
+        <div className="grid gap-4 p-4 rounded-xl border border-[#E2E8F0] bg-[#F8FAFC]">
           <div>
-            <span className="uppercase tracking-[0.15em] text-[10px] text-[#AACC33]/70 font-semibold block">Add attendee</span>
-            <span className="text-[#666] text-[11px]">Select a saved person or add an external attendee</span>
+            <span className="uppercase tracking-[0.15em] text-[10px] text-[#4F46E5]/70 font-semibold block">Add attendee</span>
+            <span className="text-[#475569] text-[11px]">Select a saved person or add an external attendee</span>
           </div>
 
           <Field label="Saved person">
@@ -862,10 +862,10 @@ export default function NewMeetingPage({ app }) {
             </select>
           </Field>
           {availableAttendees.length === 0 && (
-            <p className="m-0 text-[#555] text-[11px]">All saved people already added.</p>
+            <p className="m-0 text-[#64748B] text-[11px]">All saved people already added.</p>
           )}
 
-          <div className="h-px bg-[#1a1a1a]" />
+          <div className="h-px bg-[#E2E8F0]" />
 
           <div className="grid gap-3 sm:grid-cols-2">
             <Field label="External name">
@@ -890,13 +890,13 @@ export default function NewMeetingPage({ app }) {
           <button className={P.ghost} onClick={app.addManualAttendee}>+ Add external attendee</button>
         </div>
         {/* Selected attendees */}
-        <div className="grid gap-3 p-4 rounded-xl border border-[#1e1e1e] bg-[#080808]">
+        <div className="grid gap-3 p-4 rounded-xl border border-[#E2E8F0] bg-[#F8FAFC]">
           <div className="flex items-center justify-between gap-3">
             <div>
-              <span className="uppercase tracking-[0.15em] text-[10px] text-[#AACC33]/70 font-semibold block">Selected attendees</span>
-              <span className="text-[#666] text-[11px]">Caller is included automatically</span>
+              <span className="uppercase tracking-[0.15em] text-[10px] text-[#4F46E5]/70 font-semibold block">Selected attendees</span>
+              <span className="text-[#475569] text-[11px]">Caller is included automatically</span>
             </div>
-            <span className="px-[10px] py-[4px] rounded-full bg-[#141414] border border-[#222] text-[10px] uppercase tracking-[0.1em] text-[#444]">
+            <span className="px-[10px] py-[4px] rounded-full bg-[#FFFFFF] border border-[#E2E8F0] text-[10px] uppercase tracking-[0.1em] text-[#94A3B8]">
               {selectedAttendees.length}
             </span>
           </div>
@@ -904,14 +904,14 @@ export default function NewMeetingPage({ app }) {
             <div className="grid gap-[6px]">
               {selectedAttendees.map((attendee) => (
                 <div key={attendee.id}
-                  className="flex items-start justify-between gap-3 px-3 py-[9px] rounded-lg border border-[#1a1a1a] bg-[#0d0d0d]">
+                  className="flex items-start justify-between gap-3 px-3 py-[9px] rounded-lg border border-[#E2E8F0] bg-[#F8FAFC]">
                   <div className="flex items-start gap-[10px] min-w-0 flex-1">
-                    <div className="w-7 h-7 rounded-full bg-[#1a1a1a] border border-[#262626] flex items-center justify-center text-[9px] font-bold text-[#AACC33] shrink-0 mt-[1px]">
+                    <div className="w-7 h-7 rounded-full bg-[#E2E8F0] border border-[#E2E8F0] flex items-center justify-center text-[9px] font-bold text-[#4F46E5] shrink-0 mt-[1px]">
                       {attendee.name.split(' ').map((n) => n[0]).join('').slice(0, 2).toUpperCase()}
                     </div>
                     <div className="min-w-0 flex-1">
-                      <div className="text-[#F0F0F0] text-[12px] truncate">{attendee.name}</div>
-                      <div className="text-[#555] text-[10px] flex flex-wrap items-center gap-1 mt-[2px]">
+                      <div className="text-[#0F172A] text-[12px] truncate">{attendee.name}</div>
+                      <div className="text-[#64748B] text-[10px] flex flex-wrap items-center gap-1 mt-[2px]">
                         <span>{attendee.id === callerPerson?.id ? 'Caller' : attendee.desig || 'Attendee'}</span>
                         {attendee.source === 'manual' && <span>- external</span>}
                         {attendee.mobile && <span>- {attendee.mobile}</span>}
@@ -919,17 +919,17 @@ export default function NewMeetingPage({ app }) {
                     </div>
                   </div>
                   {attendee.source === 'manual' ? (
-                    <button className="text-[#FF5A5A]/60 text-[10px] uppercase tracking-[0.08em] hover:text-[#FF5A5A] transition-colors shrink-0"
+                    <button className="text-[#DC2626]/60 text-[10px] uppercase tracking-[0.08em] hover:text-[#DC2626] transition-colors shrink-0"
                       onClick={() => app.removeManualAttendee(attendee.id)}>Remove</button>
                   ) : attendee.id !== callerPerson?.id ? (
-                    <button className="text-[#FF5A5A]/60 text-[10px] uppercase tracking-[0.08em] hover:text-[#FF5A5A] transition-colors shrink-0"
+                    <button className="text-[#DC2626]/60 text-[10px] uppercase tracking-[0.08em] hover:text-[#DC2626] transition-colors shrink-0"
                       onClick={() => app.setMeetingAttendeeIds((cur) => cur.filter((id) => id !== attendee.id))}>Remove</button>
                   ) : null}
                 </div>
               ))}
             </div>
           ) : (
-            <div className="py-4 border border-dashed border-[#1e1e1e] rounded-lg text-[#555] text-[11px] text-center">
+            <div className="py-4 border border-dashed border-[#E2E8F0] rounded-lg text-[#64748B] text-[11px] text-center">
               No attendees selected yet
             </div>
           )}
@@ -961,11 +961,11 @@ export default function NewMeetingPage({ app }) {
 
         {/* Confirmation strip */}
         {(dateLabel || timeLabel) && (
-          <div className="flex items-center gap-3 px-4 py-3 rounded-xl bg-[#AACC33]/[0.05] border border-[#AACC33]/15">
-            <span className="text-[#AACC33] text-[13px] shrink-0">✓</span>
-            <p className="m-0 text-[12px] text-[#AACC33]/70 leading-snug">
+          <div className="flex items-center gap-3 px-4 py-3 rounded-xl bg-[#4F46E5]/[0.05] border border-[#4F46E5]/15">
+            <span className="text-[#4F46E5] text-[13px] shrink-0">✓</span>
+            <p className="m-0 text-[12px] text-[#4F46E5]/70 leading-snug">
               {dateLabel && timeLabel
-                ? <>{dateLabel} <span className="text-[#AACC33]/35 mx-1">·</span> {timeLabel}</>
+                ? <>{dateLabel} <span className="text-[#4F46E5]/35 mx-1">·</span> {timeLabel}</>
                 : dateLabel || timeLabel}
             </p>
           </div>
@@ -1018,34 +1018,34 @@ export default function NewMeetingPage({ app }) {
           </button>
         </div>
 
-        <p className="m-0 text-[#666] text-[11px] leading-[1.5]">
+        <p className="m-0 text-[#475569] text-[11px] leading-[1.5]">
           Add one or more purposes for this meeting. Each purpose can have its own desired outcome and documents.
         </p>
 
-        <label className="flex items-start gap-3 p-3 rounded-xl border border-[#1e1e1e] bg-[#080808] cursor-pointer">
+        <label className="flex items-start gap-3 p-3 rounded-xl border border-[#E2E8F0] bg-[#F8FAFC] cursor-pointer">
           <input
             type="checkbox"
             checked={app.meetingForm.includeAdditionalPoints !== false}
             onChange={(e) => app.setMeetingForm((c) => ({ ...c, includeAdditionalPoints: e.target.checked }))}
-            className="mt-[2px] h-4 w-4 min-h-0 accent-[#AACC33] cursor-pointer"
+            className="mt-[2px] h-4 w-4 min-h-0 accent-[#4F46E5] cursor-pointer"
           />
           <span className="grid gap-[3px] normal-case tracking-normal">
-            <span className="text-[#F0F0F0] text-[12px] font-semibold">Add additional points section</span>
-            <span className="text-[#666] text-[11px] leading-[1.45]">
+            <span className="text-[#0F172A] text-[12px] font-semibold">Add additional points section</span>
+            <span className="text-[#475569] text-[11px] leading-[1.45]">
               Include the blank Other Discussions area in the agenda form preview and print.
             </span>
           </span>
         </label>
 
         {purposes.map((purpose, index) => (
-          <div key={index} className="grid gap-3 p-4 rounded-xl border border-[#1e1e1e] bg-[#080808]">
+          <div key={index} className="grid gap-3 p-4 rounded-xl border border-[#E2E8F0] bg-[#F8FAFC]">
             <div className="flex items-center justify-between gap-3">
-              <span className="uppercase tracking-[0.15em] text-[10px] text-[#AACC33]/70 font-semibold">
+              <span className="uppercase tracking-[0.15em] text-[10px] text-[#4F46E5]/70 font-semibold">
                 Purpose {index + 1}
               </span>
               {purposes.length > 1 && (
                 <button
-                  className="text-[#FF5A5A]/60 text-[10px] uppercase tracking-[0.08em] hover:text-[#FF5A5A] transition-colors"
+                  className="text-[#DC2626]/60 text-[10px] uppercase tracking-[0.08em] hover:text-[#DC2626] transition-colors"
                   onClick={() => removePurpose(index)}
                 >
                   Remove
@@ -1104,12 +1104,12 @@ export default function NewMeetingPage({ app }) {
           </div>
         )}
 
-        <div className="h-px bg-[#1a1a1a]" />
+        <div className="h-px bg-[#E2E8F0]" />
         <button className={P.primary} onClick={app.generateMeeting} disabled={!canGenerate}>
           Generate &amp; Save Meeting →
         </button>
         {!canGenerate && (
-          <p className="text-[11px] text-[#555] text-center m-0">
+          <p className="text-[11px] text-[#64748B] text-center m-0">
             Name, date (dd/mm/yyyy), time, caller, and at least one purpose required
           </p>
         )}
