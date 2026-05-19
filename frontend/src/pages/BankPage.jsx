@@ -4,17 +4,17 @@ import { buildNotice, getMeetingCallerLabel, getMeetingModeLabel, getMeetingVenu
 
 /* ─── Design tokens ──────────────────────────────────────────── */
 const P = {
-  input:    'bg-[#141414] border border-[#262626] rounded-xl text-[#F0F0F0] text-[14px] px-[13px] py-3 w-full outline-none min-h-[44px] appearance-none transition-[border-color,box-shadow] duration-150 placeholder:text-[#2a2a2a] focus:border-[#AACC33]/45 focus:[box-shadow:0_0_0_3px_rgba(170,204,51,0.06)]',
-  select:   'bg-[#141414] border border-[#262626] rounded-xl text-[#F0F0F0] text-[14px] px-[13px] py-3 w-full outline-none min-h-[44px] appearance-none cursor-pointer transition-[border-color] duration-150 focus:border-[#AACC33]/45 [background-image:url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'12\' height=\'8\' fill=\'none\'%3E%3Cpath d=\'M1 1l5 5 5-5\' stroke=\'%23555\' stroke-width=\'1.5\' stroke-linecap=\'round\'/%3E%3C/svg%3E")] bg-no-repeat [background-position:right_13px_center] pr-9',
-  label:    'flex flex-col gap-[6px] text-[11px] tracking-[0.15em] uppercase text-[#555]',
-  dateText: 'bg-transparent text-[#F0F0F0] text-[13px] pl-[36px] pr-[36px] py-3 w-full outline-none min-h-[44px] appearance-none placeholder:text-[#2a2a2a] font-mono',
+  input:    'bg-[#FFFFFF] border border-[#E2E8F0] rounded-xl text-[#0F172A] text-[14px] px-[13px] py-3 w-full outline-none min-h-[44px] appearance-none transition-[border-color,box-shadow] duration-150 placeholder:text-[#E2E8F0] focus:border-[#4F46E5]/45 focus:[box-shadow:0_0_0_3px_rgba(79,70,229,0.06)]',
+  select:   'bg-[#FFFFFF] border border-[#E2E8F0] rounded-xl text-[#0F172A] text-[14px] px-[13px] py-3 w-full outline-none min-h-[44px] appearance-none cursor-pointer transition-[border-color] duration-150 focus:border-[#4F46E5]/45 [background-image:url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'12\' height=\'8\' fill=\'none\'%3E%3Cpath d=\'M1 1l5 5 5-5\' stroke=\'%23555\' stroke-width=\'1.5\' stroke-linecap=\'round\'/%3E%3C/svg%3E")] bg-no-repeat [background-position:right_13px_center] pr-9',
+  label:    'flex flex-col gap-[6px] text-[11px] tracking-[0.15em] uppercase text-[#64748B]',
+  dateText: 'bg-transparent text-[#0F172A] text-[13px] pl-[36px] pr-[36px] py-3 w-full outline-none min-h-[44px] appearance-none placeholder:text-[#E2E8F0] font-mono',
 }
 
 const STATUS_STYLES = {
-  Closed:    { badge: 'text-[#AACC33] bg-[#AACC33]/10 border-[#AACC33]/20', bar: 'bg-[#AACC33]',  note: 'bg-[#AACC33]/[0.05] border-[#AACC33]/15', noteLbl: 'text-[#AACC33]/50' },
-  Postponed: { badge: 'text-[#a3c752] bg-[#8fb339]/10 border-[#8fb339]/20', bar: 'bg-[#8fb339]',  note: 'bg-[#8fb339]/[0.05] border-[#8fb339]/15',  noteLbl: 'text-[#8fb339]/50' },
-  Cancelled: { badge: 'text-[#FF5A5A] bg-[#FF5A5A]/10 border-[#FF5A5A]/20', bar: 'bg-[#FF5A5A]', note: 'bg-[#FF5A5A]/[0.05] border-[#FF5A5A]/15',  noteLbl: 'text-[#FF5A5A]/50' },
-  Open:      { badge: 'text-white/35 bg-white/[0.04] border-white/[0.08]',   bar: 'bg-[#2a2a2a]', note: 'bg-white/[0.025] border-white/[0.07]',     noteLbl: 'text-white/25' },
+  Closed:    { badge: 'text-emerald-700 bg-emerald-50 border-emerald-200', bar: 'bg-emerald-500', note: 'bg-emerald-50 border-emerald-200', noteLbl: 'text-emerald-700' },
+  Postponed: { badge: 'text-amber-700 bg-amber-50 border-amber-200',       bar: 'bg-amber-500',   note: 'bg-amber-50 border-amber-200',     noteLbl: 'text-amber-700' },
+  Cancelled: { badge: 'text-red-700 bg-red-50 border-red-200',             bar: 'bg-red-500',     note: 'bg-red-50 border-red-200',         noteLbl: 'text-red-700' },
+  Open:      { badge: 'text-slate-600 bg-slate-100 border-slate-200',      bar: 'bg-slate-300',   note: 'bg-slate-50 border-slate-200',     noteLbl: 'text-slate-500' },
 }
 
 const STATUS_NOTE_LABELS = {
@@ -69,7 +69,7 @@ function CalendarIcon({ active }) {
     <svg
       width="15" height="15" viewBox="0 0 16 16" fill="none"
       xmlns="http://www.w3.org/2000/svg"
-      style={{ color: active ? '#AACC33' : '#555', transition: 'color 150ms', display: 'block' }}
+      style={{ color: active ? '#4F46E5' : '#64748B', transition: 'color 150ms', display: 'block' }}
     >
       <rect x="1.5" y="2.5" width="13" height="12" rx="2"
         stroke="currentColor" strokeWidth="1.25" />
@@ -138,36 +138,36 @@ function CalendarPicker({ value, onChange, onClose }) {
         top: 'calc(100% + 6px)',
         left: 0,
         width: '276px',
-        background: '#111',
-        border: '1px solid #262626',
+        background: '#FFFFFF',
+        border: '1px solid #E2E8F0',
         borderRadius: '16px',
-        boxShadow: '0 8px 40px rgba(0,0,0,0.65)',
+        boxShadow: '0 16px 40px rgba(15,23,42,0.14)',
         overflow: 'hidden',
       }}
     >
       {/* Month navigation */}
-      <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', padding:'10px 14px', borderBottom:'1px solid #1e1e1e' }}>
+      <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', padding:'10px 14px', borderBottom:'1px solid #E2E8F0' }}>
         <button type="button" onClick={prevMonth}
-          style={{ width:28, height:28, display:'flex', alignItems:'center', justifyContent:'center', background:'transparent', border:'none', borderRadius:8, color:'#555', fontSize:16, cursor:'pointer' }}
-          onMouseEnter={e => { e.currentTarget.style.background='#1e1e1e'; e.currentTarget.style.color='#F0F0F0' }}
-          onMouseLeave={e => { e.currentTarget.style.background='transparent'; e.currentTarget.style.color='#555' }}
+          style={{ width:28, height:28, display:'flex', alignItems:'center', justifyContent:'center', background:'transparent', border:'none', borderRadius:8, color:'#64748B', fontSize:16, cursor:'pointer' }}
+          onMouseEnter={e => { e.currentTarget.style.background='#E2E8F0'; e.currentTarget.style.color='#0F172A' }}
+          onMouseLeave={e => { e.currentTarget.style.background='transparent'; e.currentTarget.style.color='#64748B' }}
         >‹</button>
 
-        <span style={{ color:'#F0F0F0', fontSize:13, fontWeight:600, letterSpacing:'0.02em' }}>
+        <span style={{ color:'#0F172A', fontSize:13, fontWeight:600, letterSpacing:'0.02em' }}>
           {MONTHS[viewMonth]} {viewYear}
         </span>
 
         <button type="button" onClick={nextMonth}
-          style={{ width:28, height:28, display:'flex', alignItems:'center', justifyContent:'center', background:'transparent', border:'none', borderRadius:8, color:'#555', fontSize:16, cursor:'pointer' }}
-          onMouseEnter={e => { e.currentTarget.style.background='#1e1e1e'; e.currentTarget.style.color='#F0F0F0' }}
-          onMouseLeave={e => { e.currentTarget.style.background='transparent'; e.currentTarget.style.color='#555' }}
+          style={{ width:28, height:28, display:'flex', alignItems:'center', justifyContent:'center', background:'transparent', border:'none', borderRadius:8, color:'#64748B', fontSize:16, cursor:'pointer' }}
+          onMouseEnter={e => { e.currentTarget.style.background='#E2E8F0'; e.currentTarget.style.color='#0F172A' }}
+          onMouseLeave={e => { e.currentTarget.style.background='transparent'; e.currentTarget.style.color='#64748B' }}
         >›</button>
       </div>
 
       {/* Day-of-week headers */}
       <div style={{ display:'grid', gridTemplateColumns:'repeat(7,1fr)', padding:'10px 12px 4px' }}>
         {DOW.map(d => (
-          <div key={d} style={{ textAlign:'center', fontSize:10, color:'#555', textTransform:'uppercase', letterSpacing:'0.08em', fontWeight:600 }}>
+          <div key={d} style={{ textAlign:'center', fontSize:10, color:'#64748B', textTransform:'uppercase', letterSpacing:'0.08em', fontWeight:600 }}>
             {d}
           </div>
         ))}
@@ -183,15 +183,15 @@ function CalendarPicker({ value, onChange, onClose }) {
             <button key={d} type="button" onClick={() => selectDay(d)}
               style={{
                 height:32, width:'100%',
-                border: sel ? 'none' : today_ ? '1px solid rgba(170,204,51,0.4)' : 'none',
+                border: sel ? 'none' : today_ ? '1px solid rgba(79,70,229,0.4)' : 'none',
                 borderRadius:8,
-                background: sel ? '#AACC33' : 'transparent',
-                color: sel ? '#000' : today_ ? '#AACC33' : '#777',
+                background: sel ? '#4F46E5' : 'transparent',
+                color: sel ? '#FFFFFF' : today_ ? '#4F46E5' : '#475569',
                 fontSize:12, fontFamily:'monospace', fontWeight: sel ? 700 : 400,
                 cursor:'pointer', transition:'background 120ms, color 120ms',
               }}
-              onMouseEnter={e => { if (!sel) { e.currentTarget.style.background='#1e1e1e'; e.currentTarget.style.color='#F0F0F0' } }}
-              onMouseLeave={e => { if (!sel) { e.currentTarget.style.background='transparent'; e.currentTarget.style.color = today_ ? '#AACC33' : '#777' } }}
+              onMouseEnter={e => { if (!sel) { e.currentTarget.style.background='#E2E8F0'; e.currentTarget.style.color='#0F172A' } }}
+              onMouseLeave={e => { if (!sel) { e.currentTarget.style.background='transparent'; e.currentTarget.style.color = today_ ? '#4F46E5' : '#475569' } }}
             >
               {d}
             </button>
@@ -200,11 +200,11 @@ function CalendarPicker({ value, onChange, onClose }) {
       </div>
 
       {/* Today shortcut */}
-      <div style={{ borderTop:'1px solid #1e1e1e', padding:'6px 12px 8px' }}>
+      <div style={{ borderTop:'1px solid #E2E8F0', padding:'6px 12px 8px' }}>
         <button type="button" onClick={goToday}
-          style={{ width:'100%', background:'transparent', border:'none', color:'#444', fontSize:10, textTransform:'uppercase', letterSpacing:'0.1em', cursor:'pointer', padding:'4px 0', transition:'color 150ms' }}
-          onMouseEnter={e => e.currentTarget.style.color='#AACC33'}
-          onMouseLeave={e => e.currentTarget.style.color='#444'}
+          style={{ width:'100%', background:'transparent', border:'none', color:'#94A3B8', fontSize:10, textTransform:'uppercase', letterSpacing:'0.1em', cursor:'pointer', padding:'4px 0', transition:'color 150ms' }}
+          onMouseEnter={e => e.currentTarget.style.color='#4F46E5'}
+          onMouseLeave={e => e.currentTarget.style.color='#94A3B8'}
         >
           Today
         </button>
@@ -297,12 +297,12 @@ function DateFilterField({ value, onChange }) {
           onClick={clear}
           style={{
             position:'absolute', right:10, top:'50%', transform:'translateY(-50%)',
-            background:'transparent', border:'none', color:'#3a3a3a',
+            background:'transparent', border:'none', color:'#CBD5E1',
             fontSize:13, cursor:'pointer', padding:4, lineHeight:1,
             transition:'color 150ms', zIndex:10,
           }}
-          onMouseEnter={e => e.currentTarget.style.color='#F0F0F0'}
-          onMouseLeave={e => e.currentTarget.style.color='#3a3a3a'}
+          onMouseEnter={e => e.currentTarget.style.color='#0F172A'}
+          onMouseLeave={e => e.currentTarget.style.color='#CBD5E1'}
           aria-label="Clear date filter"
         >✕</button>
       ) : (
@@ -313,13 +313,13 @@ function DateFilterField({ value, onChange }) {
             position:'absolute', right:8, top:'50%', transform:'translateY(-50%)',
             width:26, height:26,
             display:'flex', alignItems:'center', justifyContent:'center',
-            background: open ? 'rgba(170,204,51,0.12)' : 'transparent',
+            background: open ? 'rgba(79,70,229,0.12)' : 'transparent',
             border:'none', borderRadius:7,
-            color: open ? '#AACC33' : '#444',
+            color: open ? '#4F46E5' : '#94A3B8',
             cursor:'pointer', transition:'background 150ms, color 150ms', zIndex:10,
           }}
-          onMouseEnter={e => { if (!open) { e.currentTarget.style.background='#1e1e1e'; e.currentTarget.style.color='#888' } }}
-          onMouseLeave={e => { if (!open) { e.currentTarget.style.background='transparent'; e.currentTarget.style.color='#444' } }}
+          onMouseEnter={e => { if (!open) { e.currentTarget.style.background='#E2E8F0'; e.currentTarget.style.color='#475569' } }}
+          onMouseLeave={e => { if (!open) { e.currentTarget.style.background='transparent'; e.currentTarget.style.color='#94A3B8' } }}
           aria-label="Toggle calendar"
         >
           <svg width="11" height="11" viewBox="0 0 12 12" fill="none">
@@ -353,11 +353,11 @@ function Field({ label, children }) {
 function AttendeeChip({ name }) {
   const initials = (name || '?').split(' ').map((n) => n[0]).join('').slice(0, 2).toUpperCase()
   return (
-    <div className="flex items-center gap-[6px] px-[9px] py-[5px] rounded-lg bg-[#141414] border border-[#222] hover:border-[#2e2e2e] transition-colors">
-      <div className="w-5 h-5 rounded-full bg-[#1c1c1c] border border-[#2a2a2a] flex items-center justify-center text-[8px] font-black text-[#AACC33] shrink-0">
+    <div className="flex items-center gap-[6px] px-[9px] py-[5px] rounded-lg bg-[#FFFFFF] border border-[#E2E8F0] hover:border-[#94A3B8] transition-colors">
+      <div className="w-5 h-5 rounded-full bg-[#F8FAFC] border border-[#E2E8F0] flex items-center justify-center text-[8px] font-black text-[#4F46E5] shrink-0">
         {initials}
       </div>
-      <span className="text-[#aaa] text-[11px] leading-none">{name}</span>
+      <span className="text-[#475569] text-[11px] leading-none">{name}</span>
     </div>
   )
 }
@@ -366,16 +366,16 @@ function AttendeeChip({ name }) {
 function DetailRow({ label, value, variant = 'default' }) {
   if (!value) return null
   const variants = {
-    default: { wrap: 'bg-[#0a0a0a] border-[#1a1a1a]',           lbl: 'text-white/40' },
-    accent:  { wrap: 'bg-[#AACC33]/[0.04] border-[#AACC33]/12', lbl: 'text-[#AACC33]/50' },
-    amber:   { wrap: 'bg-[#8fb339]/[0.04] border-[#8fb339]/12', lbl: 'text-[#8fb339]/50' },
-    danger:  { wrap: 'bg-[#FF5A5A]/[0.04] border-[#FF5A5A]/12', lbl: 'text-[#FF5A5A]/50' },
+    default: { wrap: 'bg-slate-50 border-slate-200',          lbl: 'text-slate-500' },
+    accent:  { wrap: 'bg-emerald-50 border-emerald-200',      lbl: 'text-emerald-700' },
+    amber:   { wrap: 'bg-amber-50 border-amber-200',          lbl: 'text-amber-700' },
+    danger:  { wrap: 'bg-red-50 border-red-200',              lbl: 'text-red-700' },
   }
   const v = variants[variant]
   return (
     <div className={`p-[10px_12px] rounded-[10px] border ${v.wrap}`}>
       <div className={`text-[9px] uppercase tracking-[0.14em] mb-[5px] ${v.lbl}`}>{label}</div>
-      <p className="m-0 text-[#999] text-[12.5px] leading-[1.7] whitespace-pre-line">{value}</p>
+      <p className="m-0 text-[#475569] text-[12.5px] leading-[1.7] whitespace-pre-line">{value}</p>
     </div>
   )
 }
@@ -384,8 +384,8 @@ function DetailRow({ label, value, variant = 'default' }) {
 function SectionLabel({ label }) {
   return (
     <div className="flex items-center gap-2 mb-2">
-      <span className="text-[9px] uppercase tracking-[0.16em] text-white/40 shrink-0">{label}</span>
-      <div className="flex-1 h-px bg-white/[0.05]" />
+      <span className="text-[9px] uppercase tracking-[0.16em] text-slate-500 shrink-0 font-semibold">{label}</span>
+      <div className="flex-1 h-px bg-slate-200" />
     </div>
   )
 }
@@ -399,14 +399,14 @@ function ActionPointList({ points }) {
     <div className="grid gap-2">
       <SectionLabel label="Action points" />
       {validPoints.map((point, index) => (
-        <div key={point.taskId || index} className="p-3 rounded-[10px] border border-[#AACC33]/12 bg-[#AACC33]/[0.035] grid gap-[6px]">
-          <p className="m-0 text-[#aaa] text-[12.5px] leading-[1.65] whitespace-pre-line">{point.task}</p>
+        <div key={point.taskId || index} className="p-3 rounded-[10px] border border-[#4F46E5]/12 bg-[#4F46E5]/[0.035] grid gap-[6px]">
+          <p className="m-0 text-[#475569] text-[12.5px] leading-[1.65] whitespace-pre-line">{point.task}</p>
           {(point.assignedTo || point.assignedToDesig || point.assignedToMobile || point.dueDate) && (
-            <div className="flex flex-wrap gap-x-3 gap-y-1 text-[10.5px] text-[#555]">
-              {point.assignedTo && <span>Owner: <span className="text-[#777]">{point.assignedTo}</span></span>}
-              {point.assignedToDesig && <span>Designation: <span className="text-[#777]">{point.assignedToDesig}</span></span>}
-              {point.assignedToMobile && <span>Mobile: <span className="text-[#777]">{point.assignedToMobile}</span></span>}
-              {point.dueDate && <span>Due: <span className="text-[#777]">{toDateLabel(point.dueDate)}</span></span>}
+            <div className="flex flex-wrap gap-x-3 gap-y-1 text-[10.5px] text-[#64748B]">
+              {point.assignedTo && <span>Owner: <span className="text-[#475569]">{point.assignedTo}</span></span>}
+              {point.assignedToDesig && <span>Designation: <span className="text-[#475569]">{point.assignedToDesig}</span></span>}
+              {point.assignedToMobile && <span>Mobile: <span className="text-[#475569]">{point.assignedToMobile}</span></span>}
+              {point.dueDate && <span>Due: <span className="text-[#475569]">{toDateLabel(point.dueDate)}</span></span>}
             </div>
           )}
         </div>
@@ -426,15 +426,15 @@ function FollowupDetail({ meeting }) {
   return (
     <div className="grid gap-2">
       <SectionLabel label="Follow-up" />
-      <div className="p-3 rounded-[10px] border border-[#8fb339]/12 bg-[#8fb339]/[0.04] grid gap-2">
+      <div className="p-3 rounded-[10px] border border-[#D97706]/12 bg-[#D97706]/[0.04] grid gap-2">
         {schedule && (
-          <div className="text-[10.5px] uppercase tracking-[0.12em] text-[#8fb339]/55 font-semibold">{schedule}</div>
+          <div className="text-[10.5px] uppercase tracking-[0.12em] text-[#D97706]/55 font-semibold">{schedule}</div>
         )}
         {meeting.followupPurpose && (
-          <p className="m-0 text-[#aaa] text-[12.5px] leading-[1.65] whitespace-pre-line">{meeting.followupPurpose}</p>
+          <p className="m-0 text-[#475569] text-[12.5px] leading-[1.65] whitespace-pre-line">{meeting.followupPurpose}</p>
         )}
         {meeting.followupNote && (
-          <p className="m-0 text-[#777] text-[11.5px] leading-[1.65] whitespace-pre-line">{meeting.followupNote}</p>
+          <p className="m-0 text-[#475569] text-[11.5px] leading-[1.65] whitespace-pre-line">{meeting.followupNote}</p>
         )}
       </div>
     </div>
@@ -477,16 +477,16 @@ function MeetingCard({ meeting, onPreview, user }) {
   const statusNote = noteKey ? meeting[noteKey] : null
 
   return (
-    <article className="border border-[#1e1e1e] bg-[#0e0e0e] rounded-2xl overflow-hidden hover:border-[#2a2a2a] transition-[border-color] duration-200">
+    <article className="border border-slate-200 bg-white rounded-2xl overflow-hidden hover:border-slate-300 transition-[border-color,box-shadow] duration-200 shadow-[0_1px_2px_rgba(15,23,42,0.04)] hover:shadow-[0_4px_14px_rgba(15,23,42,0.06)]">
       <div className={`h-[2px] w-full ${s.bar} opacity-50`} />
 
       <div className="p-4 grid gap-3">
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0">
-            <h3 className="m-0 text-[#F0F0F0] font-semibold text-[14px] leading-snug tracking-tight truncate">
+            <h3 className="m-0 text-[#0F172A] font-semibold text-[14px] leading-snug tracking-tight truncate">
               {meeting.title}
             </h3>
-            <p className="m-0 mt-[3px] text-[#666] text-[11px] font-mono tracking-tight">
+            <p className="m-0 mt-[3px] text-[#475569] text-[11px] font-mono tracking-tight">
               {toDateLabel(meeting.date)}
               {meeting.time     ? ` · ${meeting.time}` : ''}
               {meeting.duration ? ` · ${meeting.duration}` : ''}
@@ -497,31 +497,31 @@ function MeetingCard({ meeting, onPreview, user }) {
           </span>
         </div>
 
-        <div className="flex flex-wrap gap-x-3 gap-y-[4px] text-[11px] text-[#555]">
+        <div className="flex flex-wrap gap-x-3 gap-y-[4px] text-[11px] text-[#64748B]">
           <span>
-            <span className="text-[#444] mr-[3px] text-[9px] uppercase tracking-[0.1em]">By</span>
-            <span className="text-[#777]">{getMeetingCallerLabel(meeting, user)}</span>
+            <span className="text-[#94A3B8] mr-[3px] text-[9px] uppercase tracking-[0.1em]">By</span>
+            <span className="text-[#475569]">{getMeetingCallerLabel(meeting, user)}</span>
           </span>
-          <span className="text-white/15">·</span>
+          <span className="text-slate-300">·</span>
           <span>
-            <span className="text-[#444] mr-[3px] text-[9px] uppercase tracking-[0.1em]">Mode</span>
-            <span className="text-[#777]">{getMeetingModeLabel(meeting)}</span>
+            <span className="text-[#94A3B8] mr-[3px] text-[9px] uppercase tracking-[0.1em]">Mode</span>
+            <span className="text-[#475569]">{getMeetingModeLabel(meeting)}</span>
           </span>
           {getMeetingVenue(meeting) && (
             <>
-              <span className="text-white/15">·</span>
+              <span className="text-slate-300">·</span>
               <span>
-                <span className="text-[#444] mr-[3px] text-[9px] uppercase tracking-[0.1em]">Venue</span>
-                <span className="text-[#777]">{getMeetingVenue(meeting)}</span>
+                <span className="text-[#94A3B8] mr-[3px] text-[9px] uppercase tracking-[0.1em]">Venue</span>
+                <span className="text-[#475569]">{getMeetingVenue(meeting)}</span>
               </span>
             </>
           )}
           {attendees.length > 0 && (
             <>
-              <span className="text-white/15">·</span>
+              <span className="text-slate-300">·</span>
               <span>
-                <span className="text-[#444] mr-[3px] text-[9px] uppercase tracking-[0.1em]">Attendees</span>
-                <span className="text-[#777]">{attendees.length}</span>
+                <span className="text-[#94A3B8] mr-[3px] text-[9px] uppercase tracking-[0.1em]">Attendees</span>
+                <span className="text-[#475569]">{attendees.length}</span>
               </span>
             </>
           )}
@@ -533,11 +533,11 @@ function MeetingCard({ meeting, onPreview, user }) {
           const purposeCount = meeting.topics?.filter((t) => t.purpose || t.topic).length || 0
           return preview ? (
             <div className="flex items-start gap-2">
-              <p className={`m-0 text-[#666] text-[12px] leading-[1.65] flex-1 ${expanded ? '' : 'line-clamp-2'}`}>
+              <p className={`m-0 text-[#475569] text-[12px] leading-[1.65] flex-1 ${expanded ? '' : 'line-clamp-2'}`}>
                 {preview}
               </p>
               {purposeCount > 1 && (
-                <span className="shrink-0 px-[8px] py-[3px] rounded-full bg-[#1a1a1a] border border-[#252525] text-[9px] text-[#444] uppercase tracking-[0.1em] mt-[2px]">
+                <span className="shrink-0 px-[8px] py-[3px] rounded-full bg-[#E2E8F0] border border-[#E2E8F0] text-[9px] text-[#94A3B8] uppercase tracking-[0.1em] mt-[2px]">
                   +{purposeCount - 1} more
                 </span>
               )}
@@ -546,7 +546,7 @@ function MeetingCard({ meeting, onPreview, user }) {
         })()}
 
         {expanded && (
-          <div className="grid gap-3 pt-3 border-t border-[#181818]">
+          <div className="grid gap-3 pt-3 border-t border-[#E2E8F0]">
             {attendees.length > 0 && (
               <div>
                 <SectionLabel label="Attendees" />
@@ -560,24 +560,24 @@ function MeetingCard({ meeting, onPreview, user }) {
               <div className="grid gap-2">
                 <SectionLabel label="Purposes" />
                 {meeting.topics.filter((t) => t.purpose || t.topic).map((t, i) => (
-                  <div key={i} className="p-3 rounded-[10px] border border-[#1a1a1a] bg-[#0a0a0a] grid gap-2">
-                    <span className="text-[10px] uppercase tracking-[0.12em] text-[#AACC33]/50 font-semibold">
+                  <div key={i} className="p-3 rounded-[10px] border border-[#E2E8F0] bg-[#F8FAFC] grid gap-2">
+                    <span className="text-[10px] uppercase tracking-[0.12em] text-[#4F46E5]/50 font-semibold">
                       Purpose {i + 1}
                     </span>
                     <div>
-                      <div className="text-[9px] uppercase tracking-[0.12em] text-white/40 mb-[3px]">Purpose</div>
-                      <p className="m-0 text-[#888] text-[11.5px] leading-[1.65] whitespace-pre-line">{t.purpose || t.topic}</p>
+                      <div className="text-[9px] uppercase tracking-[0.12em] text-slate-500 mb-[3px]">Purpose</div>
+                      <p className="m-0 text-[#475569] text-[11.5px] leading-[1.65] whitespace-pre-line">{t.purpose || t.topic}</p>
                     </div>
                     {t.desiredOutcome && (
                       <div>
-                        <div className="text-[9px] uppercase tracking-[0.12em] text-white/40 mb-[3px]">Desired Outcome</div>
-                        <p className="m-0 text-[#888] text-[11.5px] leading-[1.65] whitespace-pre-line">{t.desiredOutcome}</p>
+                        <div className="text-[9px] uppercase tracking-[0.12em] text-slate-500 mb-[3px]">Desired Outcome</div>
+                        <p className="m-0 text-[#475569] text-[11.5px] leading-[1.65] whitespace-pre-line">{t.desiredOutcome}</p>
                       </div>
                     )}
                     {t.documents && (
                       <div>
-                        <div className="text-[9px] uppercase tracking-[0.12em] text-white/40 mb-[3px]">Documents Required</div>
-                        <p className="m-0 text-[#888] text-[11.5px] leading-[1.65] whitespace-pre-line">{t.documents}</p>
+                        <div className="text-[9px] uppercase tracking-[0.12em] text-slate-500 mb-[3px]">Documents Required</div>
+                        <p className="m-0 text-[#475569] text-[11.5px] leading-[1.65] whitespace-pre-line">{t.documents}</p>
                       </div>
                     )}
                   </div>
@@ -618,14 +618,14 @@ function MeetingCard({ meeting, onPreview, user }) {
               />
             )}
             {(meeting.unit || meeting.refNo) && (
-              <div className="flex flex-wrap items-center gap-4 pt-2 border-t border-[#181818]">
-                {meeting.unit  && <span className="text-[11px] text-[#555]">Dept: <span className="text-[#777]">{meeting.unit}</span></span>}
-                {meeting.refNo && <span className="text-[11px] text-[#555]">Ref: <code className="text-[#777] font-mono text-[10.5px]">{meeting.refNo}</code></span>}
+              <div className="flex flex-wrap items-center gap-4 pt-2 border-t border-[#E2E8F0]">
+                {meeting.unit  && <span className="text-[11px] text-[#64748B]">Dept: <span className="text-[#475569]">{meeting.unit}</span></span>}
+                {meeting.refNo && <span className="text-[11px] text-[#64748B]">Ref: <code className="text-[#475569] font-mono text-[10.5px]">{meeting.refNo}</code></span>}
               </div>
             )}
             {onPreview && (
               <button
-                className="text-left text-[10px] uppercase tracking-[0.1em] text-[#AACC33]/40 hover:text-[#AACC33]/70 transition-colors cursor-pointer mt-[-2px]"
+                className="text-left text-[10px] uppercase tracking-[0.1em] text-[#4F46E5]/40 hover:text-[#4F46E5]/70 transition-colors cursor-pointer mt-[-2px]"
                 onClick={() => onPreview(meeting)}
               >
                 Preview notice ↗
@@ -635,7 +635,7 @@ function MeetingCard({ meeting, onPreview, user }) {
         )}
 
         <button
-          className="text-left text-[10px] uppercase tracking-[0.1em] text-[#2a2a2a] hover:text-[#555] transition-colors cursor-pointer flex items-center gap-[6px]"
+          className="text-left text-[10px] uppercase tracking-[0.1em] text-slate-400 hover:text-slate-700 transition-colors cursor-pointer flex items-center gap-[6px] font-semibold"
           onClick={() => setExpanded((v) => !v)}
         >
           <span className="text-[8px]">{expanded ? '▲' : '▼'}</span>
@@ -649,23 +649,23 @@ function MeetingCard({ meeting, onPreview, user }) {
 /* ─── Filter pill ────────────────────────────────────────────── */
 function FilterPill({ label, count, active, color, onClick }) {
   const activeMap = {
-    all:       'bg-[#AACC33]/10 text-[#AACC33] border-[#AACC33]/25',
-    Closed:    'bg-[#AACC33]/10 text-[#AACC33] border-[#AACC33]/25',
-    Postponed: 'bg-[#8fb339]/10 text-[#a3c752] border-[#8fb339]/25',
-    Cancelled: 'bg-[#FF5A5A]/10 text-[#FF5A5A] border-[#FF5A5A]/25',
-    Open:      'bg-white/[0.04] text-white/50 border-white/[0.08]',
+    all:       'bg-indigo-50 text-indigo-700 border-indigo-200',
+    Closed:    'bg-emerald-50 text-emerald-700 border-emerald-200',
+    Postponed: 'bg-amber-50 text-amber-700 border-amber-200',
+    Cancelled: 'bg-red-50 text-red-700 border-red-200',
+    Open:      'bg-slate-100 text-slate-600 border-slate-200',
   }
   return (
     <button
       className={`px-[14px] py-[7px] rounded-xl border text-[10.5px] font-semibold uppercase tracking-[0.1em] cursor-pointer transition-all duration-150 flex items-center gap-[5px] ${
         active
           ? activeMap[color || label] || activeMap.all
-          : 'bg-transparent text-[#555] border-[#1e1e1e] hover:border-[#2a2a2a] hover:text-[#888]'
+          : 'bg-white text-slate-600 border-slate-200 hover:border-slate-300 hover:text-slate-900'
       }`}
       onClick={onClick}
     >
       {label}
-      {count != null && <span className="opacity-50 text-[9px]">{count}</span>}
+      {count != null && <span className="opacity-60 text-[9px]">{count}</span>}
     </button>
   )
 }
@@ -680,14 +680,14 @@ function MeetingHeaderGroup({ group, children }) {
       <button
         type="button"
         onClick={() => setOpen(v => !v)}
-        className="flex items-center gap-3 text-left w-full group px-1 py-[6px] rounded-xl hover:bg-white/[0.02] transition-colors"
+        className="flex items-center gap-3 text-left w-full group px-1 py-[6px] rounded-xl hover:bg-slate-50 transition-colors"
       >
         {/* Animated chevron */}
-        <div className="w-6 h-6 rounded-lg bg-[#141414] border border-[#222] flex items-center justify-center shrink-0 group-hover:border-[#2e2e2e] transition-colors">
+        <div className="w-6 h-6 rounded-lg bg-[#FFFFFF] border border-[#E2E8F0] flex items-center justify-center shrink-0 group-hover:border-[#94A3B8] transition-colors">
           <svg
             width="10" height="10" viewBox="0 0 12 12" fill="none"
             style={{
-              color: '#444',
+              color: '#94A3B8',
               transition: 'transform 150ms ease, color 150ms',
               transform: open ? 'rotate(90deg)' : 'rotate(0deg)',
             }}
@@ -697,20 +697,20 @@ function MeetingHeaderGroup({ group, children }) {
         </div>
 
         {/* Header title */}
-        <span className="text-[13.5px] font-semibold tracking-tight truncate text-[#888] group-hover:text-[#aaa] transition-colors">
+        <span className="text-[13.5px] font-semibold tracking-tight truncate text-[#475569] group-hover:text-[#475569] transition-colors">
           {group.header}
         </span>
 
         {/* Stretching divider */}
-        <div className="flex-1 h-px bg-[#1c1c1c] group-hover:bg-[#252525] transition-colors" />
+        <div className="flex-1 h-px bg-[#F8FAFC] group-hover:bg-[#E2E8F0] transition-colors" />
 
         {/* Meta */}
         <div className="flex items-center gap-[8px] shrink-0">
-          <span className="text-[11px] text-[#555] font-mono tabular-nums">
+          <span className="text-[11px] text-[#64748B] font-mono tabular-nums">
             {group.meetings.length} {group.meetings.length === 1 ? 'meeting' : 'meetings'}
           </span>
           {group.openCount > 0 && (
-            <span className="px-[9px] py-[3px] rounded-full bg-[#AACC33]/[0.07] border border-[#AACC33]/[0.15] text-[#AACC33]/60 text-[10px] uppercase tracking-[0.1em] font-semibold">
+            <span className="px-[9px] py-[3px] rounded-full bg-[#4F46E5]/[0.07] border border-[#4F46E5]/[0.15] text-[#4F46E5]/60 text-[10px] uppercase tracking-[0.1em] font-semibold">
               {group.openCount} open
             </span>
           )}
@@ -734,7 +734,7 @@ function TabBar({ active, onChange, bankCount, headerCount }) {
     { id: 'headers', label: 'Meeting Headers',  count: headerCount },
   ]
   return (
-    <div className="flex items-center gap-1 p-1 bg-[#0e0e0e] border border-[#1e1e1e] rounded-2xl">
+    <div className="flex items-center gap-1 p-1 bg-[#FFFFFF] border border-[#E2E8F0] rounded-2xl">
       {tabs.map((t) => (
         <button
           key={t.id}
@@ -742,12 +742,12 @@ function TabBar({ active, onChange, bankCount, headerCount }) {
           onClick={() => onChange(t.id)}
           className={`flex-1 flex items-center justify-center gap-[6px] px-4 py-[9px] rounded-xl text-[11.5px] font-semibold tracking-tight transition-all duration-150 cursor-pointer ${
             active === t.id
-              ? 'bg-[#161616] border border-[#2a2a2a] text-[#F0F0F0] shadow-[0_1px_3px_rgba(0,0,0,0.4)]'
-              : 'bg-transparent border border-transparent text-[#555] hover:text-[#888]'
+              ? 'bg-indigo-50 border border-indigo-200 text-indigo-700 shadow-[0_1px_2px_rgba(15,23,42,0.04)]'
+              : 'bg-transparent border border-transparent text-[#64748B] hover:text-[#475569]'
           }`}
         >
           {t.label}
-          <span className={`text-[9px] font-mono tabular-nums transition-colors ${active === t.id ? 'text-[#444]' : 'text-[#2a2a2a]'}`}>
+          <span className={`text-[9px] font-mono tabular-nums transition-colors ${active === t.id ? 'text-indigo-500' : 'text-slate-400'}`}>
             {t.count}
           </span>
         </button>
@@ -840,9 +840,9 @@ function BankTab({ app }) {
             onChange={(e) => app.setBankQuery(e.target.value)}
             placeholder="Title, caller, purpose, attendee, date…"
           />
-          <span className="absolute left-[13px] top-1/2 -translate-y-1/2 text-[#333] text-[14px] pointer-events-none select-none">⌕</span>
+          <span className="absolute left-[13px] top-1/2 -translate-y-1/2 text-[#94A3B8] text-[14px] pointer-events-none select-none">⌕</span>
           {app.bankQuery && (
-            <button className="absolute right-[12px] top-1/2 -translate-y-1/2 text-[#444] hover:text-[#777] text-[14px] cursor-pointer transition-colors" onClick={() => app.setBankQuery('')}>✕</button>
+            <button className="absolute right-[12px] top-1/2 -translate-y-1/2 text-[#94A3B8] hover:text-[#475569] text-[14px] cursor-pointer transition-colors" onClick={() => app.setBankQuery('')}>✕</button>
           )}
         </div>
       </Field>
@@ -850,11 +850,11 @@ function BankTab({ app }) {
       {/* Date range + export */}
       <div className="flex items-center gap-2 flex-wrap">
         <div className="flex items-center gap-2 flex-1 min-w-0">
-          <span className="text-[10px] uppercase tracking-[0.12em] text-[#555] shrink-0">From</span>
+          <span className="text-[10px] uppercase tracking-[0.12em] text-[#64748B] shrink-0">From</span>
           <div className="flex-1 min-w-[180px]">
             <DateField value={fromDate} onChange={setFromDate} />
           </div>
-          <span className="text-[#252525] shrink-0">→</span>
+          <span className="text-slate-400 shrink-0">→</span>
           <div className="flex-1 min-w-[180px]">
             <DateField value={toDate} onChange={setToDate} />
           </div>
@@ -862,7 +862,7 @@ function BankTab({ app }) {
         <button
           onClick={exportMeetings}
           disabled={!meetings.length}
-          className="shrink-0 min-h-[38px] px-4 py-2 rounded-xl bg-transparent text-[#AACC33]/60 border border-[#AACC33]/20 text-[10px] tracking-[0.08em] uppercase cursor-pointer transition-all hover:bg-[#AACC33]/[0.06] hover:text-[#AACC33] hover:border-[#AACC33]/30 disabled:opacity-30 disabled:cursor-not-allowed"
+          className="shrink-0 min-h-[38px] px-4 py-2 rounded-xl bg-transparent text-[#4F46E5]/60 border border-[#4F46E5]/20 text-[10px] tracking-[0.08em] uppercase cursor-pointer transition-all hover:bg-[#4F46E5]/[0.06] hover:text-[#4F46E5] hover:border-[#4F46E5]/30 disabled:opacity-30 disabled:cursor-not-allowed"
         >
           Export CSV
         </button>
@@ -871,10 +871,10 @@ function BankTab({ app }) {
       {/* Results meta */}
       {hasFilters && (
         <div className="flex items-center justify-between">
-          <p className="m-0 text-[11px] text-[#555]">
-            <span className="text-[#888]">{meetings.length}</span> result{meetings.length !== 1 ? 's' : ''}
+          <p className="m-0 text-[11px] text-[#64748B]">
+            <span className="text-[#475569]">{meetings.length}</span> result{meetings.length !== 1 ? 's' : ''}
           </p>
-          <button className="text-[10px] uppercase tracking-[0.1em] text-[#555] hover:text-[#888] transition-colors cursor-pointer"
+          <button className="text-[10px] uppercase tracking-[0.1em] text-[#64748B] hover:text-[#475569] transition-colors cursor-pointer"
             onClick={clearAllFilters}>
             Clear filters ✕
           </button>
@@ -891,11 +891,11 @@ function BankTab({ app }) {
           ))}
         </div>
       ) : (
-        <div className="py-14 px-4 border border-dashed border-[#1e1e1e] rounded-2xl text-center">
+        <div className="py-14 px-4 border border-dashed border-[#E2E8F0] rounded-2xl text-center">
           <div className="text-[32px] mb-3 opacity-20 select-none">◎</div>
-          <p className="m-0 text-[#555] text-[12px] leading-[1.6]">No meetings match your current filters</p>
+          <p className="m-0 text-[#64748B] text-[12px] leading-[1.6]">No meetings match your current filters</p>
           {hasFilters && (
-            <button className="mt-4 px-4 py-[7px] rounded-xl border border-[#1e1e1e] text-[10.5px] text-[#555] uppercase tracking-[0.1em] cursor-pointer hover:border-[#2a2a2a] hover:text-[#888] transition-all"
+            <button className="mt-4 px-4 py-[7px] rounded-xl border border-[#E2E8F0] text-[10.5px] text-[#64748B] uppercase tracking-[0.1em] cursor-pointer hover:border-[#E2E8F0] hover:text-[#475569] transition-all"
               onClick={clearAllFilters}>
               Clear filters
             </button>
@@ -963,9 +963,9 @@ function HeadersTab({ app }) {
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Header name, title, caller, purpose…"
           />
-          <span className="absolute left-[13px] top-1/2 -translate-y-1/2 text-[#333] text-[14px] pointer-events-none select-none">⌕</span>
+          <span className="absolute left-[13px] top-1/2 -translate-y-1/2 text-[#94A3B8] text-[14px] pointer-events-none select-none">⌕</span>
           {query && (
-            <button className="absolute right-[12px] top-1/2 -translate-y-1/2 text-[#444] hover:text-[#777] text-[14px] cursor-pointer transition-colors" onClick={() => setQuery('')}>✕</button>
+            <button className="absolute right-[12px] top-1/2 -translate-y-1/2 text-[#94A3B8] hover:text-[#475569] text-[14px] cursor-pointer transition-colors" onClick={() => setQuery('')}>✕</button>
           )}
         </div>
       </Field>
@@ -973,10 +973,10 @@ function HeadersTab({ app }) {
       {/* Results meta */}
       {hasFilters && (
         <div className="flex items-center justify-between">
-          <p className="m-0 text-[11px] text-[#555]">
-            <span className="text-[#888]">{totalShown}</span> result{totalShown !== 1 ? 's' : ''}
+          <p className="m-0 text-[11px] text-[#64748B]">
+            <span className="text-[#475569]">{totalShown}</span> result{totalShown !== 1 ? 's' : ''}
           </p>
-          <button className="text-[10px] uppercase tracking-[0.1em] text-[#555] hover:text-[#888] transition-colors cursor-pointer"
+          <button className="text-[10px] uppercase tracking-[0.1em] text-[#64748B] hover:text-[#475569] transition-colors cursor-pointer"
             onClick={() => { setQuery(''); setFilter('all') }}>
             Clear filters ✕
           </button>
@@ -997,13 +997,13 @@ function HeadersTab({ app }) {
           ))}
         </div>
       ) : (
-        <div className="py-14 px-4 border border-dashed border-[#1e1e1e] rounded-2xl text-center">
+        <div className="py-14 px-4 border border-dashed border-[#E2E8F0] rounded-2xl text-center">
           <div className="text-[32px] mb-3 opacity-20 select-none">◎</div>
-          <p className="m-0 text-[#555] text-[12px] leading-[1.6]">
+          <p className="m-0 text-[#64748B] text-[12px] leading-[1.6]">
             {hasFilters ? 'No meetings match your filters' : 'No meetings have been assigned to a header yet'}
           </p>
           {hasFilters && (
-            <button className="mt-4 px-4 py-[7px] rounded-xl border border-[#1e1e1e] text-[10.5px] text-[#555] uppercase tracking-[0.1em] cursor-pointer hover:border-[#2a2a2a] hover:text-[#888] transition-all"
+            <button className="mt-4 px-4 py-[7px] rounded-xl border border-[#E2E8F0] text-[10.5px] text-[#64748B] uppercase tracking-[0.1em] cursor-pointer hover:border-[#E2E8F0] hover:text-[#475569] transition-all"
               onClick={() => { setQuery(''); setFilter('all') }}>
               Clear filters
             </button>
@@ -1024,22 +1024,22 @@ export default function BankPage({ app }) {
     <section className="grid gap-4">
 
       {/* ── Hero ── */}
-      <div className="relative overflow-hidden p-5 border border-[#1e1e1e] bg-[#0e0e0e] rounded-2xl flex items-start justify-between gap-4">
-        <div className="pointer-events-none absolute -top-8 -right-8 w-36 h-36 rounded-full bg-[radial-gradient(circle,rgba(170,204,51,0.05)_0%,transparent_70%)]" />
+      <div className="relative overflow-hidden p-5 border border-slate-200 bg-white rounded-2xl flex items-start justify-between gap-4 shadow-[0_1px_2px_rgba(15,23,42,0.04)]">
+        <div className="pointer-events-none absolute -top-8 -right-8 w-36 h-36 rounded-full bg-[radial-gradient(circle,rgba(79,70,229,0.10)_0%,transparent_70%)]" />
         <div>
-          <p className="m-0 mb-[5px] uppercase tracking-[0.2em] text-[10px] text-[#555]">
+          <p className="m-0 mb-[5px] uppercase tracking-[0.2em] text-[10px] text-slate-500 font-semibold">
             {app.orgName || 'Organisation'}
           </p>
-          <h1 className="m-0 font-black text-[22px] text-[#F0F0F0] leading-tight tracking-tight">
+          <h1 className="m-0 font-bold text-[22px] text-slate-900 leading-tight tracking-tight">
             {activeTab === 'bank' ? 'Meeting Bank' : 'Meeting Headers'}
           </h1>
-          <p className="m-0 mt-[6px] text-[#666] text-[13px] leading-[1.6]">
+          <p className="m-0 mt-[6px] text-slate-600 text-[13px] leading-[1.6]">
             {activeTab === 'bank'
               ? 'Browse, search, and filter all meetings across your organisation.'
               : 'Meetings organised under a named header.'}
           </p>
         </div>
-        <div className="shrink-0 px-3 py-[6px] text-[10px] uppercase tracking-[0.12em] rounded-full text-[#444] bg-white/[0.02] border border-[#1e1e1e] font-mono">
+        <div className="shrink-0 px-3 py-[6px] text-[10px] uppercase tracking-[0.12em] rounded-full text-slate-500 bg-slate-50 border border-slate-200 font-mono">
           {activeTab === 'bank' ? app.meetings.length : totalHeadered} total
         </div>
       </div>

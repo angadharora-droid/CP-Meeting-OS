@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 
-const dateTimeClass = 'bg-[#141414] border border-[#262626] rounded-xl text-[#F0F0F0] text-[14px] pl-[42px] pr-[44px] py-3 w-full outline-none min-h-[44px] appearance-none transition-[border-color,box-shadow] duration-150 [color-scheme:dark] focus:border-[#AACC33]/45 focus:[box-shadow:0_0_0_3px_rgba(170,204,51,0.06)] placeholder:text-[#2e2e2e] font-mono'
+const dateTimeClass = 'bg-white border border-slate-200 rounded-xl text-slate-900 text-[14px] pl-[42px] pr-[44px] py-3 w-full outline-none min-h-[44px] appearance-none transition-[border-color,box-shadow] duration-150 focus:border-indigo-500 focus:[box-shadow:0_0_0_3px_rgba(79,70,229,0.12)] placeholder:text-slate-400 font-mono'
 
 function maskDate(raw) {
   const digits = raw.replace(/\D/g, '').slice(0, 8)
@@ -73,7 +73,7 @@ function composeTime({ hour, minute, period }) {
 
 function CalendarIcon({ active }) {
   return (
-    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" style={{ color: active ? '#AACC33' : '#555', transition: 'color 150ms', display: 'block' }}>
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" style={{ color: active ? '#4F46E5' : '#94A3B8', transition: 'color 150ms', display: 'block' }}>
       <rect x="1.5" y="2.5" width="13" height="12" rx="2" stroke="currentColor" strokeWidth="1.25" />
       <path d="M1.5 6.5h13" stroke="currentColor" strokeWidth="1.25" />
       <path d="M5 1v3M11 1v3" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" />
@@ -88,7 +88,7 @@ function CalendarIcon({ active }) {
 
 function ClockIcon({ active }) {
   return (
-    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" style={{ color: active ? '#AACC33' : '#555', transition: 'color 150ms', display: 'block' }}>
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" style={{ color: active ? '#4F46E5' : '#94A3B8', transition: 'color 150ms', display: 'block' }}>
       <circle cx="8" cy="8" r="6.5" stroke="currentColor" strokeWidth="1.25" />
       <path d="M8 4.5V8l2.4 1.6" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
@@ -111,14 +111,14 @@ function CalendarPicker({ value, onChange, onClose }) {
   for (let d = 1; d <= daysInMonth; d++) cells.push(d)
 
   return (
-    <div onMouseDown={(e) => e.preventDefault()} className="absolute left-0 top-[calc(100%+6px)] z-50 w-[276px] overflow-hidden rounded-2xl border border-[#262626] bg-[#111] shadow-[0_8px_40px_rgba(0,0,0,0.65)]">
-      <div className="flex items-center justify-between border-b border-[#1e1e1e] px-3.5 py-2.5">
-        <button type="button" className="h-7 w-7 rounded-lg text-[#555] hover:bg-[#1e1e1e] hover:text-[#F0F0F0]" onClick={() => viewMonth === 0 ? (setViewMonth(11), setViewYear((y) => y - 1)) : setViewMonth((m) => m - 1)}>‹</button>
-        <span className="text-[13px] font-semibold text-[#F0F0F0]">{MONTHS[viewMonth]} {viewYear}</span>
-        <button type="button" className="h-7 w-7 rounded-lg text-[#555] hover:bg-[#1e1e1e] hover:text-[#F0F0F0]" onClick={() => viewMonth === 11 ? (setViewMonth(0), setViewYear((y) => y + 1)) : setViewMonth((m) => m + 1)}>›</button>
+    <div onMouseDown={(e) => e.preventDefault()} className="absolute left-0 top-[calc(100%+6px)] z-50 w-[276px] overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-[0_16px_40px_rgba(15,23,42,0.12)]">
+      <div className="flex items-center justify-between border-b border-slate-200 px-3.5 py-2.5">
+        <button type="button" className="h-7 w-7 rounded-lg text-slate-500 hover:bg-slate-100 hover:text-slate-900" onClick={() => viewMonth === 0 ? (setViewMonth(11), setViewYear((y) => y - 1)) : setViewMonth((m) => m - 1)}>‹</button>
+        <span className="text-[13px] font-semibold text-slate-900">{MONTHS[viewMonth]} {viewYear}</span>
+        <button type="button" className="h-7 w-7 rounded-lg text-slate-500 hover:bg-slate-100 hover:text-slate-900" onClick={() => viewMonth === 11 ? (setViewMonth(0), setViewYear((y) => y + 1)) : setViewMonth((m) => m + 1)}>›</button>
       </div>
       <div className="grid grid-cols-7 px-3 pb-1 pt-2.5">
-        {DOW.map((d) => <div key={d} className="text-center text-[10px] font-semibold uppercase tracking-[0.08em] text-[#555]">{d}</div>)}
+        {DOW.map((d) => <div key={d} className="text-center text-[10px] font-semibold uppercase tracking-[0.08em] text-slate-400">{d}</div>)}
       </div>
       <div className="grid grid-cols-7 gap-y-0.5 px-3 pb-3">
         {cells.map((d, i) => {
@@ -126,14 +126,14 @@ function CalendarPicker({ value, onChange, onClose }) {
           const sel = parsed && parsed.d === d && parsed.m === viewMonth + 1 && parsed.y === viewYear
           const isToday = today.getDate() === d && today.getMonth() === viewMonth && today.getFullYear() === viewYear
           return (
-            <button key={d} type="button" className={`h-8 rounded-lg text-[12px] font-mono ${sel ? 'bg-[#AACC33] font-bold text-black' : isToday ? 'border border-[#AACC33]/40 text-[#AACC33]' : 'text-[#777] hover:bg-[#1e1e1e] hover:text-[#F0F0F0]'}`} onClick={() => { onChange(formatDMY(d, viewMonth + 1, viewYear)); onClose() }}>
+            <button key={d} type="button" className={`h-8 rounded-lg text-[12px] font-mono ${sel ? 'bg-indigo-600 font-bold text-white' : isToday ? 'border border-indigo-300 text-indigo-600' : 'text-slate-700 hover:bg-slate-100 hover:text-slate-900'}`} onClick={() => { onChange(formatDMY(d, viewMonth + 1, viewYear)); onClose() }}>
               {d}
             </button>
           )
         })}
       </div>
-      <div className="border-t border-[#1e1e1e] px-3 py-2">
-        <button type="button" className="w-full text-[10px] uppercase tracking-[0.1em] text-[#444] hover:text-[#AACC33]" onClick={() => { onChange(formatDMY(today.getDate(), today.getMonth() + 1, today.getFullYear())); onClose() }}>Today</button>
+      <div className="border-t border-slate-200 px-3 py-2">
+        <button type="button" className="w-full text-[10px] uppercase tracking-[0.1em] text-slate-500 hover:text-indigo-600 font-semibold" onClick={() => { onChange(formatDMY(today.getDate(), today.getMonth() + 1, today.getFullYear())); onClose() }}>Today</button>
       </div>
     </div>
   )
@@ -185,7 +185,7 @@ export function DateField({ value, onChange, output = 'iso' }) {
 
 function PickerToggle({ open, onClick, label }) {
   return (
-    <button type="button" tabIndex={-1} onClick={onClick} aria-label={label} className={`absolute right-2.5 top-1/2 z-10 flex h-7 w-7 -translate-y-1/2 items-center justify-center rounded-lg transition-colors ${open ? 'bg-[#AACC33]/12 text-[#AACC33]' : 'text-[#444] hover:bg-[#1e1e1e] hover:text-[#888]'}`}>
+    <button type="button" tabIndex={-1} onClick={onClick} aria-label={label} className={`absolute right-2.5 top-1/2 z-10 flex h-7 w-7 -translate-y-1/2 items-center justify-center rounded-lg transition-colors ${open ? 'bg-indigo-50 text-indigo-600' : 'text-slate-400 hover:bg-slate-100 hover:text-slate-700'}`}>
       <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
         <path d={open ? 'M2 8l4-4 4 4' : 'M2 4l4 4 4-4'} stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
       </svg>
@@ -237,7 +237,7 @@ function TimeColumn({ options, value, onChange, className = '', textAlign = 'cen
         {options.map((option) => {
           const sel = option.value === value
           return (
-            <button key={option.value} type="button" onClick={() => onChange(option.value)} style={{ textAlign }} className={`h-[38px] w-full font-mono transition-all duration-150 ${btnPaddingClass} ${sel ? 'text-[20px] font-bold text-[#E8E8E8]' : 'text-[15px] text-[#353535] hover:text-[#555]'}`}>
+            <button key={option.value} type="button" onClick={() => onChange(option.value)} style={{ textAlign }} className={`h-[38px] w-full font-mono transition-all duration-150 ${btnPaddingClass} ${sel ? 'text-[20px] font-bold text-slate-900' : 'text-[15px] text-slate-400 hover:text-slate-600'}`}>
               {option.label}
             </button>
           )
@@ -255,25 +255,25 @@ function TimePicker({ value, onChange, onClose }) {
   const update = (part) => onChange(composeTime({ ...selected, ...part }))
 
   return (
-    <div onMouseDown={(e) => e.preventDefault()} className="absolute left-0 top-[calc(100%+6px)] z-50 w-[280px] overflow-hidden rounded-2xl border border-[#242424] bg-[#111] shadow-[0_12px_48px_rgba(0,0,0,0.72)]">
-      <div className="flex items-center justify-between border-b border-[#1a1a1a] px-3.5 py-2.5">
-        <span className="text-[9px] font-bold uppercase tracking-[0.18em] text-[#444]">Select time</span>
-        <button type="button" onClick={() => { onChange(roundToNextQuarter()); onClose() }} className="rounded-md border border-[#AACC33]/20 bg-[#AACC33]/10 px-2.5 py-1 text-[9px] font-bold uppercase tracking-[0.12em] text-[#AACC33] hover:bg-[#AACC33]/15">Now</button>
+    <div onMouseDown={(e) => e.preventDefault()} className="absolute left-0 top-[calc(100%+6px)] z-50 w-[280px] overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-[0_16px_48px_rgba(15,23,42,0.14)]">
+      <div className="flex items-center justify-between border-b border-slate-200 px-3.5 py-2.5">
+        <span className="text-[9px] font-bold uppercase tracking-[0.18em] text-slate-500">Select time</span>
+        <button type="button" onClick={() => { onChange(roundToNextQuarter()); onClose() }} className="rounded-md border border-indigo-200 bg-indigo-50 px-2.5 py-1 text-[9px] font-bold uppercase tracking-[0.12em] text-indigo-600 hover:bg-indigo-100">Now</button>
       </div>
       <div className="relative h-[196px]">
-        <div className="pointer-events-none absolute inset-x-3 top-1/2 h-[42px] -translate-y-1/2 rounded-2xl bg-white/[0.05]" />
-        <div className="pointer-events-none absolute inset-x-0 top-0 z-10 h-16 bg-gradient-to-b from-[#111] to-transparent" />
-        <div className="pointer-events-none absolute inset-x-0 bottom-0 z-10 h-16 bg-gradient-to-t from-[#111] to-transparent" />
+        <div className="pointer-events-none absolute inset-x-3 top-1/2 h-[42px] -translate-y-1/2 rounded-2xl bg-indigo-50" />
+        <div className="pointer-events-none absolute inset-x-0 top-0 z-10 h-16 bg-gradient-to-b from-white to-transparent" />
+        <div className="pointer-events-none absolute inset-x-0 bottom-0 z-10 h-16 bg-gradient-to-t from-white to-transparent" />
         <div className="flex h-full items-stretch">
           <TimeColumn options={hourOptions} value={selected.hour} onChange={(hour) => update({ hour })} className="flex-1" textAlign="right" btnPaddingClass="pr-2" />
-          <div className="pointer-events-none z-20 flex w-5 shrink-0 items-center justify-center pb-px text-[16px] font-bold text-[#444]">:</div>
+          <div className="pointer-events-none z-20 flex w-5 shrink-0 items-center justify-center pb-px text-[16px] font-bold text-slate-400">:</div>
           <TimeColumn options={minuteOptions} value={selected.minute} onChange={(minute) => update({ minute })} className="flex-1" textAlign="left" btnPaddingClass="pl-1" />
           <TimeColumn options={periodOptions} value={selected.period} onChange={(period) => update({ period })} className="w-[68px] shrink-0" textAlign="left" btnPaddingClass="pl-3" />
         </div>
       </div>
-      <div className="flex items-center justify-between gap-3 border-t border-[#1a1a1a] px-4 py-3">
-        <span className="font-mono text-[16px] font-bold tracking-wider text-[#AACC33]">{toReadableTime(value) || '--:-- --'}</span>
-        <button type="button" onClick={onClose} className="rounded-lg bg-[#AACC33] px-[18px] py-[7px] text-[10px] font-bold uppercase tracking-[0.1em] text-black hover:bg-[#BADA44]">Done</button>
+      <div className="flex items-center justify-between gap-3 border-t border-slate-200 px-4 py-3">
+        <span className="font-mono text-[16px] font-bold tracking-wider text-indigo-600">{toReadableTime(value) || '--:-- --'}</span>
+        <button type="button" onClick={onClose} className="rounded-lg bg-indigo-600 px-[18px] py-[7px] text-[10px] font-bold uppercase tracking-[0.1em] text-white hover:bg-indigo-700 shadow-[0_2px_8px_rgba(79,70,229,0.22)]">Done</button>
       </div>
     </div>
   )
