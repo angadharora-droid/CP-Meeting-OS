@@ -100,14 +100,15 @@ const LIGHT = {
   logoBgOpacity: 0.18,
 };
 
-function makeStyles(C) {
+function makeStyles(C, m = false) {
   return {
     shell: {
       fontFamily: FONTS.body,
       background: C.bg,
       color: C.txt,
       height: "100dvh",
-      overflow: "hidden",
+      overflow: m ? "auto" : "hidden",
+      WebkitOverflowScrolling: "touch",
       position: "relative",
       transition: "background 0.3s ease, color 0.3s ease",
     },
@@ -140,7 +141,7 @@ function makeStyles(C) {
       pointerEvents: "none", zIndex: 2,
     },
     heroBgLogo: {
-      width: 520, height: 520,
+      width: m ? 320 : 520, height: m ? 320 : 520,
       background: "radial-gradient(circle at 40% 40%, rgba(224,64,160,0.9) 0%, rgba(194,0,110,0.75) 45%, rgba(120,0,70,0.5) 75%, transparent 100%)",
       WebkitMaskSize: "contain", maskSize: "contain",
       WebkitMaskRepeat: "no-repeat", maskRepeat: "no-repeat",
@@ -149,10 +150,11 @@ function makeStyles(C) {
     },
     content: {
       position: "relative", zIndex: 3,
-      height: "100%", display: "flex", flexDirection: "column",
+      height: m ? "auto" : "100%", minHeight: m ? "100%" : undefined,
+      display: "flex", flexDirection: "column",
     },
     header: {
-      padding: "0 28px", height: 58,
+      padding: m ? "0 16px" : "0 28px", height: m ? 54 : 58,
       display: "flex", alignItems: "center",
       borderBottom: `0.5px solid ${C.border}`,
       background: C.headerBg,
@@ -181,7 +183,7 @@ function makeStyles(C) {
       fontFamily: FONTS.mono, fontSize: 8, letterSpacing: "0.16em",
       textTransform: "uppercase", color: C.muted, lineHeight: 1,
     },
-    nav: { display: "flex", alignItems: "center", gap: 14 },
+    nav: { display: "flex", alignItems: "center", gap: m ? 10 : 14 },
     statusPill: {
       display: "flex", alignItems: "center", gap: 7,
       padding: "5px 12px", borderRadius: 100,
@@ -209,12 +211,12 @@ function makeStyles(C) {
       flexShrink: 0,
     },
     main: {
-      flex: 1, padding: "40px 28px 32px",
+      flex: 1, padding: m ? "28px 16px 28px" : "40px 28px 32px",
       maxWidth: 1120, margin: "0 auto",
       width: "100%", boxSizing: "border-box",
-      overflow: "hidden", display: "flex", flexDirection: "column",
+      overflow: m ? "visible" : "hidden", display: "flex", flexDirection: "column",
     },
-    hero: { display: "flex", alignItems: "center", marginBottom: 28 },
+    hero: { display: "flex", alignItems: "center", marginBottom: m ? 22 : 28 },
     heroLeft: { maxWidth: 520 },
     eyebrowRow: { display: "flex", alignItems: "center", gap: 14, marginBottom: 20 },
     eyebrowChip: {
@@ -252,7 +254,7 @@ function makeStyles(C) {
       fontFamily: FONTS.mono, fontSize: 8, letterSpacing: "0.12em",
       textTransform: "uppercase", color: C.faint, flexShrink: 0,
     },
-    cards: { display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: 12 },
+    cards: { display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 300px), 1fr))", gap: 12 },
     card: {
       display: "flex", flexDirection: "column",
       borderRadius: 16, border: `0.5px solid ${C.borderMid}`,
@@ -308,13 +310,13 @@ function makeStyles(C) {
     launchArrow: { fontSize: 11 },
     footer: {
       borderTop: `0.5px solid ${C.border}`,
-      padding: "12px 28px",
+      padding: m ? "10px 16px" : "12px 28px",
       background: C.headerBg,
       backdropFilter: "blur(24px)", WebkitBackdropFilter: "blur(24px)",
       flexShrink: 0,
       transition: "background 0.3s ease",
     },
-    footerInner: { maxWidth: 1120, margin: "0 auto", display: "flex", alignItems: "center", gap: 16 },
+    footerInner: { maxWidth: 1120, margin: "0 auto", width: "100%", display: "flex", alignItems: "center", justifyContent: m ? "space-between" : "flex-start", gap: 16 },
     footerLeft: { display: "flex", alignItems: "center", gap: 8, flexShrink: 0 },
     footerLogo: { width: 22, height: 22, borderRadius: 5, background: C.footerLogoBg, display: "flex", alignItems: "center", justifyContent: "center" },
     footerCopy: { fontFamily: FONTS.mono, fontSize: 8, color: C.faint, letterSpacing: "0.1em", textTransform: "uppercase", whiteSpace: "nowrap" },
@@ -336,9 +338,12 @@ export default function LandingPage() {
 
   const [mounted, setMounted] = useState(false);
   const [isDark, setIsDark]   = useState(true);
+  const [isMobile, setIsMobile] = useState(
+    typeof window !== "undefined" ? window.innerWidth < 640 : false
+  );
 
   const C      = isDark ? DARK : LIGHT;
-  const styles = useMemo(() => makeStyles(C), [isDark]);
+  const styles = useMemo(() => makeStyles(C, isMobile), [isDark, isMobile]);
 
   const toggleTheme = () => {
     setIsDark((d) => {
@@ -350,6 +355,14 @@ export default function LandingPage() {
   useEffect(() => {
     const t = setTimeout(() => setMounted(true), 60);
     return () => clearTimeout(t);
+  }, []);
+
+  useEffect(() => {
+    const mq = window.matchMedia("(max-width: 639px)");
+    const onChange = (e) => setIsMobile(e.matches);
+    setIsMobile(mq.matches);
+    mq.addEventListener("change", onChange);
+    return () => mq.removeEventListener("change", onChange);
   }, []);
 
   const lerp = (a, b, t) => a + (b - a) * t;
@@ -468,10 +481,14 @@ export default function LandingPage() {
             <nav style={styles.nav}>
               <div style={styles.statusPill}>
                 <span style={styles.statusDot} />
-                <span style={styles.statusLabel}>All systems live</span>
+                {!isMobile && <span style={styles.statusLabel}>All systems live</span>}
               </div>
-              <div style={styles.navDivider} />
-              <div style={styles.dateTag}>{today()}</div>
+              {!isMobile && (
+                <>
+                  <div style={styles.navDivider} />
+                  <div style={styles.dateTag}>{today()}</div>
+                </>
+              )}
               <div style={styles.navDivider} />
               <button onClick={toggleTheme} style={styles.themeBtn} title={isDark ? "Switch to light" : "Switch to dark"}>
                 {isDark ? "☀️" : "🌙"}
@@ -520,11 +537,13 @@ export default function LandingPage() {
               </div>
               <span style={styles.footerCopy}>© {new Date().getFullYear()} Centre Point Group</span>
             </div>
-            <div style={styles.tickerWrap}>
-              <span style={styles.tickerInner}>
-                CENTRE POINT GROUP &nbsp;·&nbsp; INTERNAL USE ONLY &nbsp;·&nbsp; OPERATIONS PORTAL &nbsp;·&nbsp; CENTRE POINT GROUP &nbsp;·&nbsp; INTERNAL USE ONLY &nbsp;·&nbsp; OPERATIONS PORTAL &nbsp;·&nbsp;
-              </span>
-            </div>
+            {!isMobile && (
+              <div style={styles.tickerWrap}>
+                <span style={styles.tickerInner}>
+                  CENTRE POINT GROUP &nbsp;·&nbsp; INTERNAL USE ONLY &nbsp;·&nbsp; OPERATIONS PORTAL &nbsp;·&nbsp; CENTRE POINT GROUP &nbsp;·&nbsp; INTERNAL USE ONLY &nbsp;·&nbsp; OPERATIONS PORTAL &nbsp;·&nbsp;
+                </span>
+              </div>
+            )}
             <div style={styles.footerRight}>
               <span style={styles.footerVersion}>v2.0</span>
             </div>
