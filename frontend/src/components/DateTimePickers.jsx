@@ -71,6 +71,29 @@ function composeTime({ hour, minute, period }) {
   return `${String(h24).padStart(2, '0')}:${String(minute).padStart(2, '0')}`
 }
 
+// Parse free-typed time like "9", "930", "9:30", "9:30 pm", "1430" → "HH:MM" (24h) or null
+function parseTimeInput(raw) {
+  if (!raw) return null
+  const s = String(raw).toLowerCase()
+  const pm = /p/.test(s)
+  const am = /a/.test(s)
+  const digits = s.replace(/[^\d]/g, '')
+  if (!digits) return null
+  let h, m
+  if (digits.length <= 2) { h = parseInt(digits, 10); m = 0 }
+  else if (digits.length === 3) { h = parseInt(digits.slice(0, 1), 10); m = parseInt(digits.slice(1), 10) }
+  else { h = parseInt(digits.slice(0, 2), 10); m = parseInt(digits.slice(2, 4), 10) }
+  if (Number.isNaN(h) || Number.isNaN(m) || m > 59) return null
+  if (am || pm) {
+    if (h < 1 || h > 12) return null
+    if (pm && h < 12) h += 12
+    if (am && h === 12) h = 0
+  } else if (h > 23) {
+    return null
+  }
+  return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`
+}
+
 function CalendarIcon({ active }) {
   return (
     <svg width="16" height="16" viewBox="0 0 16 16" fill="none" style={{ color: active ? '#334155' : '#94A3B8', transition: 'color 150ms', display: 'block' }}>
@@ -258,8 +281,11 @@ function TimePicker({ value, onChange, onClose }) {
 
 export function TimeField({ value, onChange }) {
   const [open, setOpen] = useState(false)
+  const [draft, setDraft] = useState(toReadableTime(value))
   const wrapRef = useRef(null)
   const active = open || Boolean(value)
+
+  useEffect(() => { setDraft(toReadableTime(value)) }, [value])
 
   useEffect(() => {
     if (!open) return
@@ -270,12 +296,29 @@ export function TimeField({ value, onChange }) {
     return () => document.removeEventListener('mousedown', onDown)
   }, [open])
 
+  function commitDraft() {
+    const parsed = parseTimeInput(draft)
+    if (parsed) { onChange(parsed); setDraft(toReadableTime(parsed)) }
+    else setDraft(toReadableTime(value))
+  }
+
   return (
     <div ref={wrapRef} className="relative">
       <button type="button" tabIndex={-1} onClick={() => setOpen((o) => !o)} className="absolute left-[13px] top-1/2 z-10 -translate-y-1/2">
         <ClockIcon active={active} />
       </button>
-      <input type="text" className={dateTimeClass} value={toReadableTime(value)} placeholder="--:-- --" onFocus={() => setOpen(true)} readOnly />
+      <input
+        type="text"
+        className={dateTimeClass}
+        value={draft}
+        placeholder="--:-- --"
+        onChange={(e) => setDraft(e.target.value)}
+        onBlur={commitDraft}
+        onKeyDown={(e) => {
+          if (e.key === 'Escape') { setDraft(toReadableTime(value)); setOpen(false); e.currentTarget.blur() }
+          if (e.key === 'Enter') { e.preventDefault(); commitDraft(); setOpen(false); e.currentTarget.blur() }
+        }}
+      />
       <PickerToggle open={open} onClick={() => setOpen((o) => !o)} label="Toggle time picker" />
       {open && <TimePicker value={value} onChange={onChange} onClose={() => setOpen(false)} />}
     </div>
