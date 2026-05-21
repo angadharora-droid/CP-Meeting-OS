@@ -715,7 +715,7 @@ function FilterPill({ label, count, active, color, onClick }) {
 
 /* ─── Meeting Header Group ───────────────────────────────────── */
 function MeetingHeaderGroup({ group, children, canManage, onRename, onDelete }) {
-  const [open, setOpen] = useState(true)
+  const [open, setOpen] = useState(false)
 
   function handleRename() {
     const next = window.prompt('Rename meeting header', group.header)
