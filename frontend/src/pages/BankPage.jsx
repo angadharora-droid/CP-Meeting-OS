@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect, useMemo } from 'react'
 import { DateField } from '../components/DateTimePickers'
-import { buildMom, buildNotice, getMeetingCallerLabel, getMeetingModeLabel, getMeetingVenue, toDateLabel } from '../lib/meetingOs'
+import { buildForm, buildMom, buildNotice, getMeetingCallerLabel, getMeetingModeLabel, getMeetingVenue, toDateLabel } from '../lib/meetingOs'
 
 /* ─── Design tokens ──────────────────────────────────────────── */
 const P = {
@@ -472,7 +472,14 @@ function previewMom(app, meeting) {
   })
 }
 
-function MeetingCard({ meeting, onPreview, onPreviewMom, user }) {
+function previewForm(app, meeting) {
+  app.setPreview({
+    title: 'Agenda Form',
+    content: meeting.formText || buildForm(meeting, getNoticeAttendees(meeting)),
+  })
+}
+
+function MeetingCard({ meeting, onPreview, onPreviewMom, onPreviewForm, user }) {
   const [expanded, setExpanded] = useState(false)
   const s = STATUS_STYLES[meeting.status] || STATUS_STYLES.Open
 
@@ -630,7 +637,7 @@ function MeetingCard({ meeting, onPreview, onPreviewMom, user }) {
                 {meeting.refNo && <span className="text-[11px] text-[#64748B]">Ref: <code className="text-[#475569] font-mono text-[10.5px]">{meeting.refNo}</code></span>}
               </div>
             )}
-            {(onPreview || (meeting.status === 'Closed' && onPreviewMom)) && (
+            {(onPreview || onPreviewForm || (meeting.status === 'Closed' && onPreviewMom)) && (
               <div className="flex flex-wrap gap-2 pt-2 border-t border-[#E2E8F0]">
                 {meeting.status === 'Closed' && onPreviewMom && (
                   <button
@@ -638,6 +645,14 @@ function MeetingCard({ meeting, onPreview, onPreviewMom, user }) {
                     onClick={() => onPreviewMom(meeting)}
                   >
                     Preview MoM
+                  </button>
+                )}
+                {onPreviewForm && (
+                  <button
+                    className="min-h-[40px] px-4 py-2 rounded-xl bg-white text-[#334155] border border-[#CBD5E1] text-[11px] tracking-[0.08em] uppercase cursor-pointer transition-colors hover:bg-[#F8FAFC] hover:border-[#94A3B8] font-semibold"
+                    onClick={() => onPreviewForm(meeting)}
+                  >
+                    Preview form
                   </button>
                 )}
                 {onPreview && (
@@ -914,6 +929,7 @@ function BankTab({ app }) {
             <MeetingCard key={meeting.meetingId} meeting={meeting} user={app.user}
               onPreview={app.setPreview ? (m) => previewNotice(app, m) : null}
               onPreviewMom={app.setPreview ? (m) => previewMom(app, m) : null}
+              onPreviewForm={app.setPreview ? (m) => previewForm(app, m) : null}
             />
           ))}
         </div>
@@ -1019,6 +1035,7 @@ function HeadersTab({ app }) {
                 <MeetingCard key={meeting.meetingId} meeting={meeting} user={app.user}
                   onPreview={app.setPreview ? (m) => previewNotice(app, m) : null}
                   onPreviewMom={app.setPreview ? (m) => previewMom(app, m) : null}
+                  onPreviewForm={app.setPreview ? (m) => previewForm(app, m) : null}
                 />
               ))}
             </MeetingHeaderGroup>
