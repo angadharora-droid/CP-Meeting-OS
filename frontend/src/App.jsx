@@ -289,6 +289,37 @@ function momToHtml(content) {
   return `<div style="font-family: Arial, Helvetica, sans-serif; font-size: 13px; line-height: 1.6; color: #1e293b;">${rows.join('')}</div>`
 }
 
+// Mobile bottom-nav icons — simple stroke set matching the slate aesthetic
+function NavIcon({ name }) {
+  const common = {
+    width: 22,
+    height: 22,
+    viewBox: '0 0 24 24',
+    fill: 'none',
+    stroke: 'currentColor',
+    strokeWidth: 1.7,
+    strokeLinecap: 'round',
+    strokeLinejoin: 'round',
+    'aria-hidden': true,
+  }
+  switch (name) {
+    case 'dashboard':
+      return (<svg {...common}><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg>)
+    case 'new-meeting':
+      return (<svg {...common}><path d="M12 5v14M5 12h14"/></svg>)
+    case 'close-meeting':
+      return (<svg {...common}><path d="M21.8 10A10 10 0 1 1 17 3.3"/><path d="M22 4 12 14.01l-3-3"/></svg>)
+    case 'tracker':
+      return (<svg {...common}><path d="M9 6h11M9 12h11M9 18h11"/><path d="M4.5 6h.01M4.5 12h.01M4.5 18h.01"/></svg>)
+    case 'bank':
+      return (<svg {...common}><path d="M3 7l9-4 9 4"/><path d="M4 10v8M20 10v8M8 10v8M16 10v8M12 10v8"/><path d="M3 21h18"/></svg>)
+    case 'people':
+      return (<svg {...common}><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>)
+    default:
+      return null
+  }
+}
+
 function App() {
   const location = useLocation()
   const navigate = useNavigate()
@@ -329,12 +360,12 @@ function App() {
   }
 
   const navItems = [
-    { key: 'dashboard',     label: 'Dashboard' },
-    { key: 'new-meeting',   label: 'New Meeting' },
-    { key: 'close-meeting', label: 'Close Meeting', badge: app.openMeetings?.length || null },
-    { key: 'tracker',       label: 'Tracker',       badge: app.openCount || null },
-    { key: 'bank',          label: 'Meeting Bank' },
-    { key: 'people',        label: 'People' },
+    { key: 'dashboard',     label: 'Dashboard',     short: 'Home' },
+    { key: 'new-meeting',   label: 'New Meeting',   short: 'New' },
+    { key: 'close-meeting', label: 'Close Meeting', short: 'Close', badge: app.openMeetings?.length || null },
+    { key: 'tracker',       label: 'Tracker',       short: 'Tracker', badge: app.openCount || null },
+    { key: 'bank',          label: 'Meeting Bank',  short: 'Bank' },
+    { key: 'people',        label: 'People',        short: 'People' },
   ]
 
   const isError   = app.toast && /error|fail|invalid|not found/i.test(app.toast)
@@ -390,8 +421,8 @@ function App() {
         </div>
       </div>
 
-      {/* NAV */}
-      <div className="sticky top-[75px] z-40 border-b border-slate-200/80 bg-white/80 backdrop-blur-xl">
+      {/* NAV — desktop/tablet top tabs (mobile uses the bottom bar below) */}
+      <div className="hidden md:block sticky top-[75px] z-40 border-b border-slate-200/80 bg-white/80 backdrop-blur-xl">
         <div className="mx-auto flex w-full max-w-[1280px] overflow-x-auto scrollbar-none px-2 sm:px-4">
         {navItems.map(({ key, label, badge }) => (
           <button
@@ -510,10 +541,43 @@ function App() {
         </section>
       )}
 
-      {/* PAGE CONTENT */}
-      <main className="w-full max-w-[1180px] mx-auto px-4 sm:px-6 lg:px-8 pt-5 sm:pt-6 pb-12 animate-fade-in">
+      {/* PAGE CONTENT — extra bottom padding on mobile clears the fixed bottom nav */}
+      <main className="w-full max-w-[1180px] mx-auto px-4 sm:px-6 lg:px-8 pt-5 sm:pt-6 pb-[calc(76px+env(safe-area-inset-bottom))] md:pb-12 animate-fade-in">
         {pageMap[page] || pageMap['new-meeting']}
       </main>
+
+      {/* MOBILE BOTTOM NAV — app-like tab bar, hidden on tablet/desktop */}
+      <nav
+        className="md:hidden fixed inset-x-0 bottom-0 z-40 border-t border-slate-200/80 bg-white/90 backdrop-blur-xl pb-[env(safe-area-inset-bottom)]"
+        aria-label="Primary"
+      >
+        <div className="mx-auto flex w-full max-w-[640px] items-stretch justify-around">
+          {navItems.map(({ key, short, badge }) => {
+            const active = page === key
+            return (
+              <button
+                key={key}
+                onClick={() => navigate(`/${key}`)}
+                aria-current={active ? 'page' : undefined}
+                className={`relative flex flex-1 flex-col items-center justify-center gap-[3px] min-h-[58px] px-1 py-2 cursor-pointer border-none bg-transparent transition-colors ${
+                  active ? 'text-slate-800' : 'text-slate-400 hover:text-slate-600'
+                }`}
+              >
+                <span className="relative">
+                  <NavIcon name={key} />
+                  {badge ? (
+                    <span className="absolute -right-2 -top-1.5 inline-flex items-center justify-center px-[4px] py-[1px] rounded-full bg-slate-700 text-white text-[9px] font-bold leading-none min-w-[15px] h-[15px]">
+                      {badge}
+                    </span>
+                  ) : null}
+                </span>
+                <span className="text-[10px] font-semibold tracking-[0.02em] leading-none">{short}</span>
+                {active && <span className="absolute top-0 left-1/2 -translate-x-1/2 h-[2px] w-7 rounded-full bg-slate-700" />}
+              </button>
+            )
+          })}
+        </div>
+      </nav>
 
     </div>
   )
