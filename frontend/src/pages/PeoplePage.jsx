@@ -34,9 +34,6 @@ export default function PeoplePage({ app }) {
         <div>
           <p className="m-0 mb-[5px] uppercase tracking-[0.2em] text-[10px] text-slate-500 font-semibold">Team access</p>
           <h1 className="tracking-tight">Managers &amp; Settings</h1>
-          <p className="m-0 mt-[6px] text-slate-600 text-[12px] leading-[1.6]">
-            Manage managers and PIN access.
-          </p>
         </div>
         <div className="shrink-0 px-3 py-[6px] text-[10px] uppercase tracking-[0.12em] rounded-full text-slate-500 bg-slate-50 border border-slate-200 font-semibold">
           {app.managers.length} manager{app.managers.length !== 1 ? 's' : ''}

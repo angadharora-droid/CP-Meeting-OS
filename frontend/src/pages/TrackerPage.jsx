@@ -131,9 +131,6 @@ export default function TrackerPage({ app }) {
           <div>
             <p className="m-0 mb-[5px] uppercase tracking-[0.2em] text-[10px] text-slate-500 font-semibold">Centre Point Hospitality</p>
             <h1 className="m-0 font-bold text-[22px] text-slate-900 leading-tight tracking-tight">Tracker</h1>
-            <p className="m-0 mt-[6px] text-slate-600 text-[13px] leading-[1.6]">
-              Keep open action points visible and mark them complete.
-            </p>
           </div>
           <div className="text-right shrink-0">
             <div className="text-[26px] font-bold text-slate-900 leading-none tabular-nums tracking-tight">{pct}%</div>

@@ -66,9 +66,6 @@ export default function CloseMeetingPage({ app }) {
           <div>
             <p className="m-0 mb-[5px] uppercase tracking-[0.2em] text-[10px] text-slate-500 font-semibold">Centre Point Hospitality</p>
             <h1 className="m-0 font-bold text-[22px] text-slate-900 leading-tight tracking-tight">Close Meeting</h1>
-            <p className="m-0 mt-[6px] text-slate-600 text-[13px] leading-[1.6]">
-              Capture concluding notes, action points, and follow-up details.
-            </p>
           </div>
           <div className={`shrink-0 px-3 py-[6px] text-[10px] uppercase tracking-[0.12em] rounded-full border font-semibold ${
             app.overdueCount

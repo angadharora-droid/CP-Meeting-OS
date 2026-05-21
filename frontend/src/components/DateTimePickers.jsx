@@ -193,84 +193,61 @@ function PickerToggle({ open, onClick, label }) {
   )
 }
 
-const ITEM_H = 38
-
-function TimeColumn({ options, value, onChange, className = '', textAlign = 'center', btnPaddingClass = '' }) {
-  const scrollRef = useRef(null)
-  const mountedRef = useRef(false)
-  const valueRef = useRef(value)
-
-  useEffect(() => { valueRef.current = value }, [value])
-  useEffect(() => {
-    const container = scrollRef.current
-    if (!container) return
-    const idx = options.findIndex((o) => o.value === value)
-    if (idx < 0) return
-    if (mountedRef.current) container.scrollTo({ top: idx * ITEM_H, behavior: 'smooth' })
-    else {
-      container.scrollTop = idx * ITEM_H
-      mountedRef.current = true
-    }
-  }, [value, options])
-
-  useEffect(() => {
-    const container = scrollRef.current
-    if (!container) return
-    function snap() {
-      const idx = Math.max(0, Math.min(options.length - 1, Math.round(container.scrollTop / ITEM_H)))
-      container.scrollTo({ top: idx * ITEM_H, behavior: 'smooth' })
-      const next = options[idx].value
-      if (next !== valueRef.current) {
-        valueRef.current = next
-        onChange(next)
-      }
-    }
-    let timer
-    function onScroll() { clearTimeout(timer); timer = setTimeout(snap, 150) }
-    container.addEventListener('scroll', onScroll, { passive: true })
-    return () => { container.removeEventListener('scroll', onScroll); clearTimeout(timer) }
-  }, [options, onChange])
-
+function StepArrow({ dir }) {
   return (
-    <div ref={scrollRef} className={`h-full overflow-y-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden ${className}`}>
-      <div className="grid py-[79px]">
-        {options.map((option) => {
-          const sel = option.value === value
-          return (
-            <button key={option.value} type="button" onClick={() => onChange(option.value)} style={{ textAlign }} className={`h-[38px] w-full font-mono transition-all duration-150 ${btnPaddingClass} ${sel ? 'text-[20px] font-bold text-slate-900' : 'text-[15px] text-slate-400 hover:text-slate-600'}`}>
-              {option.label}
-            </button>
-          )
-        })}
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+      <path d={dir === 'up' ? 'M3.5 10l4.5-4.5 4.5 4.5' : 'M3.5 6l4.5 4.5 4.5-4.5'} stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  )
+}
+
+function TimeStepper({ display, onStep }) {
+  return (
+    <div className="flex flex-col items-center gap-1.5">
+      <button type="button" aria-label="Increase" onClick={() => onStep(1)} className="grid h-8 w-14 place-items-center rounded-lg text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-700">
+        <StepArrow dir="up" />
+      </button>
+      <div className="grid h-[58px] w-14 place-items-center rounded-xl border border-slate-200 bg-slate-50 font-mono text-[26px] font-bold tabular-nums text-slate-900">
+        {display}
       </div>
+      <button type="button" aria-label="Decrease" onClick={() => onStep(-1)} className="grid h-8 w-14 place-items-center rounded-lg text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-700">
+        <StepArrow dir="down" />
+      </button>
     </div>
   )
 }
 
 function TimePicker({ value, onChange, onClose }) {
   const selected = splitTime(value)
-  const hourOptions = Array.from({ length: 12 }, (_, i) => ({ value: i + 1, label: String(i + 1) }))
-  const minuteOptions = [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55].map((m) => ({ value: m, label: String(m).padStart(2, '0') }))
-  const periodOptions = [{ value: 'AM', label: 'am' }, { value: 'PM', label: 'pm' }]
   const update = (part) => onChange(composeTime({ ...selected, ...part }))
 
+  const stepHour = (d) => update({ hour: ((selected.hour - 1 + d + 12) % 12) + 1 })
+  const stepMinute = (d) => {
+    const snapped = Math.round(selected.minute / 5) * 5
+    update({ minute: (snapped + d * 5 + 60) % 60 })
+  }
+
+  const periodBtn = (p) => `flex-1 rounded-lg px-3 py-2 text-[13px] font-bold transition-colors ${
+    selected.period === p ? 'bg-slate-700 text-white shadow-[0_2px_8px_rgba(15,23,42,0.14)]' : 'text-slate-500 hover:bg-slate-100 hover:text-slate-700'
+  }`
+
   return (
-    <div onMouseDown={(e) => e.preventDefault()} className="absolute left-0 top-[calc(100%+6px)] z-50 w-[min(280px,calc(100vw-2rem))] max-w-[92vw] overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-[0_16px_48px_rgba(15,23,42,0.14)]">
+    <div onMouseDown={(e) => e.preventDefault()} className="absolute left-0 top-[calc(100%+6px)] z-50 w-[min(300px,calc(100vw-2rem))] max-w-[92vw] overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-[0_16px_48px_rgba(15,23,42,0.14)]">
       <div className="flex items-center justify-between border-b border-slate-200 px-3.5 py-2.5">
         <span className="text-[9px] font-bold uppercase tracking-[0.18em] text-slate-500">Select time</span>
         <button type="button" onClick={() => { onChange(roundToNextQuarter()); onClose() }} className="rounded-md border border-slate-300 bg-slate-100 px-2.5 py-1 text-[9px] font-bold uppercase tracking-[0.12em] text-slate-700 hover:bg-slate-200">Now</button>
       </div>
-      <div className="relative h-[196px]">
-        <div className="pointer-events-none absolute inset-x-3 top-1/2 z-0 h-[42px] -translate-y-1/2 rounded-2xl bg-slate-100" />
-        <div className="pointer-events-none absolute inset-x-0 top-0 z-20 h-16 bg-gradient-to-b from-white to-transparent" />
-        <div className="pointer-events-none absolute inset-x-0 bottom-0 z-20 h-16 bg-gradient-to-t from-white to-transparent" />
-        <div className="relative z-10 flex h-full items-stretch justify-center">
-          <TimeColumn options={hourOptions} value={selected.hour} onChange={(hour) => update({ hour })} className="w-[72px] shrink-0" textAlign="right" btnPaddingClass="pr-3" />
-          <div className="pointer-events-none z-20 flex w-5 shrink-0 items-center justify-center pb-px text-[16px] font-bold text-slate-400">:</div>
-          <TimeColumn options={minuteOptions} value={selected.minute} onChange={(minute) => update({ minute })} className="w-[72px] shrink-0" textAlign="left" btnPaddingClass="pl-3" />
-          <TimeColumn options={periodOptions} value={selected.period} onChange={(period) => update({ period })} className="w-[64px] shrink-0" textAlign="center" btnPaddingClass="" />
+
+      <div className="flex items-center justify-center gap-2.5 px-4 py-5">
+        <TimeStepper display={selected.hour} onStep={stepHour} />
+        <span className="pb-1 font-mono text-[26px] font-bold text-slate-300">:</span>
+        <TimeStepper display={String(selected.minute).padStart(2, '0')} onStep={stepMinute} />
+        <div className="ml-1 flex w-[58px] flex-col gap-1.5 self-stretch py-[1px]">
+          <button type="button" onClick={() => update({ period: 'AM' })} className={periodBtn('AM')}>AM</button>
+          <button type="button" onClick={() => update({ period: 'PM' })} className={periodBtn('PM')}>PM</button>
         </div>
       </div>
+
       <div className="flex items-center justify-between gap-3 border-t border-slate-200 px-4 py-3">
         <span className="font-mono text-[16px] font-bold tracking-wider text-slate-700">{toReadableTime(value) || '--:-- --'}</span>
         <button type="button" onClick={onClose} className="rounded-lg bg-slate-700 px-[18px] py-[7px] text-[10px] font-bold uppercase tracking-[0.1em] text-white hover:bg-slate-800 shadow-[0_2px_8px_rgba(15,23,42,0.14)]">Done</button>
