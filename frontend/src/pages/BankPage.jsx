@@ -716,16 +716,19 @@ function FilterPill({ label, count, active, color, onClick }) {
 /* ─── Meeting Header Group ───────────────────────────────────── */
 function MeetingHeaderGroup({ group, children, canManage, onRename, onDelete }) {
   const [open, setOpen] = useState(false)
+  const [menuOpen, setMenuOpen] = useState(false)
 
   function handleRename() {
     const next = window.prompt('Rename meeting header', group.header)
     if (next === null) return
+    setMenuOpen(false)
     onRename?.(group.header, next)
   }
 
   function handleDelete() {
     const ok = window.confirm(`Remove header "${group.header}" from ${group.meetings.length} meeting${group.meetings.length === 1 ? '' : 's'}? The meetings will not be deleted.`)
     if (!ok) return
+    setMenuOpen(false)
     onDelete?.(group.header)
   }
 
@@ -774,21 +777,33 @@ function MeetingHeaderGroup({ group, children, canManage, onRename, onDelete }) 
         </button>
 
         {canManage && (
-          <div className="flex items-center gap-2 shrink-0">
+          <div className="relative shrink-0">
             <button
               type="button"
-              className="min-h-[32px] px-3 py-1 rounded-lg bg-white text-[#334155] border border-[#CBD5E1] text-[10px] tracking-[0.08em] uppercase cursor-pointer transition-colors hover:bg-[#F8FAFC] hover:border-[#94A3B8] font-semibold"
-              onClick={handleRename}
+              className="h-8 w-8 rounded-lg bg-white text-[#64748B] border border-[#CBD5E1] cursor-pointer transition-colors hover:bg-[#F8FAFC] hover:border-[#94A3B8] hover:text-[#334155] font-semibold leading-none"
+              onClick={() => setMenuOpen((v) => !v)}
+              aria-label="Header actions"
             >
-              Rename
+              ...
             </button>
-            <button
-              type="button"
-              className="min-h-[32px] px-3 py-1 rounded-lg bg-white text-red-700 border border-red-200 text-[10px] tracking-[0.08em] uppercase cursor-pointer transition-colors hover:bg-red-50 hover:border-red-300 font-semibold"
-              onClick={handleDelete}
-            >
-              Delete
-            </button>
+            {menuOpen && (
+              <div className="absolute right-0 top-[calc(100%+6px)] z-20 grid min-w-[132px] overflow-hidden rounded-xl border border-[#E2E8F0] bg-white shadow-[0_12px_30px_rgba(15,23,42,0.12)]">
+                <button
+                  type="button"
+                  className="px-3 py-2 text-left text-[11px] font-semibold text-[#334155] hover:bg-[#F8FAFC] cursor-pointer"
+                  onClick={handleRename}
+                >
+                  Rename
+                </button>
+                <button
+                  type="button"
+                  className="px-3 py-2 text-left text-[11px] font-semibold text-red-700 hover:bg-red-50 cursor-pointer"
+                  onClick={handleDelete}
+                >
+                  Delete
+                </button>
+              </div>
+            )}
           </div>
         )}
         </div>
