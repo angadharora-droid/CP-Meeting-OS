@@ -10,6 +10,7 @@ import {
   buildForm,
   buildNotice,
   generateRefNo,
+  getMeetingMode,
   getMeetingVenue,
   makeAttendee,
   makeCalendarUrl,
@@ -427,6 +428,7 @@ export function useMeetingOs(navigate, page) {
 
   function removeManualAttendee(id) {
     setManualAttendees((current) => current.filter((attendee) => attendee.id !== id))
+    showToast('External attendee removed')
   }
 
   async function requestPinReset() {
@@ -503,6 +505,7 @@ export function useMeetingOs(navigate, page) {
 
   function addActionPoint() {
     setActionPoints((current) => [...current, blankActionPoint()])
+    showToast('Action point added')
   }
 
   function updateActionPoint(taskId, key, value) {
@@ -511,6 +514,7 @@ export function useMeetingOs(navigate, page) {
 
   function removeActionPoint(taskId) {
     setActionPoints((current) => current.filter((row) => row.taskId !== taskId))
+    showToast('Action point removed')
   }
 
   async function generateMeeting() {
@@ -678,18 +682,49 @@ export function useMeetingOs(navigate, page) {
     showToast('Meeting closed')
 
     if (followup && followupForm.date) {
-      setMeetingForm((current) => ({
-        ...current,
-        meetingHeader: updateMeeting.meetingHeader || current.meetingHeader,
+      const followupPurpose = followupForm.purpose || `Follow-up on: ${updateMeeting.title}`
+      const attendeeDetails = updateMeeting.attendeeDetails || []
+      const followupMeeting = {
+        meetingId: uid(),
+        // Keep the follow-up under the same header as the meeting it follows.
+        meetingHeader: updateMeeting.meetingHeader || '',
         title: `Follow-up: ${updateMeeting.title}`,
         date: followupForm.date,
-        time: followupForm.time || current.time,
-        topics: [{ topic: '', purpose: followupForm.purpose || `Follow-up on: ${updateMeeting.title}`, desiredOutcome: '', documents: '' }],
-        note: followupForm.note || `Follow-up to meeting held on ${toDateLabel(updateMeeting.date)}`,
+        time: followupForm.time || updateMeeting.time || '',
+        duration: updateMeeting.duration || '1 hour',
+        mode: getMeetingMode(updateMeeting) || 'inperson',
+        venue: updateMeeting.venue || '',
+        vcLink: updateMeeting.vcLink || '',
         unit: updateMeeting.unit || '',
-        calledBy: people.find((person) => person.name === updateMeeting.calledBy)?.id || current.calledBy,
-      }))
-      navigate('/new-meeting')
+        calledById: updateMeeting.calledById || '',
+        calledBy: updateMeeting.calledBy || '',
+        calledByName: updateMeeting.calledBy || 'Organizer',
+        attendees: updateMeeting.attendees || '',
+        attendeeDetails,
+        topics: [{ topic: '', purpose: followupPurpose, desiredOutcome: '', documents: '' }],
+        includeAdditionalPoints: true,
+        purpose: followupPurpose,
+        outcome: '',
+        docs: '',
+        note: followupForm.note || `Follow-up to meeting held on ${toDateLabel(updateMeeting.date)}`,
+        status: 'Open',
+        refNo: generateRefNo(),
+        // Links this follow-up back to the meeting it was generated from.
+        followupOfMeetingId: updateMeeting.meetingId,
+      }
+
+      const noticeText = buildNotice(followupMeeting, attendeeDetails)
+      const formText = buildForm(followupMeeting, attendeeDetails)
+
+      const followupResult = await apiPost({ action: 'log_meeting', ...followupMeeting, noticeText, formText })
+      if (!followupResult?.ok) {
+        showToast(followupResult?.error || 'Could not save follow-up meeting')
+        return
+      }
+
+      setMeetings((current) => [{ ...followupMeeting, noticeText, formText }, ...current])
+      showToast('Follow-up meeting created')
+      navigate('/bank')
     }
   }
 
