@@ -647,6 +647,49 @@ export function useMeetingOs(navigate, page) {
     showToast('Edit cancelled')
   }
 
+  function startFollowupDraft(sourceMeeting = activeMeeting) {
+    if (!sourceMeeting?.meetingId) {
+      showToast('Select a meeting first')
+      return
+    }
+
+    const attendeeDetails = sourceMeeting.attendeeDetails || []
+    const callerId = sourceMeeting.calledById || contactPeople.find((person) => person.name === sourceMeeting.calledBy)?.id || ''
+    const internalIds = attendeeDetails
+      .filter((attendee) => attendee.source !== 'manual' && attendee.id && attendee.id !== callerId)
+      .map((attendee) => attendee.id)
+    const manual = attendeeDetails
+      .filter((attendee) => attendee.source === 'manual' || !attendee.id)
+      .map((attendee) => makeAttendee(attendee, 'manual'))
+
+    setEditingMeetingId('')
+    setMeetingForm({
+      meetingHeader: sourceMeeting.meetingHeader || '',
+      title: `Follow-up: ${sourceMeeting.title}`,
+      unit: sourceMeeting.unit || '',
+      calledBy: callerId,
+      calledById: callerId,
+      date: '',
+      time: sourceMeeting.time || '',
+      duration: sourceMeeting.duration || '1 hour',
+      mode: getMeetingMode(sourceMeeting) || 'inperson',
+      venue: sourceMeeting.venue || '',
+      vcLink: sourceMeeting.vcLink || '',
+      topics: [{ topic: '', purpose: `Follow-up on: ${sourceMeeting.title}`, desiredOutcome: '', documents: '' }],
+      includeAdditionalPoints: false,
+      followupOfMeetingId: sourceMeeting.meetingId,
+      note: `Follow-up to meeting held on ${toDateLabel(sourceMeeting.date)}`,
+    })
+    setMeetingAttendeeIds(internalIds)
+    setManualAttendees(manual)
+    setManualAttendeeForm(blankManualAttendee)
+    setFollowup(false)
+    setFollowupForm({ date: '', time: '', purpose: '', note: '' })
+    setPreview(null)
+    navigate('/new-meeting')
+    showToast('Follow-up draft ready')
+  }
+
   async function closeMeeting() {
     if (!closeMeetingId) {
       showToast('Select a meeting first')
@@ -1045,6 +1088,7 @@ export function useMeetingOs(navigate, page) {
     generateMeeting,
     editMeeting,
     cancelEditMeeting,
+    startFollowupDraft,
     closeMeeting,
     postponeMeeting,
     cancelMeeting,
