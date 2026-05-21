@@ -393,45 +393,21 @@
   border-top: 2px solid #000000;
 }
 
-/* ─── Mobile typography scale ───────────────────────────────────────────────
-   Lifts the compact desktop type sizes to comfortable mobile reading targets
-   on phones (≤640px). Desktop sizing is untouched. Uses attribute selectors +
-   !important to override Tailwind's inline `text-[Npx]` utilities only within
-   this breakpoint. Recommended bands:
-     Titles 22-28 · Subheads 18-20 · Body 16-17 · Secondary 14 · Caption 10-12
+/* ─── Mobile typography (minimal) ───────────────────────────────────────────
+   The desktop type scale is kept as-is on mobile so the UI looks the same.
+   Only two targeted fixes are applied on phones (≤640px):
+     1. Form controls → 16px, which stops iOS Safari from auto-zooming on focus.
+     2. A 10px legibility floor for the very smallest micro-text (8-9px).
 */
 @media (max-width: 640px) {
-  /* Form controls → 16px also stops iOS Safari auto-zoom on focus */
   input,
   select,
   textarea {
     font-size: 16px !important;
   }
 
-  label {
-    font-size: 12px !important;
-  }
-
-  h3 {
-    font-size: 18px !important;
-  }
-
-  /* Caption / microcopy → 10-12px */
   [class*="text-[8px]"],
-  [class*="text-[9px]"]  { font-size: 11px !important; }
-  [class*="text-[10px]"] { font-size: 12px !important; }
-
-  /* Secondary text → 13-14px */
-  [class*="text-[11px]"] { font-size: 13px !important; }
-  [class*="text-[12px]"] { font-size: 14px !important; }
-
-  /* Body text → 15-17px */
-  [class*="text-[13px]"] { font-size: 15px !important; }
-  [class*="text-[14px]"] { font-size: 16px !important; }
-  [class*="text-[15px]"] { font-size: 16px !important; }
-  [class*="text-[16px]"] { font-size: 17px !important; }
-
-  /* Subheads (18-20px) and titles (22-28px) already sit in their target bands */
+  [class*="text-[9px]"] { font-size: 10px !important; }
 }
 
 @page {

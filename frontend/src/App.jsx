@@ -458,7 +458,7 @@ function App() {
 
       {/* TOAST */}
       {app.toast && (
-        <div className={`fixed bottom-6 left-1/2 animate-toast rounded-xl px-5 py-[10px] text-[12px] z-[999] max-w-[92vw] text-center shadow-[0_10px_30px_rgba(15,23,42,0.12)] flex items-center gap-2 font-medium ${
+        <div className={`fixed bottom-[calc(72px+env(safe-area-inset-bottom))] md:bottom-6 left-1/2 animate-toast rounded-xl px-5 py-[10px] text-[12px] z-[999] max-w-[92vw] text-center shadow-[0_10px_30px_rgba(15,23,42,0.12)] flex items-center gap-2 font-medium ${
           isError
             ? 'bg-red-50 border border-red-200 text-red-700'
             : isSuccess
