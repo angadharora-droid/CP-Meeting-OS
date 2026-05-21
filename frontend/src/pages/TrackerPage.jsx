@@ -179,27 +179,34 @@ export default function TrackerPage({ app }) {
       </div>
 
       {/* ── Date range + export ── */}
-      <div className="flex items-center gap-2 flex-wrap">
-        <div className="flex items-center gap-2 flex-1 min-w-0">
-          <span className="text-[10px] uppercase tracking-[0.12em] text-slate-500 shrink-0 font-semibold">From</span>
-          <div className="flex-1 min-w-[180px]">
-            <DateField value={fromDate} onChange={setFromDate} />
+      <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:flex-wrap">
+        <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-2 sm:flex-1 sm:min-w-0">
+          <div className="flex items-center gap-2">
+            <span className="w-8 shrink-0 text-[10px] uppercase tracking-[0.12em] text-slate-500 font-semibold sm:w-auto">From</span>
+            <div className="flex-1 sm:min-w-[150px]">
+              <DateField value={fromDate} onChange={setFromDate} />
+            </div>
           </div>
-          <span className="text-slate-400 shrink-0">→</span>
-          <div className="flex-1 min-w-[180px]">
-            <DateField value={toDate} onChange={setToDate} />
+          <div className="flex items-center gap-2">
+            <span className="w-8 shrink-0 text-[10px] uppercase tracking-[0.12em] text-slate-500 font-semibold sm:w-auto sm:text-slate-400 sm:tracking-normal">
+              <span className="sm:hidden">To</span>
+              <span className="hidden sm:inline">→</span>
+            </span>
+            <div className="flex-1 sm:min-w-[150px]">
+              <DateField value={toDate} onChange={setToDate} />
+            </div>
           </div>
           {(fromDate || toDate) && (
             <button
-              className="text-[11px] text-slate-400 hover:text-slate-700 transition-colors shrink-0 cursor-pointer"
+              className="self-start text-[11px] text-slate-400 hover:text-slate-700 transition-colors shrink-0 cursor-pointer sm:self-auto"
               onClick={() => { setFromDate(''); setToDate('') }}
-            >✕</button>
+            >✕ Clear dates</button>
           )}
         </div>
         <button
           onClick={exportTasks}
           disabled={!filteredTasks.length}
-          className="shrink-0 min-h-[36px] px-4 py-[7px] rounded-xl bg-white text-slate-800 border border-slate-300 text-[10px] tracking-[0.08em] uppercase cursor-pointer transition-all hover:bg-slate-100 hover:border-slate-400 disabled:opacity-40 disabled:cursor-not-allowed font-semibold"
+          className="w-full sm:w-auto shrink-0 min-h-[40px] px-4 py-[9px] rounded-xl bg-white text-slate-800 border border-slate-300 text-[10px] tracking-[0.08em] uppercase cursor-pointer transition-all hover:bg-slate-100 hover:border-slate-400 disabled:opacity-40 disabled:cursor-not-allowed font-semibold"
         >
           Export CSV
         </button>
@@ -252,7 +259,7 @@ export default function TrackerPage({ app }) {
 
                   {/* Actions */}
                   {!isDone && (
-                    <div className="flex gap-2 pt-1 border-t border-slate-100">
+                    <div className="flex flex-wrap gap-2 pt-1 border-t border-slate-100">
                       <button className={P.primary} onClick={() => app.markTask(task.taskId, 'Done')}>
                         ✓ Mark done
                       </button>
@@ -281,7 +288,7 @@ export default function TrackerPage({ app }) {
                     </div>
                   )}
                   {isDone && (
-                    <div className="flex gap-2 pt-1 border-t border-slate-100">
+                    <div className="flex flex-wrap gap-2 pt-1 border-t border-slate-100">
                       <button className={P.ghost} onClick={() => app.markTask(task.taskId, 'Open')}>
                         Reopen task
                       </button>
