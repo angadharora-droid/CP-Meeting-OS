@@ -393,23 +393,6 @@
   border-top: 2px solid #000000;
 }
 
-/* ─── Mobile typography (minimal) ───────────────────────────────────────────
-   The desktop type scale is kept as-is on mobile so the UI looks the same.
-   Only two targeted fixes are applied on phones (≤640px):
-     1. Form controls → 16px, which stops iOS Safari from auto-zooming on focus.
-     2. A 10px legibility floor for the very smallest micro-text (8-9px).
-*/
-@media (max-width: 640px) {
-  input,
-  select,
-  textarea {
-    font-size: 16px !important;
-  }
-
-  [class*="text-[8px]"],
-  [class*="text-[9px]"] { font-size: 10px !important; }
-}
-
 @page {
   size: A4;
   margin: 8mm 16mm;

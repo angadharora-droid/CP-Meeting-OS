@@ -261,10 +261,10 @@ function TimePicker({ value, onChange, onClose }) {
         <button type="button" onClick={() => { onChange(roundToNextQuarter()); onClose() }} className="rounded-md border border-slate-300 bg-slate-100 px-2.5 py-1 text-[9px] font-bold uppercase tracking-[0.12em] text-slate-700 hover:bg-slate-200">Now</button>
       </div>
       <div className="relative h-[196px]">
-        <div className="pointer-events-none absolute inset-x-3 top-1/2 h-[42px] -translate-y-1/2 rounded-2xl bg-slate-100" />
-        <div className="pointer-events-none absolute inset-x-0 top-0 z-10 h-16 bg-gradient-to-b from-white to-transparent" />
-        <div className="pointer-events-none absolute inset-x-0 bottom-0 z-10 h-16 bg-gradient-to-t from-white to-transparent" />
-        <div className="flex h-full items-stretch justify-center">
+        <div className="pointer-events-none absolute inset-x-3 top-1/2 z-0 h-[42px] -translate-y-1/2 rounded-2xl bg-slate-100" />
+        <div className="pointer-events-none absolute inset-x-0 top-0 z-20 h-16 bg-gradient-to-b from-white to-transparent" />
+        <div className="pointer-events-none absolute inset-x-0 bottom-0 z-20 h-16 bg-gradient-to-t from-white to-transparent" />
+        <div className="relative z-10 flex h-full items-stretch justify-center">
           <TimeColumn options={hourOptions} value={selected.hour} onChange={(hour) => update({ hour })} className="w-[72px] shrink-0" textAlign="right" btnPaddingClass="pr-3" />
           <div className="pointer-events-none z-20 flex w-5 shrink-0 items-center justify-center pb-px text-[16px] font-bold text-slate-400">:</div>
           <TimeColumn options={minuteOptions} value={selected.minute} onChange={(minute) => update({ minute })} className="w-[72px] shrink-0" textAlign="left" btnPaddingClass="pl-3" />
