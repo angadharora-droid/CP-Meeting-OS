@@ -17,7 +17,7 @@ export const blankMeeting = {
   venue: '',
   vcLink: '',
   topics: [{ topic: '', purpose: '', desiredOutcome: '', documents: '' }],
-  includeAdditionalPoints: true,
+  includeAdditionalPoints: false,
   note: '',
 }
 
@@ -351,7 +351,7 @@ export function buildForm(meeting, attendees) {
     sections.push('', 'Concluding Points & Actionable Notes:', ...writeLines(7), '', '----------------------------------------------------------------', '')
   })
 
-  if (meeting.includeAdditionalPoints !== false) {
+  if (meeting.includeAdditionalPoints === true) {
     sections.push(
       `${agendaItems.length + 1}) Other Discussions`,
       '',

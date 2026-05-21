@@ -576,7 +576,7 @@ router.post('/', async (req, res) => {
                 documents: String(t?.documents || ''),
               }))
           : [],
-        includeAdditionalPoints: req.body?.includeAdditionalPoints !== false,
+        includeAdditionalPoints: req.body?.includeAdditionalPoints === true,
         purpose: String(req.body?.purpose || ''),
         desiredOutcome: String(req.body?.desiredOutcome || req.body?.outcome || ''),
         documents: String(req.body?.documents || req.body?.docs || ''),
@@ -588,6 +588,14 @@ router.post('/', async (req, res) => {
         refNo: String(req.body?.refNo || ''),
         followupOfMeetingId: String(req.body?.followupOfMeetingId || ''),
       };
+
+      const existing = await Meeting.findOne({ meetingId }).lean();
+      if (existing) {
+        const actor = await getMeetingActor(req, existing);
+        if (!actor) {
+          return res.status(403).json({ ok: false, error: 'Only the caller or admin can edit this meeting' });
+        }
+      }
 
       await Meeting.updateOne({ meetingId }, { $set: update }, { upsert: true });
 
