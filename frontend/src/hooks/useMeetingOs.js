@@ -824,8 +824,23 @@ export function useMeetingOs(navigate, page) {
     showToast(`Marked ${status}`)
   }
 
-  function copyText(text) {
-    navigator.clipboard?.writeText(text).then(() => showToast('Copied to clipboard'))
+  async function copyText(text, html = '') {
+    try {
+      if (html && navigator.clipboard?.write && window.ClipboardItem) {
+        await navigator.clipboard.write([
+          new ClipboardItem({
+            'text/plain': new Blob([text], { type: 'text/plain' }),
+            'text/html': new Blob([html], { type: 'text/html' }),
+          }),
+        ])
+      } else {
+        await navigator.clipboard?.writeText(text)
+      }
+      showToast('Copied to clipboard')
+    } catch {
+      await navigator.clipboard?.writeText(text)
+      showToast('Copied to clipboard')
+    }
   }
 
   function openCalendarLinks() {

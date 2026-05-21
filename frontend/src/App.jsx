@@ -232,6 +232,41 @@ function MomPreview({ content }) {
   )
 }
 
+function escapeHtml(value) {
+  return String(value || '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+}
+
+function momToHtml(content) {
+  const sections = new Set(['Attendees', 'Agenda', 'Key Discussion Points', 'Action Item', 'Action Items', 'Follow-up Meeting'])
+  const rows = String(content || '').split('\n').map((rawLine, index) => {
+    const line = rawLine.trimEnd()
+    if (!line) return '<br>'
+    if (index === 0) return `<p><strong>${escapeHtml(line)}</strong></p>`
+    if (sections.has(line)) return `<p><strong>${escapeHtml(line)}</strong></p>`
+
+    if (line.includes('\t')) {
+      const cells = line.split('\t')
+      const isHeader = cells.join('|') === 'Action|Owner|Due Date'
+      return `<p>${cells.map((cell) => (
+        isHeader ? `<strong>${escapeHtml(cell)}</strong>` : escapeHtml(cell)
+      )).join(' &nbsp; ')}</p>`
+    }
+
+    const labelMatch = line.match(/^([^:]+):\s*(.*)$/)
+    if (labelMatch) {
+      return `<p><strong>${escapeHtml(labelMatch[1])}:</strong>${labelMatch[2] ? ` ${escapeHtml(labelMatch[2])}` : ''}</p>`
+    }
+
+    return `<p>${escapeHtml(line)}</p>`
+  })
+
+  return `<div style="font-family: Arial, Helvetica, sans-serif; font-size: 13px; line-height: 1.6; color: #1e293b;">${rows.join('')}</div>`
+}
+
 function App() {
   const location = useLocation()
   const navigate = useNavigate()
@@ -429,7 +464,10 @@ function App() {
             <div className="document-preview-actions flex gap-2">
               <button
                 className="flex-1 bg-slate-700 border-none text-white rounded-xl px-4 py-[11px] text-[12px] cursor-pointer font-semibold hover:bg-slate-800 active:scale-[0.98] transition-all shadow-[0_1px_2px_rgba(15,23,42,0.06),0_4px_10px_rgba(15,23,42,0.10)]"
-                onClick={() => app.copyText(app.preview.content)}
+                onClick={() => app.copyText(
+                  app.preview.content,
+                  app.preview.title === 'Minutes of Meeting (MoM)' ? momToHtml(app.preview.content) : '',
+                )}
               >
                 Copy to clipboard
               </button>
