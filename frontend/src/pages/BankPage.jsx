@@ -479,9 +479,10 @@ function previewForm(app, meeting) {
   })
 }
 
-function MeetingCard({ meeting, onPreview, onPreviewMom, onPreviewForm, user }) {
+function MeetingCard({ meeting, onPreview, onPreviewMom, onPreviewForm, onEdit, user }) {
   const [expanded, setExpanded] = useState(false)
   const s = STATUS_STYLES[meeting.status] || STATUS_STYLES.Open
+  const canEdit = user?.role === 'admin' || meeting.calledById === user?.id || meeting.calledBy === user?.name
 
   const attendees = meeting.attendeeDetails?.length
     ? meeting.attendeeDetails.map((a) => a.name)
@@ -639,6 +640,14 @@ function MeetingCard({ meeting, onPreview, onPreviewMom, onPreviewForm, user }) 
             )}
             {(onPreview || onPreviewForm || (meeting.status === 'Closed' && onPreviewMom)) && (
               <div className="flex flex-wrap gap-2 pt-2 border-t border-[#E2E8F0]">
+                {canEdit && onEdit && (
+                  <button
+                    className="min-h-[40px] px-4 py-2 rounded-xl bg-slate-700 text-white border border-slate-700 text-[11px] tracking-[0.08em] uppercase cursor-pointer transition-colors hover:bg-slate-800 hover:border-slate-800 font-semibold"
+                    onClick={() => onEdit(meeting)}
+                  >
+                    Edit meeting
+                  </button>
+                )}
                 {meeting.status === 'Closed' && onPreviewMom && (
                   <button
                     className="min-h-[40px] px-4 py-2 rounded-xl bg-emerald-600 text-white border border-emerald-600 text-[11px] tracking-[0.08em] uppercase cursor-pointer transition-all hover:bg-emerald-700 hover:border-emerald-700 active:scale-[0.98] font-semibold shadow-[0_1px_2px_rgba(15,23,42,0.06),0_4px_10px_rgba(15,23,42,0.10)]"
@@ -963,6 +972,7 @@ function BankTab({ app }) {
               onPreview={app.setPreview ? (m) => previewNotice(app, m) : null}
               onPreviewMom={app.setPreview ? (m) => previewMom(app, m) : null}
               onPreviewForm={app.setPreview ? (m) => previewForm(app, m) : null}
+              onEdit={app.editMeeting}
             />
           ))}
         </div>
@@ -1075,6 +1085,7 @@ function HeadersTab({ app }) {
                   onPreview={app.setPreview ? (m) => previewNotice(app, m) : null}
                   onPreviewMom={app.setPreview ? (m) => previewMom(app, m) : null}
                   onPreviewForm={app.setPreview ? (m) => previewForm(app, m) : null}
+                  onEdit={app.editMeeting}
                 />
               ))}
             </MeetingHeaderGroup>

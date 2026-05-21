@@ -43,6 +43,7 @@ export function useMeetingOs(navigate, page) {
   const [personForm, setPersonForm] = useState(blankPerson)
   const [managerForm, setManagerForm] = useState(blankManager)
   const [meetingForm, setMeetingForm] = useState(blankMeeting)
+  const [editingMeetingId, setEditingMeetingId] = useState('')
   const [meetingAttendeeIds, setMeetingAttendeeIds] = useState([])
   const [manualAttendees, setManualAttendees] = useState([])
   const [manualAttendeeForm, setManualAttendeeForm] = useState(blankManualAttendee)
@@ -519,6 +520,9 @@ export function useMeetingOs(navigate, page) {
   }
 
   async function generateMeeting() {
+    const existingMeeting = editingMeetingId
+      ? meetings.find((meeting) => meeting.meetingId === editingMeetingId)
+      : null
     const managerCaller = isManager ? contactPeople.find((person) => person.email === user?.email || person.name === user?.name) : null
     const adminCaller = isAdmin && user?.id
       ? { id: user.id, name: user.name || 'Admin', desig: user.desig || '', email: user.email || '' }
@@ -542,7 +546,7 @@ export function useMeetingOs(navigate, page) {
       (t) => t.topic || t.purpose || t.desiredOutcome || t.documents,
     )
     const meeting = {
-      meetingId: uid(),
+      meetingId: existingMeeting?.meetingId || uid(),
       meetingHeader: meetingForm.meetingHeader.trim(),
       title: meetingForm.title.trim(),
       date: meetingForm.date,
@@ -558,13 +562,13 @@ export function useMeetingOs(navigate, page) {
       attendees: uniqueAttendees.map((person) => person.name).join('\n'),
       attendeeDetails: uniqueAttendees,
       topics: topicsClean,
-      includeAdditionalPoints: meetingForm.includeAdditionalPoints !== false,
+      includeAdditionalPoints: meetingForm.includeAdditionalPoints === true,
       purpose: topicsClean.map((t) => [t.topic, t.purpose].filter(Boolean).join(': ')).filter(Boolean).join('\n'),
       outcome: topicsClean.map((t) => t.desiredOutcome).filter(Boolean).join('\n'),
       docs: topicsClean.map((t) => t.documents).filter(Boolean).join('\n'),
       note: meetingForm.note.trim(),
-      status: 'Open',
-      refNo: generateRefNo(),
+      status: existingMeeting?.status || 'Open',
+      refNo: existingMeeting?.refNo || generateRefNo(),
     }
 
     const noticeText = buildNotice(meeting, uniqueAttendees)
@@ -576,14 +580,69 @@ export function useMeetingOs(navigate, page) {
       return
     }
 
-    setMeetings((current) => [{ ...meeting, noticeText, formText }, ...current])
+    if (existingMeeting) {
+      setMeetings((current) => current.map((item) => (
+        item.meetingId === existingMeeting.meetingId
+          ? { ...item, ...meeting, noticeText, formText }
+          : item
+      )))
+    } else {
+      setMeetings((current) => [{ ...meeting, noticeText, formText }, ...current])
+    }
     setCloseMeetingId(meeting.meetingId)
     setMeetingForm(blankMeeting)
+    setEditingMeetingId('')
     setMeetingAttendeeIds([])
     setManualAttendees([])
     setManualAttendeeForm(blankManualAttendee)
     navigate('/bank')
-    showToast('Meeting saved')
+    showToast(existingMeeting ? 'Meeting updated' : 'Meeting saved')
+  }
+
+  function editMeeting(meeting) {
+    if (!meeting?.meetingId) return
+    const attendeeDetails = meeting.attendeeDetails || []
+    const callerId = meeting.calledById || contactPeople.find((person) => person.name === meeting.calledBy)?.id || ''
+    const internalIds = attendeeDetails
+      .filter((attendee) => attendee.source !== 'manual' && attendee.id && attendee.id !== callerId)
+      .map((attendee) => attendee.id)
+    const manual = attendeeDetails
+      .filter((attendee) => attendee.source === 'manual' || !attendee.id)
+      .map((attendee) => makeAttendee(attendee, 'manual'))
+
+    setEditingMeetingId(meeting.meetingId)
+    setMeetingForm({
+      meetingHeader: meeting.meetingHeader || '',
+      title: meeting.title || '',
+      unit: meeting.unit || '',
+      calledBy: callerId,
+      calledById: callerId,
+      date: toDateLabel(meeting.date) || meeting.date || '',
+      time: meeting.time || '',
+      duration: meeting.duration || '1 hour',
+      mode: getMeetingMode(meeting) || 'inperson',
+      venue: meeting.venue || '',
+      vcLink: meeting.vcLink || '',
+      topics: meeting.topics?.length
+        ? meeting.topics
+        : [{ topic: '', purpose: meeting.purpose || '', desiredOutcome: meeting.outcome || meeting.desiredOutcome || '', documents: meeting.docs || meeting.documents || '' }],
+      includeAdditionalPoints: meeting.includeAdditionalPoints === true,
+      note: meeting.note || meeting.specialNote || '',
+    })
+    setMeetingAttendeeIds(internalIds)
+    setManualAttendees(manual)
+    setManualAttendeeForm(blankManualAttendee)
+    navigate('/new-meeting')
+    showToast('Editing meeting')
+  }
+
+  function cancelEditMeeting() {
+    setEditingMeetingId('')
+    setMeetingForm(blankMeeting)
+    setMeetingAttendeeIds([])
+    setManualAttendees([])
+    setManualAttendeeForm(blankManualAttendee)
+    showToast('Edit cancelled')
   }
 
   async function closeMeeting() {
@@ -722,7 +781,7 @@ export function useMeetingOs(navigate, page) {
         attendees: updateMeeting.attendees || '',
         attendeeDetails,
         topics: [{ topic: '', purpose: followupPurpose, desiredOutcome: '', documents: '' }],
-        includeAdditionalPoints: true,
+        includeAdditionalPoints: false,
         purpose: followupPurpose,
         outcome: '',
         docs: '',
@@ -946,6 +1005,7 @@ export function useMeetingOs(navigate, page) {
     setManagerForm,
     meetingForm,
     setMeetingForm,
+    editingMeetingId,
     meetingAttendeeIds,
     setMeetingAttendeeIds,
     actionPoints,
@@ -988,6 +1048,8 @@ export function useMeetingOs(navigate, page) {
     updateActionPoint,
     removeActionPoint,
     generateMeeting,
+    editMeeting,
+    cancelEditMeeting,
     closeMeeting,
     postponeMeeting,
     cancelMeeting,

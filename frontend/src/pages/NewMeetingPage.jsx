@@ -754,9 +754,13 @@ export default function NewMeetingPage({ app }) {
           <p className="m-0 mb-[5px] uppercase tracking-[0.2em] text-[10px] text-[#64748B]">
             {app.orgName || 'Organisation'}
           </p>
-          <h1 className="m-0 font-black text-[22px] text-[#0F172A] leading-tight tracking-tight">New Meeting</h1>
+          <h1 className="m-0 font-black text-[22px] text-[#0F172A] leading-tight tracking-tight">
+            {app.editingMeetingId ? 'Edit Meeting' : 'New Meeting'}
+          </h1>
           <p className="m-0 mt-[6px] text-[#475569] text-[13px] leading-[1.6]">
-            Fill the details below. A notice and agenda form are generated automatically.
+            {app.editingMeetingId
+              ? 'Update the details below. The notice and agenda form will be regenerated.'
+              : 'Fill the details below. A notice and agenda form are generated automatically.'}
           </p>
         </div>
 
@@ -1026,7 +1030,7 @@ export default function NewMeetingPage({ app }) {
         <label className="flex items-start gap-3 p-3 rounded-xl border border-[#E2E8F0] bg-[#F8FAFC] cursor-pointer">
           <input
             type="checkbox"
-            checked={app.meetingForm.includeAdditionalPoints !== false}
+            checked={app.meetingForm.includeAdditionalPoints === true}
             onChange={(e) => app.setMeetingForm((c) => ({ ...c, includeAdditionalPoints: e.target.checked }))}
             className="mt-[2px] h-4 w-4 min-h-0 accent-[#334155] cursor-pointer"
           />
@@ -1107,8 +1111,13 @@ export default function NewMeetingPage({ app }) {
 
         <div className="h-px bg-[#E2E8F0]" />
         <button className={P.primary} onClick={app.generateMeeting} disabled={!canGenerate}>
-          Generate &amp; Save Meeting →
+          {app.editingMeetingId ? 'Update Meeting →' : 'Generate & Save Meeting →'}
         </button>
+        {app.editingMeetingId && (
+          <button className={P.ghost} onClick={app.cancelEditMeeting}>
+            Cancel edit
+          </button>
+        )}
         {!canGenerate && (
           <p className="text-[11px] text-[#64748B] text-center m-0">
             Name, date (dd/mm/yyyy), time, caller, and at least one purpose required
