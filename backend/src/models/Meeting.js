@@ -80,6 +80,8 @@ const meetingSchema = new mongoose.Schema(
     followupTime: { type: String, default: '' },
     followupPurpose: { type: String, default: '' },
     followupNote: { type: String, default: '' },
+    followupMeetingId: { type: String, default: '' },
+    followupOfMeetingId: { type: String, default: '', index: true },
     postponedOn: { type: Date },
     postponedToDate: { type: String, default: '' },
     postponedToTime: { type: String, default: '' },

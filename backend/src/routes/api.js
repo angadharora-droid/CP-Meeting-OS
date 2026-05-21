@@ -585,9 +585,18 @@ router.post('/', async (req, res) => {
         noticeText: String(req.body?.noticeText || ''),
         formText: String(req.body?.formText || ''),
         refNo: String(req.body?.refNo || ''),
+        followupOfMeetingId: String(req.body?.followupOfMeetingId || ''),
       };
 
       await Meeting.updateOne({ meetingId }, { $set: update }, { upsert: true });
+
+      // Link the source meeting to its newly created follow-up.
+      if (update.followupOfMeetingId) {
+        await Meeting.updateOne(
+          { meetingId: update.followupOfMeetingId },
+          { $set: { followupMeetingId: meetingId } },
+        );
+      }
 
       try {
         const saved = await Meeting.findOne({ meetingId }).lean();
