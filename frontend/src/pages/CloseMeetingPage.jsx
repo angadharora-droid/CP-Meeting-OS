@@ -48,7 +48,7 @@ export default function CloseMeetingPage({ app }) {
   return (
     <section className="grid gap-4">
 
-      {/* ── Hero ── */}
+      {/* Hero */}
       <div className={P.card}>
         <div className="flex items-start justify-between gap-3">
           <div>
@@ -68,17 +68,17 @@ export default function CloseMeetingPage({ app }) {
         </div>
       </div>
 
-      {/* ── 01 Select Meeting ── */}
+      {/* 01 Select Meeting */}
       <div className={P.card}>
         <SecHead n="01">Select Meeting</SecHead>
 
         <Field label="Meeting *">
           <select className={P.select} value={app.closeMeetingId}
             onChange={(e) => app.setCloseMeetingId(e.target.value)}>
-            <option value="">— Choose an open meeting —</option>
+            <option value="">Choose an open meeting</option>
             {app.openMeetings.map((m) => (
               <option key={m.meetingId} value={m.meetingId}>
-                {m.title}{m.date ? ` · ${toDateLabel(m.date)}` : ''}
+                {m.title}{m.date ? ` - ${toDateLabel(m.date)}` : ''}
               </option>
             ))}
           </select>
@@ -91,25 +91,25 @@ export default function CloseMeetingPage({ app }) {
               <span className="text-slate-900 font-semibold text-[14px]">{app.activeMeeting.title}</span>
             </div>
               <span className="text-slate-600 text-[12px] pl-4">
-                {toDateLabel(app.activeMeeting.date)}{app.activeMeeting.time ? ` · ${app.activeMeeting.time}` : ''}
-                {` · ${getMeetingCallerLabel(app.activeMeeting, app.user)}`}
+                {toDateLabel(app.activeMeeting.date)}{app.activeMeeting.time ? ` - ${app.activeMeeting.time}` : ''}
+                {` - ${getMeetingCallerLabel(app.activeMeeting, app.user)}`}
             </span>
           </div>
         )}
       </div>
 
-      {/* ── 02 Concluding Notes ── */}
+      {/* 02 Concluding Notes */}
       <div className={P.card}>
         <SecHead n="02">Concluding Notes</SecHead>
         <Field label="Minutes &amp; key points discussed">
           <textarea className={P.textarea} style={{ minHeight: '110px' }}
             value={app.closureNotes}
-            placeholder="Summarise what was discussed and decided…"
+            placeholder="Summarise what was discussed and decided..."
             onChange={(e) => app.setClosureNotes(e.target.value)} />
         </Field>
       </div>
 
-      {/* ── 03 Action Points — collapsed by default, opens on add ── */}
+      {/* 03 Action Points - collapsed by default, opens on add */}
       <details ref={actionPointsRef} className={P.card}>
         <summary className="list-none cursor-pointer select-none flex items-center justify-between gap-4">
           <SecHead n="03">Action Points</SecHead>
@@ -121,7 +121,7 @@ export default function CloseMeetingPage({ app }) {
         <div className="grid gap-4 pt-2">
           {app.actionPoints.length === 0 && (
             <div className="py-5 px-4 border border-dashed border-slate-300 rounded-xl text-slate-500 text-[12px] text-center leading-[1.6]">
-              No action points yet — add one below
+              No action points yet - add one below
             </div>
           )}
 
@@ -182,61 +182,27 @@ export default function CloseMeetingPage({ app }) {
         </div>
       </details>
 
-      {/* ── 04 Follow-up ── */}
+      {/* 04 Follow-up */}
       <div className={P.card}>
         <SecHead n="04">Follow-up</SecHead>
 
-        <label className="flex items-center gap-3 cursor-pointer">
-          <div className={`w-5 h-5 rounded-md border flex items-center justify-center transition-all ${
-            app.followup ? 'bg-slate-700 border-slate-700' : 'bg-white border-slate-300'
-          }`}>
-            {app.followup && <span className="text-white text-[11px] font-bold leading-none">✓</span>}
-            <input type="checkbox" className="sr-only" checked={app.followup}
-              onChange={(e) => app.setFollowup(e.target.checked)} />
-          </div>
-          <span className="text-slate-900 text-[13px] font-medium">Schedule a follow-up meeting</span>
-        </label>
-
-        {app.followup && (
-          <div className="grid gap-4 pt-2 border-t border-slate-200 mt-1">
-            <div className="grid gap-3 sm:grid-cols-2">
-              <Field label="Follow-up date">
-                <DateField
-                  value={app.followupForm.date}
-                  onChange={(date) => app.setFollowupForm((c) => ({ ...c, date }))}
-                />
-              </Field>
-              <Field label="Follow-up time">
-                <TimeField
-                  value={app.followupForm.time}
-                  onChange={(time) => app.setFollowupForm((c) => ({ ...c, time }))}
-                />
-              </Field>
-            </div>
-            <Field label="Purpose / agenda">
-              <textarea className={P.textarea} value={app.followupForm.purpose}
-                placeholder="What will the follow-up cover?"
-                onChange={(e) => app.setFollowupForm((c) => ({ ...c, purpose: e.target.value }))} />
-            </Field>
-            <Field label="Special note">
-              <input className={P.input} value={app.followupForm.note}
-                placeholder="Any special instructions…"
-                onChange={(e) => app.setFollowupForm((c) => ({ ...c, note: e.target.value }))} />
-            </Field>
-          </div>
-        )}
-
+        <p className="m-0 text-slate-600 text-[12px] leading-[1.6]">
+          Create a new follow-up meeting draft using this meeting's header, department, caller, attendees, venue, and agenda context.
+        </p>
+        <button className={P.ghost} onClick={() => app.startFollowupDraft()} disabled={!app.closeMeetingId}>
+          Schedule follow-up meeting
+        </button>
         <div className="h-px bg-slate-200" />
 
         <button className={P.primary} onClick={app.closeMeeting} disabled={!app.closeMeetingId}>
-          Save &amp; Close Meeting →
+          Save &amp; Close Meeting
         </button>
         {!app.closeMeetingId && (
           <p className="text-[11px] text-slate-500 text-center m-0">Select a meeting above to continue</p>
         )}
       </div>
 
-      {/* ── 05 Postpone / Cancel ── */}
+      {/* 05 Postpone / Cancel */}
       <details className={P.card}>
         <summary className="list-none cursor-pointer select-none flex items-center justify-between gap-4">
           <SecHead n="05">Postpone or Cancel</SecHead>
