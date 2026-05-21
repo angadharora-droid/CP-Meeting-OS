@@ -631,21 +631,21 @@ function MeetingCard({ meeting, onPreview, onPreviewMom, user }) {
               </div>
             )}
             {(onPreview || (meeting.status === 'Closed' && onPreviewMom)) && (
-              <div className="flex flex-wrap gap-3 mt-[-2px]">
-                {onPreview && (
-                  <button
-                    className="text-left text-[10px] uppercase tracking-[0.1em] text-[#334155]/40 hover:text-[#334155]/70 transition-colors cursor-pointer"
-                    onClick={() => onPreview(meeting)}
-                  >
-                    Preview notice
-                  </button>
-                )}
+              <div className="flex flex-wrap gap-2 pt-2 border-t border-[#E2E8F0]">
                 {meeting.status === 'Closed' && onPreviewMom && (
                   <button
-                    className="text-left text-[10px] uppercase tracking-[0.1em] text-emerald-700/70 hover:text-emerald-800 transition-colors cursor-pointer"
+                    className="min-h-[40px] px-4 py-2 rounded-xl bg-emerald-600 text-white border border-emerald-600 text-[11px] tracking-[0.08em] uppercase cursor-pointer transition-all hover:bg-emerald-700 hover:border-emerald-700 active:scale-[0.98] font-semibold shadow-[0_1px_2px_rgba(15,23,42,0.06),0_4px_10px_rgba(15,23,42,0.10)]"
                     onClick={() => onPreviewMom(meeting)}
                   >
                     Preview MoM
+                  </button>
+                )}
+                {onPreview && (
+                  <button
+                    className="min-h-[40px] px-4 py-2 rounded-xl bg-white text-[#334155] border border-[#CBD5E1] text-[11px] tracking-[0.08em] uppercase cursor-pointer transition-colors hover:bg-[#F8FAFC] hover:border-[#94A3B8] font-semibold"
+                    onClick={() => onPreview(meeting)}
+                  >
+                    Preview notice
                   </button>
                 )}
               </div>
