@@ -283,10 +283,21 @@ export default function CloseMeetingPage({ app }) {
               </button>
             </div>
 
-            <div className="grid gap-3 rounded-xl border border-slate-200 bg-slate-50 p-4 text-[12px] text-slate-600">
-              <div><strong className="text-slate-800">Header:</strong> {app.followupDraft.meetingHeader || '-'}</div>
-              <div><strong className="text-slate-800">Department:</strong> {app.followupDraft.unit || '-'}</div>
-              <div><strong className="text-slate-800">Attendees:</strong> {(app.followupDraft.attendeeDetails || []).map((a) => a.name).filter(Boolean).join(', ') || '-'}</div>
+            <div className="grid gap-3 sm:grid-cols-2">
+              <Field label="Meeting header">
+                <input
+                  className={P.input}
+                  value={app.followupDraft.meetingHeader || ''}
+                  onChange={(e) => app.setFollowupDraft((c) => ({ ...c, meetingHeader: e.target.value }))}
+                />
+              </Field>
+              <Field label="Department / unit">
+                <input
+                  className={P.input}
+                  value={app.followupDraft.unit || ''}
+                  onChange={(e) => app.setFollowupDraft((c) => ({ ...c, unit: e.target.value }))}
+                />
+              </Field>
             </div>
 
             <Field label="Meeting title">
@@ -296,6 +307,42 @@ export default function CloseMeetingPage({ app }) {
                 onChange={(e) => app.setFollowupDraft((c) => ({ ...c, title: e.target.value }))}
               />
             </Field>
+
+            <div className="grid gap-3 sm:grid-cols-2">
+              <Field label="Called by">
+                <select
+                  className={P.select}
+                  value={app.followupDraft.calledById || ''}
+                  onChange={(e) => {
+                    const person = app.contactPeople.find((p) => p.id === e.target.value)
+                    app.setFollowupDraft((c) => ({
+                      ...c,
+                      calledById: e.target.value,
+                      calledBy: person?.name || '',
+                      callerName: person?.name || '',
+                    }))
+                  }}
+                >
+                  <option value="">Select caller</option>
+                  {app.contactPeople.map((person) => (
+                    <option key={person.id || person.email || person.name} value={person.id}>
+                      {person.name}{person.desig ? ` - ${person.desig}` : ''}
+                    </option>
+                  ))}
+                </select>
+              </Field>
+              <Field label="Duration">
+                <select
+                  className={P.select}
+                  value={app.followupDraft.duration || '1 hour'}
+                  onChange={(e) => app.setFollowupDraft((c) => ({ ...c, duration: e.target.value }))}
+                >
+                  {['30 minutes', '45 minutes', '1 hour', '1.5 hours', '2 hours', '3 hours'].map((duration) => (
+                    <option key={duration} value={duration}>{duration}</option>
+                  ))}
+                </select>
+              </Field>
+            </div>
 
             <div className="grid gap-3 sm:grid-cols-2">
               <Field label="Date">
@@ -312,6 +359,62 @@ export default function CloseMeetingPage({ app }) {
               </Field>
             </div>
 
+            <div className="grid gap-3 sm:grid-cols-2">
+              <Field label="Mode">
+                <select
+                  className={P.select}
+                  value={app.followupDraft.mode || 'inperson'}
+                  onChange={(e) => app.setFollowupDraft((c) => ({ ...c, mode: e.target.value }))}
+                >
+                  <option value="inperson">In person</option>
+                  <option value="vc">Video conference</option>
+                  <option value="hybrid">Hybrid</option>
+                </select>
+              </Field>
+              {(app.followupDraft.mode === 'inperson' || app.followupDraft.mode === 'hybrid') && (
+                <Field label="Venue">
+                  <input
+                    className={P.input}
+                    value={app.followupDraft.venue || ''}
+                    onChange={(e) => app.setFollowupDraft((c) => ({ ...c, venue: e.target.value }))}
+                  />
+                </Field>
+              )}
+              {app.followupDraft.mode === 'vc' && (
+                <Field label="VC link">
+                  <input
+                    className={P.input}
+                    value={app.followupDraft.vcLink || ''}
+                    onChange={(e) => app.setFollowupDraft((c) => ({ ...c, vcLink: e.target.value }))}
+                  />
+                </Field>
+              )}
+            </div>
+
+            {app.followupDraft.mode === 'hybrid' && (
+              <Field label="VC link">
+                <input
+                  className={P.input}
+                  value={app.followupDraft.vcLink || ''}
+                  onChange={(e) => app.setFollowupDraft((c) => ({ ...c, vcLink: e.target.value }))}
+                />
+              </Field>
+            )}
+
+            <div className="grid gap-2 rounded-xl border border-slate-200 bg-slate-50 p-4">
+              <span className="text-[11px] font-semibold uppercase tracking-[0.12em] text-slate-500">Attendees</span>
+              <div className="flex flex-wrap gap-2">
+                {(app.followupDraft.attendeeDetails || []).map((attendee, index) => (
+                  <span key={`${attendee.id || attendee.name}-${index}`} className="rounded-full border border-slate-200 bg-white px-3 py-1 text-[12px] text-slate-700">
+                    {attendee.name}{attendee.desig ? ` - ${attendee.desig}` : ''}
+                  </span>
+                ))}
+                {!(app.followupDraft.attendeeDetails || []).length && (
+                  <span className="text-[12px] text-slate-500">No attendees copied from the source meeting.</span>
+                )}
+              </div>
+            </div>
+
             <Field label="Purpose / agenda">
               <textarea
                 className={P.textarea}
@@ -323,6 +426,28 @@ export default function CloseMeetingPage({ app }) {
               />
             </Field>
 
+            <Field label="Desired outcome">
+              <textarea
+                className={P.textarea}
+                value={app.followupDraft.topics?.[0]?.desiredOutcome || ''}
+                onChange={(e) => app.setFollowupDraft((c) => ({
+                  ...c,
+                  topics: [{ ...(c.topics?.[0] || {}), desiredOutcome: e.target.value }],
+                }))}
+              />
+            </Field>
+
+            <Field label="Documents required">
+              <textarea
+                className={P.textarea}
+                value={app.followupDraft.topics?.[0]?.documents || ''}
+                onChange={(e) => app.setFollowupDraft((c) => ({
+                  ...c,
+                  topics: [{ ...(c.topics?.[0] || {}), documents: e.target.value }],
+                }))}
+              />
+            </Field>
+
             <Field label="Special note">
               <input
                 className={P.input}
@@ -330,6 +455,19 @@ export default function CloseMeetingPage({ app }) {
                 onChange={(e) => app.setFollowupDraft((c) => ({ ...c, note: e.target.value }))}
               />
             </Field>
+
+            <label className="flex items-start gap-3 rounded-xl border border-slate-200 bg-slate-50 p-3 cursor-pointer">
+              <input
+                type="checkbox"
+                className="mt-[2px] h-4 w-4 min-h-0 accent-slate-700"
+                checked={app.followupDraft.includeAdditionalPoints === true}
+                onChange={(e) => app.setFollowupDraft((c) => ({ ...c, includeAdditionalPoints: e.target.checked }))}
+              />
+              <span className="grid gap-[3px]">
+                <span className="text-[12px] font-semibold text-slate-900">Add additional points section</span>
+                <span className="text-[11px] leading-[1.45] text-slate-600">Include the blank Other Discussions area in the agenda form.</span>
+              </span>
+            </label>
 
             <div className="flex flex-col gap-2 sm:flex-row">
               <button className={P.primary} onClick={app.saveFollowupDraftAndClose}>

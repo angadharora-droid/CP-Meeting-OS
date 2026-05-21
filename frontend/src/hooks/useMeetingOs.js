@@ -835,7 +835,7 @@ export function useMeetingOs(navigate, page) {
         attendees: attendeeDetails.map((person) => person.name).join('\n'),
         attendeeDetails,
         topics: draft.topics || [{ topic: '', purpose: draftPurpose || `Follow-up on: ${updateMeeting.title}`, desiredOutcome: '', documents: '' }],
-        includeAdditionalPoints: false,
+        includeAdditionalPoints: draft.includeAdditionalPoints === true,
         purpose: (draft.topics || []).map((topic) => [topic.topic, topic.purpose].filter(Boolean).join(': ')).filter(Boolean).join('\n'),
         outcome: (draft.topics || []).map((topic) => topic.desiredOutcome).filter(Boolean).join('\n'),
         docs: (draft.topics || []).map((topic) => topic.documents).filter(Boolean).join('\n'),
