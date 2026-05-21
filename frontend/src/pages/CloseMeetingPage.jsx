@@ -267,6 +267,82 @@ export default function CloseMeetingPage({ app }) {
         </div>
       </details>
 
+      {app.followupDraft && (
+        <section className="fixed inset-0 z-[1000] grid place-items-center bg-slate-900/40 p-4 backdrop-blur-sm">
+          <div className="w-full max-w-[760px] max-h-[88dvh] overflow-auto rounded-2xl border border-slate-200 bg-white p-5 shadow-[0_24px_60px_rgba(15,23,42,0.18)] grid gap-4">
+            <div className="flex items-start justify-between gap-3">
+              <div>
+                <p className="m-0 mb-[3px] text-[10px] uppercase tracking-[0.18em] text-slate-500 font-semibold">Follow-up meeting</p>
+                <h2 className="m-0 text-[16px] leading-tight text-slate-900 font-semibold">Create follow-up draft</h2>
+              </div>
+              <button
+                className="rounded-lg border border-slate-200 bg-white px-3 py-[7px] text-[11px] text-slate-500 hover:border-slate-300 hover:text-slate-700"
+                onClick={app.closeFollowupDraft}
+              >
+                Close
+              </button>
+            </div>
+
+            <div className="grid gap-3 rounded-xl border border-slate-200 bg-slate-50 p-4 text-[12px] text-slate-600">
+              <div><strong className="text-slate-800">Header:</strong> {app.followupDraft.meetingHeader || '-'}</div>
+              <div><strong className="text-slate-800">Department:</strong> {app.followupDraft.unit || '-'}</div>
+              <div><strong className="text-slate-800">Attendees:</strong> {(app.followupDraft.attendeeDetails || []).map((a) => a.name).filter(Boolean).join(', ') || '-'}</div>
+            </div>
+
+            <Field label="Meeting title">
+              <input
+                className={P.input}
+                value={app.followupDraft.title || ''}
+                onChange={(e) => app.setFollowupDraft((c) => ({ ...c, title: e.target.value }))}
+              />
+            </Field>
+
+            <div className="grid gap-3 sm:grid-cols-2">
+              <Field label="Date">
+                <DateField
+                  value={app.followupDraft.date || ''}
+                  onChange={(date) => app.setFollowupDraft((c) => ({ ...c, date }))}
+                />
+              </Field>
+              <Field label="Time">
+                <TimeField
+                  value={app.followupDraft.time || ''}
+                  onChange={(time) => app.setFollowupDraft((c) => ({ ...c, time }))}
+                />
+              </Field>
+            </div>
+
+            <Field label="Purpose / agenda">
+              <textarea
+                className={P.textarea}
+                value={app.followupDraft.topics?.[0]?.purpose || ''}
+                onChange={(e) => app.setFollowupDraft((c) => ({
+                  ...c,
+                  topics: [{ ...(c.topics?.[0] || {}), purpose: e.target.value }],
+                }))}
+              />
+            </Field>
+
+            <Field label="Special note">
+              <input
+                className={P.input}
+                value={app.followupDraft.note || ''}
+                onChange={(e) => app.setFollowupDraft((c) => ({ ...c, note: e.target.value }))}
+              />
+            </Field>
+
+            <div className="flex flex-col gap-2 sm:flex-row">
+              <button className={P.primary} onClick={app.saveFollowupDraftAndClose}>
+                Save follow-up and close meeting
+              </button>
+              <button className={P.ghost} onClick={app.closeFollowupDraft}>
+                Cancel
+              </button>
+            </div>
+          </div>
+        </section>
+      )}
+
     </section>
   )
 }

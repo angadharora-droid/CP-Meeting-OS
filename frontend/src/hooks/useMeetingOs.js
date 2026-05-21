@@ -61,6 +61,7 @@ export function useMeetingOs(navigate, page) {
   const [closeMeetingId, setCloseMeetingId] = useState('')
   const [followup, setFollowup] = useState(false)
   const [followupForm, setFollowupForm] = useState({ date: '', time: '', purpose: '', note: '' })
+  const [followupDraft, setFollowupDraft] = useState(null)
   const [pinChangeForm, setPinChangeForm] = useState(blankPinChange)
   const [pinResetForm, setPinResetForm] = useState(blankPinResetRequest)
   const [bankFilter, setBankFilter] = useState('all')
@@ -662,13 +663,13 @@ export function useMeetingOs(navigate, page) {
       .filter((attendee) => attendee.source === 'manual' || !attendee.id)
       .map((attendee) => makeAttendee(attendee, 'manual'))
 
-    setEditingMeetingId('')
-    setMeetingForm({
+    setFollowupDraft({
       meetingHeader: sourceMeeting.meetingHeader || '',
       title: `Follow-up: ${sourceMeeting.title}`,
       unit: sourceMeeting.unit || '',
       calledBy: callerId,
       calledById: callerId,
+      callerName: sourceMeeting.calledBy || '',
       date: '',
       time: sourceMeeting.time || '',
       duration: sourceMeeting.duration || '1 hour',
@@ -679,18 +680,27 @@ export function useMeetingOs(navigate, page) {
       includeAdditionalPoints: false,
       followupOfMeetingId: sourceMeeting.meetingId,
       note: `Follow-up to meeting held on ${toDateLabel(sourceMeeting.date)}`,
+      attendeeDetails,
     })
-    setMeetingAttendeeIds(internalIds)
-    setManualAttendees(manual)
-    setManualAttendeeForm(blankManualAttendee)
     setFollowup(false)
     setFollowupForm({ date: '', time: '', purpose: '', note: '' })
-    setPreview(null)
-    navigate('/new-meeting')
-    showToast('Follow-up draft ready')
+    showToast('Follow-up draft opened')
   }
 
-  async function closeMeeting() {
+  function closeFollowupDraft() {
+    setFollowupDraft(null)
+  }
+
+  async function saveFollowupDraftAndClose() {
+    if (!followupDraft?.date || !followupDraft?.time || !followupDraft?.title) {
+      showToast('Follow-up date, time and title are required')
+      return
+    }
+    await closeMeeting({ followupDraft })
+  }
+
+  async function closeMeeting(options = {}) {
+    const draft = options.followupDraft || null
     if (!closeMeetingId) {
       showToast('Select a meeting first')
       return
@@ -710,17 +720,19 @@ export function useMeetingOs(navigate, page) {
 
     const updateMeeting = meetings.find((meeting) => meeting.meetingId === closeMeetingId)
     if (!updateMeeting) return
+    const draftPurpose = draft?.topics?.[0]?.purpose || ''
+    const hasFollowup = Boolean(draft) || followup
 
     const momText = buildMom(
       {
         ...updateMeeting,
         closingNotes: closureNotes.trim(),
         actionPoints: points,
-        followupRequired: followup,
-        followupDate: followup ? followupForm.date : '',
-        followupTime: followup ? followupForm.time : '',
-        followupPurpose: followup ? followupForm.purpose.trim() : '',
-        followupNote: followup ? followupForm.note.trim() : '',
+        followupRequired: hasFollowup,
+        followupDate: draft ? draft.date : followup ? followupForm.date : '',
+        followupTime: draft ? draft.time : followup ? followupForm.time : '',
+        followupPurpose: draft ? draftPurpose : followup ? followupForm.purpose.trim() : '',
+        followupNote: draft ? draft.note : followup ? followupForm.note.trim() : '',
       },
       updateMeeting.attendeeDetails || [],
       closureNotes.trim(),
@@ -734,11 +746,11 @@ export function useMeetingOs(navigate, page) {
       actionPoints: points,
       momText,
       followup: {
-        required: followup,
-        date: followup ? followupForm.date : '',
-        time: followup ? followupForm.time : '',
-        purpose: followup ? followupForm.purpose.trim() : '',
-        note: followup ? followupForm.note.trim() : '',
+        required: hasFollowup,
+        date: draft ? draft.date : followup ? followupForm.date : '',
+        time: draft ? draft.time : followup ? followupForm.time : '',
+        purpose: draft ? draftPurpose : followup ? followupForm.purpose.trim() : '',
+        note: draft ? draft.note : followup ? followupForm.note.trim() : '',
       },
       closedOn: new Date().toISOString(),
     }
@@ -788,11 +800,11 @@ export function useMeetingOs(navigate, page) {
               closingNotes: closureNotes,
               actionPoints: points,
               momText,
-              followupRequired: followup,
-              followupDate: followup ? followupForm.date : '',
-              followupTime: followup ? followupForm.time : '',
-              followupPurpose: followup ? followupForm.purpose : '',
-              followupNote: followup ? followupForm.note : '',
+              followupRequired: hasFollowup,
+              followupDate: draft ? draft.date : followup ? followupForm.date : '',
+              followupTime: draft ? draft.time : followup ? followupForm.time : '',
+              followupPurpose: draft ? draftPurpose : followup ? followupForm.purpose : '',
+              followupNote: draft ? draft.note : followup ? followupForm.note : '',
             }
           : meeting,
       ),
@@ -802,6 +814,49 @@ export function useMeetingOs(navigate, page) {
     setClosureNotes('')
     setFollowup(false)
     setFollowupForm({ date: '', time: '', purpose: '', note: '' })
+
+    if (draft) {
+      const attendeeDetails = draft.attendeeDetails || []
+      const caller = contactPeople.find((person) => person.id === draft.calledById)
+      const followupMeeting = {
+        meetingId: uid(),
+        meetingHeader: draft.meetingHeader || '',
+        title: draft.title || `Follow-up: ${updateMeeting.title}`,
+        date: draft.date,
+        time: draft.time,
+        duration: draft.duration || '1 hour',
+        mode: draft.mode || getMeetingMode(updateMeeting) || 'inperson',
+        venue: draft.venue || '',
+        vcLink: draft.vcLink || '',
+        unit: draft.unit || '',
+        calledById: draft.calledById || '',
+        calledBy: caller?.name || draft.callerName || updateMeeting.calledBy || '',
+        calledByName: caller?.name || draft.callerName || updateMeeting.calledBy || 'Organizer',
+        attendees: attendeeDetails.map((person) => person.name).join('\n'),
+        attendeeDetails,
+        topics: draft.topics || [{ topic: '', purpose: draftPurpose || `Follow-up on: ${updateMeeting.title}`, desiredOutcome: '', documents: '' }],
+        includeAdditionalPoints: false,
+        purpose: (draft.topics || []).map((topic) => [topic.topic, topic.purpose].filter(Boolean).join(': ')).filter(Boolean).join('\n'),
+        outcome: (draft.topics || []).map((topic) => topic.desiredOutcome).filter(Boolean).join('\n'),
+        docs: (draft.topics || []).map((topic) => topic.documents).filter(Boolean).join('\n'),
+        note: draft.note || '',
+        status: 'Open',
+        refNo: generateRefNo(),
+        followupOfMeetingId: updateMeeting.meetingId,
+      }
+      const noticeText = buildNotice(followupMeeting, attendeeDetails)
+      const formText = buildForm(followupMeeting, attendeeDetails)
+      const followupResult = await apiPost({ action: 'log_meeting', ...followupMeeting, noticeText, formText })
+      if (!followupResult?.ok) {
+        showToast(followupResult?.error || 'Could not save follow-up meeting')
+        return
+      }
+      setMeetings((current) => [{ ...followupMeeting, noticeText, formText }, ...current])
+      setFollowupDraft(null)
+      showToast('Meeting closed and follow-up saved')
+      navigate('/bank')
+      return
+    }
 
     if (followup && followupForm.date) {
       const followupPurpose = followupForm.purpose || `Follow-up on: ${updateMeeting.title}`
@@ -1055,6 +1110,8 @@ export function useMeetingOs(navigate, page) {
     setFollowup,
     followupForm,
     setFollowupForm,
+    followupDraft,
+    setFollowupDraft,
     bankFilter,
     setBankFilter,
     bankSort,
@@ -1089,6 +1146,8 @@ export function useMeetingOs(navigate, page) {
     editMeeting,
     cancelEditMeeting,
     startFollowupDraft,
+    closeFollowupDraft,
+    saveFollowupDraftAndClose,
     closeMeeting,
     postponeMeeting,
     cancelMeeting,
