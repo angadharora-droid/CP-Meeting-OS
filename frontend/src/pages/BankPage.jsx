@@ -784,7 +784,7 @@ function MeetingHeaderGroup({ group, children, canManage, onRename, onDelete }) 
               onClick={() => setMenuOpen((v) => !v)}
               aria-label="Header actions"
             >
-              ...
+              ⋮
             </button>
             {menuOpen && (
               <div className="absolute right-0 top-[calc(100%+6px)] z-20 grid min-w-[132px] overflow-hidden rounded-xl border border-[#E2E8F0] bg-white shadow-[0_12px_30px_rgba(15,23,42,0.12)]">
