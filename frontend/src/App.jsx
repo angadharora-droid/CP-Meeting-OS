@@ -19,6 +19,22 @@ function parseAgendaForm(content) {
   let field = null
 
   const readValue = (label, line) => line.replace(new RegExp(`^${label}\\s*:\\s*`), '').trim()
+  const hasTopicContent = (topic) => Boolean(
+    topic && ['topic', 'purpose', 'outcome', 'documents', 'notes'].some((key) => topic[key]?.length),
+  )
+  const startTopic = (title, marker = '') => {
+    current = {
+      number: String(topics.length + 1),
+      marker,
+      title,
+      topic: [],
+      purpose: [],
+      outcome: [],
+      documents: [],
+      notes: [],
+    }
+    topics.push(current)
+  }
 
   lines.forEach((rawLine) => {
     const line = rawLine.trim()
@@ -43,22 +59,11 @@ function parseAgendaForm(content) {
 
     const topicMatch = line.match(/^(\d+)([.)])\s+(.+)$/)
     if (topicMatch) {
-      current = {
-        number: topicMatch[1],
-        marker: topicMatch[2],
-        title: topicMatch[3],
-        topic: [],
-        purpose: [],
-        outcome: [],
-        documents: [],
-        notes: [],
-      }
-      topics.push(current)
+      startTopic(topicMatch[3], topicMatch[2])
+      current.number = topicMatch[1]
       field = current.title === 'Purpose:' ? 'purpose' : null
       return
     }
-
-    if (!current) return
 
     const labelMap = {
       'Topic:': 'topic',
@@ -69,9 +74,15 @@ function parseAgendaForm(content) {
     }
 
     if (labelMap[line]) {
+      if (line === 'Purpose:' && (!current || hasTopicContent(current))) {
+        startTopic('Purpose:')
+      }
+      if (!current) return
       field = labelMap[line]
       return
     }
+
+    if (!current) return
 
     if (!field) return
 
@@ -132,10 +143,14 @@ function AgendaTopic({ topic }) {
 
   return (
     <section className="agenda-topic">
-      {!compactPurpose && <h3>{topic.number}{topic.marker || '.'} {topic.title}</h3>}
+      {topic.title === 'Other Discussions' ? (
+        <div className="agenda-field-label">Other Discussions</div>
+      ) : !compactPurpose && (
+        <h3>{topic.number}{topic.marker || '.'} {topic.title}</h3>
+      )}
       {topic.topic.length > 0 && <AgendaField label="Topic" items={topic.topic} blankCount={2} />}
       {compactPurpose ? (
-        <AgendaField label={`${topic.number}) Purpose`} items={topic.purpose} blankCount={3} />
+        <AgendaField label="Purpose" items={topic.purpose} blankCount={3} />
       ) : (
         <AgendaField label="Purpose" items={topic.purpose} blankCount={3} />
       )}

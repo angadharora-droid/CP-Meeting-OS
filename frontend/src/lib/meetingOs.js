@@ -339,7 +339,7 @@ export function buildForm(meeting, attendees) {
   agendaItems.forEach((item, index) => {
     const purposeLines = normalizeListText(item.purpose || item.topic)
     sections.push(
-      `${index + 1}) Purpose:`,
+      'Purpose:',
       ...(purposeLines.length ? purposeLines.map((line) => `- ${line}`) : writeLines(3)),
       '',
       'Desired Outcome:',
