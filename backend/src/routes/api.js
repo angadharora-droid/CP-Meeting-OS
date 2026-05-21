@@ -672,6 +672,46 @@ router.post('/', async (req, res) => {
       return res.json({ ok: true });
     }
 
+    if (action === 'rename_meeting_header') {
+      const user = await getRequestUser(req);
+      if (!user || user.role !== 'admin') {
+        return res.status(403).json({ ok: false, error: 'Admin access required' });
+      }
+
+      const oldHeader = String(req.body?.oldHeader || '').trim();
+      const newHeader = String(req.body?.newHeader || '').trim();
+
+      if (!oldHeader || !newHeader) {
+        return res.status(400).json({ ok: false, error: 'oldHeader and newHeader required' });
+      }
+
+      const result = await Meeting.updateMany(
+        { meetingHeader: oldHeader },
+        { $set: { meetingHeader: newHeader } },
+      );
+
+      return res.json({ ok: true, modifiedCount: result.modifiedCount || 0 });
+    }
+
+    if (action === 'delete_meeting_header') {
+      const user = await getRequestUser(req);
+      if (!user || user.role !== 'admin') {
+        return res.status(403).json({ ok: false, error: 'Admin access required' });
+      }
+
+      const header = String(req.body?.header || '').trim();
+      if (!header) {
+        return res.status(400).json({ ok: false, error: 'header required' });
+      }
+
+      const result = await Meeting.updateMany(
+        { meetingHeader: header },
+        { $set: { meetingHeader: '' } },
+      );
+
+      return res.json({ ok: true, modifiedCount: result.modifiedCount || 0 });
+    }
+
     if (action === 'close_meeting') {
       const meetingId = String(req.body?.meetingId || '').trim();
       const notes = String(req.body?.notes || '').trim();
