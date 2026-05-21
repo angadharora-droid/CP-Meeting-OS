@@ -18,6 +18,7 @@ export const blankMeeting = {
   vcLink: '',
   topics: [{ topic: '', purpose: '', desiredOutcome: '', documents: '' }],
   includeAdditionalPoints: false,
+  followupOfMeetingId: '',
   note: '',
 }
 

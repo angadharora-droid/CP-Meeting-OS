@@ -563,6 +563,7 @@ export function useMeetingOs(navigate, page) {
       attendeeDetails: uniqueAttendees,
       topics: topicsClean,
       includeAdditionalPoints: meetingForm.includeAdditionalPoints === true,
+      followupOfMeetingId: meetingForm.followupOfMeetingId || existingMeeting?.followupOfMeetingId || '',
       purpose: topicsClean.map((t) => [t.topic, t.purpose].filter(Boolean).join(': ')).filter(Boolean).join('\n'),
       outcome: topicsClean.map((t) => t.desiredOutcome).filter(Boolean).join('\n'),
       docs: topicsClean.map((t) => t.documents).filter(Boolean).join('\n'),
@@ -627,6 +628,7 @@ export function useMeetingOs(navigate, page) {
         ? meeting.topics
         : [{ topic: '', purpose: meeting.purpose || '', desiredOutcome: meeting.outcome || meeting.desiredOutcome || '', documents: meeting.docs || meeting.documents || '' }],
       includeAdditionalPoints: meeting.includeAdditionalPoints === true,
+      followupOfMeetingId: meeting.followupOfMeetingId || '',
       note: meeting.note || meeting.specialNote || '',
     })
     setMeetingAttendeeIds(internalIds)
@@ -757,54 +759,47 @@ export function useMeetingOs(navigate, page) {
     setClosureNotes('')
     setFollowup(false)
     setFollowupForm({ date: '', time: '', purpose: '', note: '' })
-    setPreview({ title: 'Minutes of Meeting (MoM)', content: momText })
-    showToast('Meeting closed')
 
     if (followup && followupForm.date) {
       const followupPurpose = followupForm.purpose || `Follow-up on: ${updateMeeting.title}`
       const attendeeDetails = updateMeeting.attendeeDetails || []
-      const followupMeeting = {
-        meetingId: uid(),
-        // Keep the follow-up under the same header as the meeting it follows.
+      const callerId = updateMeeting.calledById || contactPeople.find((person) => person.name === updateMeeting.calledBy)?.id || ''
+      const internalIds = attendeeDetails
+        .filter((attendee) => attendee.source !== 'manual' && attendee.id && attendee.id !== callerId)
+        .map((attendee) => attendee.id)
+      const manual = attendeeDetails
+        .filter((attendee) => attendee.source === 'manual' || !attendee.id)
+        .map((attendee) => makeAttendee(attendee, 'manual'))
+
+      setEditingMeetingId('')
+      setMeetingForm({
         meetingHeader: updateMeeting.meetingHeader || '',
         title: `Follow-up: ${updateMeeting.title}`,
-        date: followupForm.date,
+        unit: updateMeeting.unit || '',
+        calledBy: callerId,
+        calledById: callerId,
+        date: toDateLabel(followupForm.date) || followupForm.date,
         time: followupForm.time || updateMeeting.time || '',
         duration: updateMeeting.duration || '1 hour',
         mode: getMeetingMode(updateMeeting) || 'inperson',
         venue: updateMeeting.venue || '',
         vcLink: updateMeeting.vcLink || '',
-        unit: updateMeeting.unit || '',
-        calledById: updateMeeting.calledById || '',
-        calledBy: updateMeeting.calledBy || '',
-        calledByName: updateMeeting.calledBy || 'Organizer',
-        attendees: updateMeeting.attendees || '',
-        attendeeDetails,
         topics: [{ topic: '', purpose: followupPurpose, desiredOutcome: '', documents: '' }],
         includeAdditionalPoints: false,
-        purpose: followupPurpose,
-        outcome: '',
-        docs: '',
-        note: followupForm.note || `Follow-up to meeting held on ${toDateLabel(updateMeeting.date)}`,
-        status: 'Open',
-        refNo: generateRefNo(),
-        // Links this follow-up back to the meeting it was generated from.
         followupOfMeetingId: updateMeeting.meetingId,
-      }
-
-      const noticeText = buildNotice(followupMeeting, attendeeDetails)
-      const formText = buildForm(followupMeeting, attendeeDetails)
-
-      const followupResult = await apiPost({ action: 'log_meeting', ...followupMeeting, noticeText, formText })
-      if (!followupResult?.ok) {
-        showToast(followupResult?.error || 'Could not save follow-up meeting')
-        return
-      }
-
-      setMeetings((current) => [{ ...followupMeeting, noticeText, formText }, ...current])
-      showToast('Follow-up meeting created')
-      navigate('/bank')
+        note: followupForm.note || `Follow-up to meeting held on ${toDateLabel(updateMeeting.date)}`,
+      })
+      setMeetingAttendeeIds(internalIds)
+      setManualAttendees(manual)
+      setManualAttendeeForm(blankManualAttendee)
+      setPreview(null)
+      navigate('/new-meeting')
+      showToast('Meeting closed. Follow-up draft ready')
+      return
     }
+
+    setPreview({ title: 'Minutes of Meeting (MoM)', content: momText })
+    showToast('Meeting closed')
   }
 
   async function postponeMeeting({ meetingId, postponedToDate, postponedToTime, reason }) {
