@@ -475,7 +475,7 @@ function previewMom(app, meeting) {
 function previewForm(app, meeting) {
   app.setPreview({
     title: 'Agenda Form',
-    content: meeting.formText || buildForm(meeting, getNoticeAttendees(meeting)),
+    content: buildForm(meeting, getNoticeAttendees(meeting)),
   })
 }
 
