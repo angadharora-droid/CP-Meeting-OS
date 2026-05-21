@@ -813,6 +813,58 @@ export function useMeetingOs(navigate, page) {
     showToast('Meeting cancelled')
   }
 
+  async function renameMeetingHeader(oldHeader, newHeader) {
+    const cleanOld = String(oldHeader || '').trim()
+    const cleanNew = String(newHeader || '').trim()
+    if (!cleanOld || !cleanNew) {
+      showToast('Header name is required')
+      return false
+    }
+    if (cleanOld === cleanNew) return true
+
+    const result = await apiPost({
+      action: 'rename_meeting_header',
+      oldHeader: cleanOld,
+      newHeader: cleanNew,
+    })
+
+    if (!result?.ok) {
+      showToast(result?.error || 'Could not rename header')
+      return false
+    }
+
+    setMeetings((current) => current.map((meeting) => (
+      (meeting.meetingHeader || '').trim() === cleanOld
+        ? { ...meeting, meetingHeader: cleanNew }
+        : meeting
+    )))
+    showToast('Header renamed')
+    return true
+  }
+
+  async function deleteMeetingHeader(header) {
+    const cleanHeader = String(header || '').trim()
+    if (!cleanHeader) return false
+
+    const result = await apiPost({
+      action: 'delete_meeting_header',
+      header: cleanHeader,
+    })
+
+    if (!result?.ok) {
+      showToast(result?.error || 'Could not delete header')
+      return false
+    }
+
+    setMeetings((current) => current.map((meeting) => (
+      (meeting.meetingHeader || '').trim() === cleanHeader
+        ? { ...meeting, meetingHeader: '' }
+        : meeting
+    )))
+    showToast('Header deleted')
+    return true
+  }
+
   async function markTask(taskId, status) {
     const result = await apiPost({ action: 'update_task', taskId, status })
     if (!result?.ok) {
@@ -939,6 +991,8 @@ export function useMeetingOs(navigate, page) {
     closeMeeting,
     postponeMeeting,
     cancelMeeting,
+    renameMeetingHeader,
+    deleteMeetingHeader,
     markTask,
     copyText,
     openCalendarLinks,

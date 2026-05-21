@@ -132,23 +132,10 @@ function AgendaTopic({ topic }) {
 
   return (
     <section className="agenda-topic">
-      <h3>{topic.number}{topic.marker || '.'} {topic.title}</h3>
+      {!compactPurpose && <h3>{topic.number}{topic.marker || '.'} {topic.title}</h3>}
       {topic.topic.length > 0 && <AgendaField label="Topic" items={topic.topic} blankCount={2} />}
       {compactPurpose ? (
-        topic.purpose?.some((item) => item.text || item.blank) ? (
-          <div className="agenda-bullets">
-            {topic.purpose.filter((item) => item.text).map((item, index) => (
-              <div className="agenda-bullet-item" key={index}>
-                <span aria-hidden="true">â€¢</span>
-                <span>{item.text}</span>
-              </div>
-            ))}
-          </div>
-        ) : (
-          <div className="agenda-lines">
-            {Array.from({ length: 3 }).map((_, index) => <div key={index} />)}
-          </div>
-        )
+        <AgendaField label={`${topic.number}) Purpose`} items={topic.purpose} blankCount={3} />
       ) : (
         <AgendaField label="Purpose" items={topic.purpose} blankCount={3} />
       )}

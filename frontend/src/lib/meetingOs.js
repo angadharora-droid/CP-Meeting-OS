@@ -1,4 +1,4 @@
-const API_BASE_URL = import.meta.env.VITE_API_URL?.replace(/\/+$/, '') || ''
+﻿const API_BASE_URL = import.meta.env.VITE_API_URL?.replace(/\/+$/, '') || ''
 
 export const API = `${API_BASE_URL}/api`
 
@@ -118,7 +118,7 @@ export function normalizeListText(text) {
     .split('\n')
     .map((line) => line.trim())
     .filter(Boolean)
-    .map((line) => line.replace(/^[-•*\d.]+\s*/, ''))
+    .map((line) => line.replace(/^(\d+[.)]\s*|[-*]\s*|[\u2022\u00b7]\s*|\u00e2\S*\s*)/, '').trim())
 }
 
 const NOTICE_MONTHS = [
@@ -390,3 +390,4 @@ export function makeCalendarUrl(meeting, person) {
 
   return `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(meeting.title)}&dates=${dateStr}T${start}/${dateStr}T${end}&details=${details}&location=${location}&add=${encodeURIComponent(person.email)}`
 }
+

@@ -705,51 +705,84 @@ function FilterPill({ label, count, active, color, onClick }) {
 }
 
 /* ─── Meeting Header Group ───────────────────────────────────── */
-function MeetingHeaderGroup({ group, children }) {
+function MeetingHeaderGroup({ group, children, canManage, onRename, onDelete }) {
   const [open, setOpen] = useState(true)
+
+  function handleRename() {
+    const next = window.prompt('Rename meeting header', group.header)
+    if (next === null) return
+    onRename?.(group.header, next)
+  }
+
+  function handleDelete() {
+    const ok = window.confirm(`Remove header "${group.header}" from ${group.meetings.length} meeting${group.meetings.length === 1 ? '' : 's'}? The meetings will not be deleted.`)
+    if (!ok) return
+    onDelete?.(group.header)
+  }
 
   return (
     <div className="grid gap-3">
       {/* Header row */}
-      <button
-        type="button"
-        onClick={() => setOpen(v => !v)}
-        className="flex items-center gap-3 text-left w-full group px-1 py-[6px] rounded-xl hover:bg-slate-50 transition-colors"
-      >
-        {/* Animated chevron */}
-        <div className="w-6 h-6 rounded-lg bg-[#FFFFFF] border border-[#E2E8F0] flex items-center justify-center shrink-0 group-hover:border-[#94A3B8] transition-colors">
-          <svg
-            width="10" height="10" viewBox="0 0 12 12" fill="none"
-            style={{
-              color: '#94A3B8',
-              transition: 'transform 150ms ease, color 150ms',
-              transform: open ? 'rotate(90deg)' : 'rotate(0deg)',
-            }}
-          >
-            <path d="M4 2l4 4-4 4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
-          </svg>
-        </div>
+      <div className="flex flex-wrap items-center gap-2 rounded-xl px-1 py-[6px] hover:bg-slate-50 transition-colors">
+        <button
+          type="button"
+          onClick={() => setOpen(v => !v)}
+          className="flex min-w-0 flex-1 items-center gap-3 text-left group cursor-pointer bg-transparent border-none p-0"
+        >
+          {/* Animated chevron */}
+          <div className="w-6 h-6 rounded-lg bg-[#FFFFFF] border border-[#E2E8F0] flex items-center justify-center shrink-0 group-hover:border-[#94A3B8] transition-colors">
+            <svg
+              width="10" height="10" viewBox="0 0 12 12" fill="none"
+              style={{
+                color: '#94A3B8',
+                transition: 'transform 150ms ease, color 150ms',
+                transform: open ? 'rotate(90deg)' : 'rotate(0deg)',
+              }}
+            >
+              <path d="M4 2l4 4-4 4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+          </div>
 
-        {/* Header title */}
-        <span className="text-[13.5px] font-semibold tracking-tight truncate text-[#475569] group-hover:text-[#475569] transition-colors">
-          {group.header}
-        </span>
-
-        {/* Stretching divider */}
-        <div className="flex-1 h-px bg-[#F8FAFC] group-hover:bg-[#E2E8F0] transition-colors" />
-
-        {/* Meta */}
-        <div className="flex items-center gap-[8px] shrink-0">
-          <span className="text-[11px] text-[#64748B] font-mono tabular-nums">
-            {group.meetings.length} {group.meetings.length === 1 ? 'meeting' : 'meetings'}
+          {/* Header title */}
+          <span className="text-[13.5px] font-semibold tracking-tight truncate text-[#475569] group-hover:text-[#475569] transition-colors">
+            {group.header}
           </span>
-          {group.openCount > 0 && (
-            <span className="px-[9px] py-[3px] rounded-full bg-[#334155]/[0.07] border border-[#334155]/[0.15] text-[#334155]/60 text-[10px] uppercase tracking-[0.1em] font-semibold">
-              {group.openCount} open
+
+          {/* Stretching divider */}
+          <div className="flex-1 h-px bg-[#F8FAFC] group-hover:bg-[#E2E8F0] transition-colors" />
+
+          {/* Meta */}
+          <div className="flex items-center gap-[8px] shrink-0">
+            <span className="text-[11px] text-[#64748B] font-mono tabular-nums">
+              {group.meetings.length} {group.meetings.length === 1 ? 'meeting' : 'meetings'}
             </span>
-          )}
+            {group.openCount > 0 && (
+              <span className="px-[9px] py-[3px] rounded-full bg-[#334155]/[0.07] border border-[#334155]/[0.15] text-[#334155]/60 text-[10px] uppercase tracking-[0.1em] font-semibold">
+                {group.openCount} open
+              </span>
+            )}
+          </div>
+        </button>
+
+        {canManage && (
+          <div className="flex items-center gap-2 shrink-0">
+            <button
+              type="button"
+              className="min-h-[32px] px-3 py-1 rounded-lg bg-white text-[#334155] border border-[#CBD5E1] text-[10px] tracking-[0.08em] uppercase cursor-pointer transition-colors hover:bg-[#F8FAFC] hover:border-[#94A3B8] font-semibold"
+              onClick={handleRename}
+            >
+              Rename
+            </button>
+            <button
+              type="button"
+              className="min-h-[32px] px-3 py-1 rounded-lg bg-white text-red-700 border border-red-200 text-[10px] tracking-[0.08em] uppercase cursor-pointer transition-colors hover:bg-red-50 hover:border-red-300 font-semibold"
+              onClick={handleDelete}
+            >
+              Delete
+            </button>
+          </div>
+        )}
         </div>
-      </button>
 
       {/* Indented cards */}
       {open && (
@@ -1030,7 +1063,13 @@ function HeadersTab({ app }) {
       {groups.length > 0 ? (
         <div className="grid gap-4">
           {groups.map((group) => (
-            <MeetingHeaderGroup key={group.header} group={group}>
+            <MeetingHeaderGroup
+              key={group.header}
+              group={group}
+              canManage={app.isAdmin}
+              onRename={app.renameMeetingHeader}
+              onDelete={app.deleteMeetingHeader}
+            >
               {group.meetings.map((meeting) => (
                 <MeetingCard key={meeting.meetingId} meeting={meeting} user={app.user}
                   onPreview={app.setPreview ? (m) => previewNotice(app, m) : null}
