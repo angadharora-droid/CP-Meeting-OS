@@ -264,11 +264,11 @@ function TimePicker({ value, onChange, onClose }) {
         <div className="pointer-events-none absolute inset-x-3 top-1/2 h-[42px] -translate-y-1/2 rounded-2xl bg-slate-100" />
         <div className="pointer-events-none absolute inset-x-0 top-0 z-10 h-16 bg-gradient-to-b from-white to-transparent" />
         <div className="pointer-events-none absolute inset-x-0 bottom-0 z-10 h-16 bg-gradient-to-t from-white to-transparent" />
-        <div className="flex h-full items-stretch">
-          <TimeColumn options={hourOptions} value={selected.hour} onChange={(hour) => update({ hour })} className="flex-1" textAlign="right" btnPaddingClass="pr-2" />
+        <div className="flex h-full items-stretch justify-center">
+          <TimeColumn options={hourOptions} value={selected.hour} onChange={(hour) => update({ hour })} className="w-[72px] shrink-0" textAlign="right" btnPaddingClass="pr-3" />
           <div className="pointer-events-none z-20 flex w-5 shrink-0 items-center justify-center pb-px text-[16px] font-bold text-slate-400">:</div>
-          <TimeColumn options={minuteOptions} value={selected.minute} onChange={(minute) => update({ minute })} className="flex-1" textAlign="left" btnPaddingClass="pl-1" />
-          <TimeColumn options={periodOptions} value={selected.period} onChange={(period) => update({ period })} className="w-[68px] shrink-0" textAlign="left" btnPaddingClass="pl-3" />
+          <TimeColumn options={minuteOptions} value={selected.minute} onChange={(minute) => update({ minute })} className="w-[72px] shrink-0" textAlign="left" btnPaddingClass="pl-3" />
+          <TimeColumn options={periodOptions} value={selected.period} onChange={(period) => update({ period })} className="w-[64px] shrink-0" textAlign="center" btnPaddingClass="" />
         </div>
       </div>
       <div className="flex items-center justify-between gap-3 border-t border-slate-200 px-4 py-3">

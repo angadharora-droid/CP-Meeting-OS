@@ -187,17 +187,17 @@ export default function PeoplePage({ app }) {
           <div className="grid gap-3">
             {app.managers.map((manager) => (
               <article key={manager.id} className="p-4 border border-slate-200 bg-white rounded-2xl shadow-[0_1px_2px_rgba(15,23,42,0.04)]">
-                <div className="flex items-start justify-between gap-4">
+                <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
                   <div className="flex items-center gap-3 min-w-0">
                     <Avatar name={manager.name} size="lg" />
                     <div className="min-w-0">
                       <h3 className="m-0 text-[14px] font-semibold leading-snug truncate">{manager.name}</h3>
                       <p className="m-0 mt-[3px] text-slate-500 text-[11px] truncate">{manager.desig || 'No designation'}</p>
-                      <p className="m-0 mt-[2px] text-slate-500 text-[11px] truncate">{manager.email}</p>
+                      <p className="m-0 mt-[2px] text-slate-500 text-[11px] break-all sm:truncate">{manager.email}</p>
                     </div>
                   </div>
                   {app.isAdmin && (
-                    <div className="flex gap-2 shrink-0">
+                    <div className="flex gap-2 shrink-0 border-t border-slate-100 pt-3 sm:border-t-0 sm:pt-0">
                       <button className={P.ghost}
                         style={{ width: 'auto', minHeight: '36px', padding: '6px 14px', fontSize: '11px' }}
                         onClick={() => app.editManager(manager)}>
