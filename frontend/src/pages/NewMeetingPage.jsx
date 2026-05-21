@@ -757,13 +757,6 @@ export default function NewMeetingPage({ app }) {
           <h1 className="m-0 font-black text-[22px] text-[#0F172A] leading-tight tracking-tight">
             {app.followupMode ? 'Follow-up Meeting' : app.editingMeetingId ? 'Edit Meeting' : 'New Meeting'}
           </h1>
-          <p className="m-0 mt-[6px] text-[#475569] text-[13px] leading-[1.6]">
-            {app.followupMode
-              ? 'Create the follow-up meeting using the full meeting form.'
-              : app.editingMeetingId
-              ? 'Update the details below. The notice and agenda form will be regenerated.'
-              : 'Fill the details below. A notice and agenda form are generated automatically.'}
-          </p>
         </div>
 
       </div>

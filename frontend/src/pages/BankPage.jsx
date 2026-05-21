@@ -1143,11 +1143,6 @@ export default function BankPage({ app }) {
           <h1 className="m-0 font-bold text-[22px] text-slate-900 leading-tight tracking-tight">
             {activeTab === 'bank' ? 'Meeting Bank' : 'Meeting Headers'}
           </h1>
-          <p className="m-0 mt-[6px] text-slate-600 text-[13px] leading-[1.6]">
-            {activeTab === 'bank'
-              ? 'Browse, search, and filter all meetings across your organisation.'
-              : 'Meetings organised under a named header.'}
-          </p>
         </div>
         <div className="shrink-0 px-3 py-[6px] text-[10px] uppercase tracking-[0.12em] rounded-full text-slate-500 bg-slate-50 border border-slate-200 font-mono">
           {activeTab === 'bank' ? app.meetings.length : totalHeadered} total

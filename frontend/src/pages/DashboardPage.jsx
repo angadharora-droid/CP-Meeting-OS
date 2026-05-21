@@ -222,14 +222,6 @@ export default function DashboardPage({ app }) {
             {toDateLabel(today)}
           </p>
           <h1 className="text-[26px] font-bold tracking-tight leading-none text-slate-900">Dashboard</h1>
-          <p className="m-0 mt-[10px] text-slate-600 text-[13px] leading-snug flex items-center gap-[6px]">
-            {app.todayMeetings.length > 0 && (
-              <span className="inline-block w-[6px] h-[6px] rounded-full bg-slate-700 shrink-0" />
-            )}
-            {app.todayMeetings.length
-              ? `${app.todayMeetings.length} meeting${app.todayMeetings.length !== 1 ? 's' : ''} scheduled today`
-              : 'No meetings scheduled for today'}
-          </p>
         </div>
         <button
           className="relative shrink-0 px-[14px] py-[8px] text-[11px] font-semibold uppercase tracking-[0.08em] rounded-full bg-slate-700 text-white hover:bg-slate-800 active:scale-[0.96] cursor-pointer transition-all shadow-[0_4px_12px_rgba(15,23,42,0.14)]"
