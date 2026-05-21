@@ -227,6 +227,61 @@
   display: none;
 }
 
+.mom-preview-page {
+  overflow: auto;
+  padding: 8mm 10mm 10mm;
+  border: 1px solid #E2E8F0;
+  border-radius: 12px;
+  background: #ffffff;
+  color: #1E293B;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 12.5px;
+  line-height: 1.65;
+}
+
+.mom-preview-page h1 {
+  margin: 0 0 6mm;
+  color: #0F172A;
+  font-size: 18px;
+  font-weight: 800;
+  letter-spacing: 0;
+}
+
+.mom-preview-page h2 {
+  margin: 4mm 0 1.5mm;
+  color: #0F172A;
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0;
+}
+
+.mom-preview-page p {
+  margin: 0 0 1.2mm;
+  white-space: pre-wrap;
+}
+
+.mom-preview-page strong,
+.mom-preview-row-head span {
+  color: #0F172A;
+  font-weight: 800;
+}
+
+.mom-preview-spacer {
+  height: 3mm;
+}
+
+.mom-preview-row {
+  display: grid;
+  grid-template-columns: minmax(160px, 1.7fr) minmax(100px, 1fr) minmax(80px, 0.8fr);
+  gap: 10px;
+  padding: 6px 0;
+  border-bottom: 1px solid #E2E8F0;
+}
+
+.mom-preview-row-head {
+  border-bottom-color: #CBD5E1;
+}
+
 .agenda-form-page {
   overflow: auto;
   padding: 10mm 16mm 14mm;

@@ -468,7 +468,7 @@ function previewNotice(app, meeting) {
 function previewMom(app, meeting) {
   app.setPreview({
     title: 'Minutes of Meeting (MoM)',
-    content: meeting.momText || buildMom(meeting, getNoticeAttendees(meeting), meeting.closingNotes, meeting.actionPoints || []),
+    content: buildMom(meeting, getNoticeAttendees(meeting), meeting.closingNotes, meeting.actionPoints || []),
   })
 }
 
