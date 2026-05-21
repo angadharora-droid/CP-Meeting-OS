@@ -584,6 +584,7 @@ router.post('/', async (req, res) => {
         status: String(req.body?.status || 'Open'),
         noticeText: String(req.body?.noticeText || ''),
         formText: String(req.body?.formText || ''),
+        momText: String(req.body?.momText || ''),
         refNo: String(req.body?.refNo || ''),
         followupOfMeetingId: String(req.body?.followupOfMeetingId || ''),
       };
@@ -690,6 +691,7 @@ router.post('/', async (req, res) => {
             .filter((p) => p.taskId && p.task)
         : [];
       const followup = req.body?.followup || {};
+      const momText = String(req.body?.momText || '').trim();
 
       if (!meetingId) {
         return res.status(400).json({ ok: false, error: 'meetingId required' });
@@ -712,6 +714,7 @@ router.post('/', async (req, res) => {
             status: 'Closed',
             closingNotes: notes,
             actionPoints,
+            momText,
             closedOn,
             followupRequired: Boolean(followup?.required),
             followupDate: String(followup?.date || '').trim(),

@@ -8,6 +8,7 @@ import {
   blankPinChange,
   blankPinResetRequest,
   buildForm,
+  buildMom,
   buildNotice,
   generateRefNo,
   getMeetingMode,
@@ -603,11 +604,31 @@ export function useMeetingOs(navigate, page) {
       }))
       .filter((row) => row.task)
 
+    const updateMeeting = meetings.find((meeting) => meeting.meetingId === closeMeetingId)
+    if (!updateMeeting) return
+
+    const momText = buildMom(
+      {
+        ...updateMeeting,
+        closingNotes: closureNotes.trim(),
+        actionPoints: points,
+        followupRequired: followup,
+        followupDate: followup ? followupForm.date : '',
+        followupTime: followup ? followupForm.time : '',
+        followupPurpose: followup ? followupForm.purpose.trim() : '',
+        followupNote: followup ? followupForm.note.trim() : '',
+      },
+      updateMeeting.attendeeDetails || [],
+      closureNotes.trim(),
+      points,
+    )
+
     const payload = {
       action: 'close_meeting',
       meetingId: closeMeetingId,
       notes: closureNotes.trim(),
       actionPoints: points,
+      momText,
       followup: {
         required: followup,
         date: followup ? followupForm.date : '',
@@ -617,9 +638,6 @@ export function useMeetingOs(navigate, page) {
       },
       closedOn: new Date().toISOString(),
     }
-
-    const updateMeeting = meetings.find((meeting) => meeting.meetingId === closeMeetingId)
-    if (!updateMeeting) return
 
     const closeResult = await apiPost(payload)
     if (!closeResult?.ok) {
@@ -665,6 +683,7 @@ export function useMeetingOs(navigate, page) {
               status: 'Closed',
               closingNotes: closureNotes,
               actionPoints: points,
+              momText,
               followupRequired: followup,
               followupDate: followup ? followupForm.date : '',
               followupTime: followup ? followupForm.time : '',
@@ -679,6 +698,7 @@ export function useMeetingOs(navigate, page) {
     setClosureNotes('')
     setFollowup(false)
     setFollowupForm({ date: '', time: '', purpose: '', note: '' })
+    setPreview({ title: 'Minutes of Meeting (MoM)', content: momText })
     showToast('Meeting closed')
 
     if (followup && followupForm.date) {

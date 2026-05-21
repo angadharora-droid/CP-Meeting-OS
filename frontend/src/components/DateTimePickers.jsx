@@ -111,7 +111,7 @@ function CalendarPicker({ value, onChange, onClose }) {
   for (let d = 1; d <= daysInMonth; d++) cells.push(d)
 
   return (
-    <div onMouseDown={(e) => e.preventDefault()} className="absolute left-0 top-[calc(100%+6px)] z-50 w-[276px] overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-[0_16px_40px_rgba(15,23,42,0.12)]">
+    <div onMouseDown={(e) => e.preventDefault()} className="absolute left-0 top-[calc(100%+6px)] z-50 w-[min(276px,calc(100vw-2rem))] max-w-[92vw] overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-[0_16px_40px_rgba(15,23,42,0.12)]">
       <div className="flex items-center justify-between border-b border-slate-200 px-3.5 py-2.5">
         <button type="button" className="h-7 w-7 rounded-lg text-slate-500 hover:bg-slate-100 hover:text-slate-900" onClick={() => viewMonth === 0 ? (setViewMonth(11), setViewYear((y) => y - 1)) : setViewMonth((m) => m - 1)}>‹</button>
         <span className="text-[13px] font-semibold text-slate-900">{MONTHS[viewMonth]} {viewYear}</span>
@@ -255,7 +255,7 @@ function TimePicker({ value, onChange, onClose }) {
   const update = (part) => onChange(composeTime({ ...selected, ...part }))
 
   return (
-    <div onMouseDown={(e) => e.preventDefault()} className="absolute left-0 top-[calc(100%+6px)] z-50 w-[280px] overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-[0_16px_48px_rgba(15,23,42,0.14)]">
+    <div onMouseDown={(e) => e.preventDefault()} className="absolute left-0 top-[calc(100%+6px)] z-50 w-[min(280px,calc(100vw-2rem))] max-w-[92vw] overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-[0_16px_48px_rgba(15,23,42,0.14)]">
       <div className="flex items-center justify-between border-b border-slate-200 px-3.5 py-2.5">
         <span className="text-[9px] font-bold uppercase tracking-[0.18em] text-slate-500">Select time</span>
         <button type="button" onClick={() => { onChange(roundToNextQuarter()); onClose() }} className="rounded-md border border-slate-300 bg-slate-100 px-2.5 py-1 text-[9px] font-bold uppercase tracking-[0.12em] text-slate-700 hover:bg-slate-200">Now</button>

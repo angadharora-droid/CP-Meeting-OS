@@ -70,6 +70,7 @@ const meetingSchema = new mongoose.Schema(
 
     noticeText: { type: String, default: '' },
     formText: { type: String, default: '' },
+    momText: { type: String, default: '' },
     refNo: { type: String, default: '' },
 
     closingNotes: { type: String, default: '' },

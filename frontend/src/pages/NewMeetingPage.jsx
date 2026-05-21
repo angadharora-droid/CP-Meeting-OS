@@ -166,11 +166,12 @@ function CalendarPicker({ value, onChange, onClose }) {
         zIndex: 50,
         top: 'calc(100% + 6px)',
         left: 0,
-        width: '276px',
+        width: 'min(276px, calc(100vw - 2rem))',
+        maxWidth: '92vw',
         background: '#FFFFFF',
         border: '1px solid #E2E8F0',
         borderRadius: '16px',
-        boxShadow: '0 8px 40px rgba(0,0,0,0.65)',
+        boxShadow: '0 16px 40px rgba(15,23,42,0.16)',
         overflow: 'hidden',
       }}
     >
@@ -454,8 +455,8 @@ function TimePicker({ value, onChange, onClose }) {
       onMouseDown={(e) => e.preventDefault()}
       style={{
         position: 'absolute', zIndex: 50, top: 'calc(100% + 6px)', left: 0,
-        width: '280px', background: '#FFFFFF', border: '1px solid #E2E8F0',
-        borderRadius: '16px', boxShadow: '0 12px 48px rgba(0,0,0,0.72)', overflow: 'hidden',
+        width: 'min(280px, calc(100vw - 2rem))', maxWidth: '92vw', background: '#FFFFFF', border: '1px solid #E2E8F0',
+        borderRadius: '16px', boxShadow: '0 16px 48px rgba(15,23,42,0.18)', overflow: 'hidden',
       }}
     >
       {/* Header */}

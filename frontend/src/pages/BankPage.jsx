@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect, useMemo } from 'react'
 import { DateField } from '../components/DateTimePickers'
-import { buildNotice, getMeetingCallerLabel, getMeetingModeLabel, getMeetingVenue, toDateLabel } from '../lib/meetingOs'
+import { buildMom, buildNotice, getMeetingCallerLabel, getMeetingModeLabel, getMeetingVenue, toDateLabel } from '../lib/meetingOs'
 
 /* ─── Design tokens ──────────────────────────────────────────── */
 const P = {
@@ -465,7 +465,14 @@ function previewNotice(app, meeting) {
   })
 }
 
-function MeetingCard({ meeting, onPreview, user }) {
+function previewMom(app, meeting) {
+  app.setPreview({
+    title: 'Minutes of Meeting (MoM)',
+    content: meeting.momText || buildMom(meeting, getNoticeAttendees(meeting), meeting.closingNotes, meeting.actionPoints || []),
+  })
+}
+
+function MeetingCard({ meeting, onPreview, onPreviewMom, user }) {
   const [expanded, setExpanded] = useState(false)
   const s = STATUS_STYLES[meeting.status] || STATUS_STYLES.Open
 
@@ -623,13 +630,25 @@ function MeetingCard({ meeting, onPreview, user }) {
                 {meeting.refNo && <span className="text-[11px] text-[#64748B]">Ref: <code className="text-[#475569] font-mono text-[10.5px]">{meeting.refNo}</code></span>}
               </div>
             )}
-            {onPreview && (
-              <button
-                className="text-left text-[10px] uppercase tracking-[0.1em] text-[#334155]/40 hover:text-[#334155]/70 transition-colors cursor-pointer mt-[-2px]"
-                onClick={() => onPreview(meeting)}
-              >
-                Preview notice ↗
-              </button>
+            {(onPreview || (meeting.status === 'Closed' && onPreviewMom)) && (
+              <div className="flex flex-wrap gap-3 mt-[-2px]">
+                {onPreview && (
+                  <button
+                    className="text-left text-[10px] uppercase tracking-[0.1em] text-[#334155]/40 hover:text-[#334155]/70 transition-colors cursor-pointer"
+                    onClick={() => onPreview(meeting)}
+                  >
+                    Preview notice
+                  </button>
+                )}
+                {meeting.status === 'Closed' && onPreviewMom && (
+                  <button
+                    className="text-left text-[10px] uppercase tracking-[0.1em] text-emerald-700/70 hover:text-emerald-800 transition-colors cursor-pointer"
+                    onClick={() => onPreviewMom(meeting)}
+                  >
+                    Preview MoM
+                  </button>
+                )}
+              </div>
             )}
           </div>
         )}
@@ -719,7 +738,7 @@ function MeetingHeaderGroup({ group, children }) {
 
       {/* Indented cards */}
       {open && (
-        <div className="grid gap-2 pl-[36px]">
+        <div className="grid gap-2 pl-3 sm:pl-[36px]">
           {children}
         </div>
       )}
@@ -848,21 +867,28 @@ function BankTab({ app }) {
       </Field>
 
       {/* Date range + export */}
-      <div className="flex items-center gap-2 flex-wrap">
-        <div className="flex items-center gap-2 flex-1 min-w-0">
-          <span className="text-[10px] uppercase tracking-[0.12em] text-[#64748B] shrink-0">From</span>
-          <div className="flex-1 min-w-[180px]">
-            <DateField value={fromDate} onChange={setFromDate} />
+      <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:flex-wrap">
+        <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-2 sm:flex-1 sm:min-w-0">
+          <div className="flex items-center gap-2">
+            <span className="w-8 shrink-0 text-[10px] uppercase tracking-[0.12em] text-[#64748B] sm:w-auto">From</span>
+            <div className="flex-1 sm:min-w-[150px]">
+              <DateField value={fromDate} onChange={setFromDate} />
+            </div>
           </div>
-          <span className="text-slate-400 shrink-0">→</span>
-          <div className="flex-1 min-w-[180px]">
-            <DateField value={toDate} onChange={setToDate} />
+          <div className="flex items-center gap-2">
+            <span className="w-8 shrink-0 text-[10px] uppercase tracking-[0.12em] text-[#64748B] sm:w-auto sm:text-slate-400 sm:tracking-normal">
+              <span className="sm:hidden">To</span>
+              <span className="hidden sm:inline">→</span>
+            </span>
+            <div className="flex-1 sm:min-w-[150px]">
+              <DateField value={toDate} onChange={setToDate} />
+            </div>
           </div>
         </div>
         <button
           onClick={exportMeetings}
           disabled={!meetings.length}
-          className="shrink-0 min-h-[38px] px-4 py-2 rounded-xl bg-transparent text-[#334155]/60 border border-[#334155]/20 text-[10px] tracking-[0.08em] uppercase cursor-pointer transition-all hover:bg-[#334155]/[0.06] hover:text-[#334155] hover:border-[#334155]/30 disabled:opacity-30 disabled:cursor-not-allowed"
+          className="w-full sm:w-auto shrink-0 min-h-[40px] px-4 py-2 rounded-xl bg-transparent text-[#334155]/60 border border-[#334155]/20 text-[10px] tracking-[0.08em] uppercase cursor-pointer transition-all hover:bg-[#334155]/[0.06] hover:text-[#334155] hover:border-[#334155]/30 disabled:opacity-30 disabled:cursor-not-allowed"
         >
           Export CSV
         </button>
@@ -887,6 +913,7 @@ function BankTab({ app }) {
           {meetings.map((meeting) => (
             <MeetingCard key={meeting.meetingId} meeting={meeting} user={app.user}
               onPreview={app.setPreview ? (m) => previewNotice(app, m) : null}
+              onPreviewMom={app.setPreview ? (m) => previewMom(app, m) : null}
             />
           ))}
         </div>
@@ -991,6 +1018,7 @@ function HeadersTab({ app }) {
               {group.meetings.map((meeting) => (
                 <MeetingCard key={meeting.meetingId} meeting={meeting} user={app.user}
                   onPreview={app.setPreview ? (m) => previewNotice(app, m) : null}
+                  onPreviewMom={app.setPreview ? (m) => previewMom(app, m) : null}
                 />
               ))}
             </MeetingHeaderGroup>
