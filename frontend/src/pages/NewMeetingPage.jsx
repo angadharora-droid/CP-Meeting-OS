@@ -68,6 +68,29 @@ function composeTime({ hour, minute, period }) {
   return `${String(h24).padStart(2, '0')}:${String(minute).padStart(2, '0')}`
 }
 
+// Parse free-typed time like "9", "930", "9:30", "9:30 pm", "1430" → "HH:MM" (24h) or null
+function parseTimeInput(raw) {
+  if (!raw) return null
+  const s = String(raw).toLowerCase()
+  const pm = /p/.test(s)
+  const am = /a/.test(s)
+  const digits = s.replace(/[^\d]/g, '')
+  if (!digits) return null
+  let h, m
+  if (digits.length <= 2) { h = parseInt(digits, 10); m = 0 }
+  else if (digits.length === 3) { h = parseInt(digits.slice(0, 1), 10); m = parseInt(digits.slice(1), 10) }
+  else { h = parseInt(digits.slice(0, 2), 10); m = parseInt(digits.slice(2, 4), 10) }
+  if (Number.isNaN(h) || Number.isNaN(m) || m > 59) return null
+  if (am || pm) {
+    if (h < 1 || h > 12) return null
+    if (pm && h < 12) h += 12
+    if (am && h === 12) h = 0
+  } else if (h > 23) {
+    return null
+  }
+  return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`
+}
+
 function parseDMY(dmy) {
   if (!isValidDMY(dmy)) return null
   const [dd, mm, yyyy] = dmy.split('/').map(Number)
@@ -422,8 +445,13 @@ function TimePicker({ value, onChange, onClose }) {
 
 function TimeField({ value, onChange }) {
   const [open, setOpen] = useState(false)
+  const [draft, setDraft] = useState(toReadableTime(value))
   const wrapRef = useRef(null)
   const active = open || Boolean(value)
+
+  // Reflect external/picker changes in the editable text (skipped while typing,
+  // since typing doesn't commit until blur, so `value` stays put mid-edit)
+  useEffect(() => { setDraft(toReadableTime(value)) }, [value])
 
   useEffect(() => {
     if (!open) return
@@ -433,6 +461,12 @@ function TimeField({ value, onChange }) {
     document.addEventListener('mousedown', onDown)
     return () => document.removeEventListener('mousedown', onDown)
   }, [open])
+
+  function commitDraft() {
+    const parsed = parseTimeInput(draft)
+    if (parsed) { onChange(parsed); setDraft(toReadableTime(parsed)) }
+    else setDraft(toReadableTime(value))
+  }
 
   return (
     <div ref={wrapRef} style={{ position: 'relative' }}>
@@ -454,15 +488,14 @@ function TimeField({ value, onChange }) {
       <input
         type="text"
         className={P.dateTime}
-        value={toReadableTime(value)}
+        value={draft}
         placeholder="--:-- --"
-        onFocus={() => setOpen(true)}
+        onChange={(e) => setDraft(e.target.value)}
+        onBlur={commitDraft}
         onKeyDown={(e) => {
-          if (e.key === 'Escape') setOpen(false)
-          if (e.key === 'Backspace' || e.key === 'Delete') onChange('')
+          if (e.key === 'Escape') { setDraft(toReadableTime(value)); setOpen(false); e.currentTarget.blur() }
+          if (e.key === 'Enter') { e.preventDefault(); commitDraft(); setOpen(false); e.currentTarget.blur() }
         }}
-        readOnly
-        style={{ cursor: 'pointer' }}
       />
 
       <button
