@@ -337,12 +337,10 @@ export function buildForm(meeting, attendees) {
   ]
 
   agendaItems.forEach((item, index) => {
-    const label = item.purpose || item.topic || `Purpose ${index + 1}`
+    const purposeLines = normalizeListText(item.purpose || item.topic)
     sections.push(
-      `${index + 1}. ${label}`,
-      '',
-      'Purpose:',
-      `- ${label}`,
+      `${index + 1}) Purpose:`,
+      ...(purposeLines.length ? purposeLines.map((line) => `- ${line}`) : writeLines(3)),
       '',
       'Desired Outcome:',
       `- ${item.desiredOutcome || 'As discussed'}`,
@@ -355,7 +353,7 @@ export function buildForm(meeting, attendees) {
 
   if (meeting.includeAdditionalPoints !== false) {
     sections.push(
-      `${agendaItems.length + 1}. Other Discussions`,
+      `${agendaItems.length + 1}) Other Discussions`,
       '',
       'Purpose:',
       ...writeLines(3),
