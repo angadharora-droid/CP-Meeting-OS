@@ -1,6 +1,7 @@
 import { getMeetingCallerLabel, toDateLabel } from '../lib/meetingOs'
 import { useRef, useState } from 'react'
 import { DateField, TimeField } from '../components/DateTimePickers'
+import NewMeetingPage from './NewMeetingPage'
 
 const P = {
   primary:  'w-full min-h-[48px] px-5 py-[13px] rounded-xl bg-slate-700 text-white font-semibold text-[13px] tracking-[0.08em] uppercase cursor-pointer border-none transition-all hover:bg-slate-800 active:scale-[0.98] disabled:opacity-40 disabled:cursor-not-allowed disabled:active:scale-100 shadow-[0_1px_2px_rgba(15,23,42,0.06),0_4px_12px_rgba(15,23,42,0.10)]',
@@ -37,6 +38,17 @@ export default function CloseMeetingPage({ app }) {
   const [postponeForm, setPostponeForm] = useState({ date: '', time: '', reason: '' })
   const [cancelReason, setCancelReason] = useState('')
   const actionPointsRef = useRef(null)
+  const followupModalApp = app.followupDraft
+    ? {
+        ...app,
+        meetingForm: app.followupDraft,
+        setMeetingForm: app.setFollowupDraft,
+        editingMeetingId: 'followup-draft',
+        followupMode: true,
+        generateMeeting: app.saveFollowupDraftAndClose,
+        cancelEditMeeting: app.closeFollowupDraft,
+      }
+    : null
 
   function handleAddActionPoint() {
     app.addActionPoint()
@@ -267,216 +279,10 @@ export default function CloseMeetingPage({ app }) {
         </div>
       </details>
 
-      {app.followupDraft && (
+      {followupModalApp && (
         <section className="fixed inset-0 z-[1000] grid place-items-center bg-slate-900/40 p-4 backdrop-blur-sm">
-          <div className="w-full max-w-[760px] max-h-[88dvh] overflow-auto rounded-2xl border border-slate-200 bg-white p-5 shadow-[0_24px_60px_rgba(15,23,42,0.18)] grid gap-4">
-            <div className="flex items-start justify-between gap-3">
-              <div>
-                <p className="m-0 mb-[3px] text-[10px] uppercase tracking-[0.18em] text-slate-500 font-semibold">Follow-up meeting</p>
-                <h2 className="m-0 text-[16px] leading-tight text-slate-900 font-semibold">Create follow-up draft</h2>
-              </div>
-              <button
-                className="rounded-lg border border-slate-200 bg-white px-3 py-[7px] text-[11px] text-slate-500 hover:border-slate-300 hover:text-slate-700"
-                onClick={app.closeFollowupDraft}
-              >
-                Close
-              </button>
-            </div>
-
-            <div className="grid gap-3 sm:grid-cols-2">
-              <Field label="Meeting header">
-                <input
-                  className={P.input}
-                  value={app.followupDraft.meetingHeader || ''}
-                  onChange={(e) => app.setFollowupDraft((c) => ({ ...c, meetingHeader: e.target.value }))}
-                />
-              </Field>
-              <Field label="Department / unit">
-                <input
-                  className={P.input}
-                  value={app.followupDraft.unit || ''}
-                  onChange={(e) => app.setFollowupDraft((c) => ({ ...c, unit: e.target.value }))}
-                />
-              </Field>
-            </div>
-
-            <Field label="Meeting title">
-              <input
-                className={P.input}
-                value={app.followupDraft.title || ''}
-                onChange={(e) => app.setFollowupDraft((c) => ({ ...c, title: e.target.value }))}
-              />
-            </Field>
-
-            <div className="grid gap-3 sm:grid-cols-2">
-              <Field label="Called by">
-                <select
-                  className={P.select}
-                  value={app.followupDraft.calledById || ''}
-                  onChange={(e) => {
-                    const person = app.contactPeople.find((p) => p.id === e.target.value)
-                    app.setFollowupDraft((c) => ({
-                      ...c,
-                      calledById: e.target.value,
-                      calledBy: person?.name || '',
-                      callerName: person?.name || '',
-                    }))
-                  }}
-                >
-                  <option value="">Select caller</option>
-                  {app.contactPeople.map((person) => (
-                    <option key={person.id || person.email || person.name} value={person.id}>
-                      {person.name}{person.desig ? ` - ${person.desig}` : ''}
-                    </option>
-                  ))}
-                </select>
-              </Field>
-              <Field label="Duration">
-                <select
-                  className={P.select}
-                  value={app.followupDraft.duration || '1 hour'}
-                  onChange={(e) => app.setFollowupDraft((c) => ({ ...c, duration: e.target.value }))}
-                >
-                  {['30 minutes', '45 minutes', '1 hour', '1.5 hours', '2 hours', '3 hours'].map((duration) => (
-                    <option key={duration} value={duration}>{duration}</option>
-                  ))}
-                </select>
-              </Field>
-            </div>
-
-            <div className="grid gap-3 sm:grid-cols-2">
-              <Field label="Date">
-                <DateField
-                  value={app.followupDraft.date || ''}
-                  onChange={(date) => app.setFollowupDraft((c) => ({ ...c, date }))}
-                />
-              </Field>
-              <Field label="Time">
-                <TimeField
-                  value={app.followupDraft.time || ''}
-                  onChange={(time) => app.setFollowupDraft((c) => ({ ...c, time }))}
-                />
-              </Field>
-            </div>
-
-            <div className="grid gap-3 sm:grid-cols-2">
-              <Field label="Mode">
-                <select
-                  className={P.select}
-                  value={app.followupDraft.mode || 'inperson'}
-                  onChange={(e) => app.setFollowupDraft((c) => ({ ...c, mode: e.target.value }))}
-                >
-                  <option value="inperson">In person</option>
-                  <option value="vc">Video conference</option>
-                  <option value="hybrid">Hybrid</option>
-                </select>
-              </Field>
-              {(app.followupDraft.mode === 'inperson' || app.followupDraft.mode === 'hybrid') && (
-                <Field label="Venue">
-                  <input
-                    className={P.input}
-                    value={app.followupDraft.venue || ''}
-                    onChange={(e) => app.setFollowupDraft((c) => ({ ...c, venue: e.target.value }))}
-                  />
-                </Field>
-              )}
-              {app.followupDraft.mode === 'vc' && (
-                <Field label="VC link">
-                  <input
-                    className={P.input}
-                    value={app.followupDraft.vcLink || ''}
-                    onChange={(e) => app.setFollowupDraft((c) => ({ ...c, vcLink: e.target.value }))}
-                  />
-                </Field>
-              )}
-            </div>
-
-            {app.followupDraft.mode === 'hybrid' && (
-              <Field label="VC link">
-                <input
-                  className={P.input}
-                  value={app.followupDraft.vcLink || ''}
-                  onChange={(e) => app.setFollowupDraft((c) => ({ ...c, vcLink: e.target.value }))}
-                />
-              </Field>
-            )}
-
-            <div className="grid gap-2 rounded-xl border border-slate-200 bg-slate-50 p-4">
-              <span className="text-[11px] font-semibold uppercase tracking-[0.12em] text-slate-500">Attendees</span>
-              <div className="flex flex-wrap gap-2">
-                {(app.followupDraft.attendeeDetails || []).map((attendee, index) => (
-                  <span key={`${attendee.id || attendee.name}-${index}`} className="rounded-full border border-slate-200 bg-white px-3 py-1 text-[12px] text-slate-700">
-                    {attendee.name}{attendee.desig ? ` - ${attendee.desig}` : ''}
-                  </span>
-                ))}
-                {!(app.followupDraft.attendeeDetails || []).length && (
-                  <span className="text-[12px] text-slate-500">No attendees copied from the source meeting.</span>
-                )}
-              </div>
-            </div>
-
-            <Field label="Purpose / agenda">
-              <textarea
-                className={P.textarea}
-                value={app.followupDraft.topics?.[0]?.purpose || ''}
-                onChange={(e) => app.setFollowupDraft((c) => ({
-                  ...c,
-                  topics: [{ ...(c.topics?.[0] || {}), purpose: e.target.value }],
-                }))}
-              />
-            </Field>
-
-            <Field label="Desired outcome">
-              <textarea
-                className={P.textarea}
-                value={app.followupDraft.topics?.[0]?.desiredOutcome || ''}
-                onChange={(e) => app.setFollowupDraft((c) => ({
-                  ...c,
-                  topics: [{ ...(c.topics?.[0] || {}), desiredOutcome: e.target.value }],
-                }))}
-              />
-            </Field>
-
-            <Field label="Documents required">
-              <textarea
-                className={P.textarea}
-                value={app.followupDraft.topics?.[0]?.documents || ''}
-                onChange={(e) => app.setFollowupDraft((c) => ({
-                  ...c,
-                  topics: [{ ...(c.topics?.[0] || {}), documents: e.target.value }],
-                }))}
-              />
-            </Field>
-
-            <Field label="Special note">
-              <input
-                className={P.input}
-                value={app.followupDraft.note || ''}
-                onChange={(e) => app.setFollowupDraft((c) => ({ ...c, note: e.target.value }))}
-              />
-            </Field>
-
-            <label className="flex items-start gap-3 rounded-xl border border-slate-200 bg-slate-50 p-3 cursor-pointer">
-              <input
-                type="checkbox"
-                className="mt-[2px] h-4 w-4 min-h-0 accent-slate-700"
-                checked={app.followupDraft.includeAdditionalPoints === true}
-                onChange={(e) => app.setFollowupDraft((c) => ({ ...c, includeAdditionalPoints: e.target.checked }))}
-              />
-              <span className="grid gap-[3px]">
-                <span className="text-[12px] font-semibold text-slate-900">Add additional points section</span>
-                <span className="text-[11px] leading-[1.45] text-slate-600">Include the blank Other Discussions area in the agenda form.</span>
-              </span>
-            </label>
-
-            <div className="flex flex-col gap-2 sm:flex-row">
-              <button className={P.primary} onClick={app.saveFollowupDraftAndClose}>
-                Save follow-up and close meeting
-              </button>
-              <button className={P.ghost} onClick={app.closeFollowupDraft}>
-                Cancel
-              </button>
-            </div>
+          <div className="w-full max-w-[980px] max-h-[88dvh] overflow-auto rounded-2xl border border-slate-200 bg-white p-4 shadow-[0_24px_60px_rgba(15,23,42,0.18)]">
+            <NewMeetingPage app={followupModalApp} />
           </div>
         </section>
       )}

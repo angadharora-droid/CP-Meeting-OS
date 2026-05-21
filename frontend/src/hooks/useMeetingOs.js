@@ -684,6 +684,9 @@ export function useMeetingOs(navigate, page) {
     })
     setFollowup(false)
     setFollowupForm({ date: '', time: '', purpose: '', note: '' })
+    setMeetingAttendeeIds(internalIds)
+    setManualAttendees(manual)
+    setManualAttendeeForm(blankManualAttendee)
     showToast('Follow-up draft opened')
   }
 
@@ -816,8 +819,22 @@ export function useMeetingOs(navigate, page) {
     setFollowupForm({ date: '', time: '', purpose: '', note: '' })
 
     if (draft) {
-      const attendeeDetails = draft.attendeeDetails || []
       const caller = contactPeople.find((person) => person.id === draft.calledById)
+      const attendeeDetails = [
+        caller ? makeAttendee(caller, 'database') : null,
+        ...contactPeople
+          .filter((person) => meetingAttendeeIds.includes(person.id))
+          .map((person) => makeAttendee(person, 'database')),
+        ...manualAttendees,
+      ].filter(Boolean)
+      const uniqueAttendees = []
+      const seenKeys = new Set()
+      attendeeDetails.forEach((attendee) => {
+        const key = attendee.id || attendee.email || attendee.name
+        if (seenKeys.has(key)) return
+        seenKeys.add(key)
+        uniqueAttendees.push(attendee)
+      })
       const followupMeeting = {
         meetingId: uid(),
         meetingHeader: draft.meetingHeader || '',
@@ -832,8 +849,8 @@ export function useMeetingOs(navigate, page) {
         calledById: draft.calledById || '',
         calledBy: caller?.name || draft.callerName || updateMeeting.calledBy || '',
         calledByName: caller?.name || draft.callerName || updateMeeting.calledBy || 'Organizer',
-        attendees: attendeeDetails.map((person) => person.name).join('\n'),
-        attendeeDetails,
+        attendees: uniqueAttendees.map((person) => person.name).join('\n'),
+        attendeeDetails: uniqueAttendees,
         topics: draft.topics || [{ topic: '', purpose: draftPurpose || `Follow-up on: ${updateMeeting.title}`, desiredOutcome: '', documents: '' }],
         includeAdditionalPoints: draft.includeAdditionalPoints === true,
         purpose: (draft.topics || []).map((topic) => [topic.topic, topic.purpose].filter(Boolean).join(': ')).filter(Boolean).join('\n'),
@@ -844,8 +861,8 @@ export function useMeetingOs(navigate, page) {
         refNo: generateRefNo(),
         followupOfMeetingId: updateMeeting.meetingId,
       }
-      const noticeText = buildNotice(followupMeeting, attendeeDetails)
-      const formText = buildForm(followupMeeting, attendeeDetails)
+      const noticeText = buildNotice(followupMeeting, uniqueAttendees)
+      const formText = buildForm(followupMeeting, uniqueAttendees)
       const followupResult = await apiPost({ action: 'log_meeting', ...followupMeeting, noticeText, formText })
       if (!followupResult?.ok) {
         showToast(followupResult?.error || 'Could not save follow-up meeting')
@@ -853,6 +870,9 @@ export function useMeetingOs(navigate, page) {
       }
       setMeetings((current) => [{ ...followupMeeting, noticeText, formText }, ...current])
       setFollowupDraft(null)
+      setMeetingAttendeeIds([])
+      setManualAttendees([])
+      setManualAttendeeForm(blankManualAttendee)
       showToast('Meeting closed and follow-up saved')
       navigate('/bank')
       return
