@@ -755,10 +755,12 @@ export default function NewMeetingPage({ app }) {
             {app.orgName || 'Organisation'}
           </p>
           <h1 className="m-0 font-black text-[22px] text-[#0F172A] leading-tight tracking-tight">
-            {app.editingMeetingId ? 'Edit Meeting' : 'New Meeting'}
+            {app.followupMode ? 'Follow-up Meeting' : app.editingMeetingId ? 'Edit Meeting' : 'New Meeting'}
           </h1>
           <p className="m-0 mt-[6px] text-[#475569] text-[13px] leading-[1.6]">
-            {app.editingMeetingId
+            {app.followupMode
+              ? 'Create the follow-up meeting using the full meeting form.'
+              : app.editingMeetingId
               ? 'Update the details below. The notice and agenda form will be regenerated.'
               : 'Fill the details below. A notice and agenda form are generated automatically.'}
           </p>
@@ -1111,11 +1113,11 @@ export default function NewMeetingPage({ app }) {
 
         <div className="h-px bg-[#E2E8F0]" />
         <button className={P.primary} onClick={app.generateMeeting} disabled={!canGenerate}>
-          {app.editingMeetingId ? 'Update Meeting →' : 'Generate & Save Meeting →'}
+          {app.followupMode ? 'Save Follow-up & Close Meeting' : app.editingMeetingId ? 'Update Meeting →' : 'Generate & Save Meeting →'}
         </button>
         {app.editingMeetingId && (
           <button className={P.ghost} onClick={app.cancelEditMeeting}>
-            Cancel edit
+            {app.followupMode ? 'Cancel follow-up' : 'Cancel edit'}
           </button>
         )}
         {!canGenerate && (
