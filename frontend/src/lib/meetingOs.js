@@ -227,64 +227,61 @@ export function buildNotice(meeting, attendees) {
 export function buildMom(meeting, attendees = [], closingNotes = '', actionPoints = []) {
   const attendeeLines = attendees.length
     ? attendees
-        .map((person, index) => `${index + 1}. ${person.name || ''}${person.desig ? ` - ${person.desig}` : ''}`.trim())
+        .map((person) => `${person.name || ''}${person.desig ? ` - ${person.desig}` : ''}`.trim())
         .filter(Boolean)
-    : normalizeListText(meeting.attendees).map((name, index) => `${index + 1}. ${name}`)
+    : normalizeListText(meeting.attendees)
 
   const topics = (meeting.topics || []).filter((t) => t.topic || t.purpose || t.desiredOutcome)
-  const topicLines = topics.length
-    ? topics.flatMap((topic, index) => [
-        `${index + 1}. ${topic.topic || topic.purpose || `Discussion ${index + 1}`}`,
-        topic.purpose ? `   Purpose: ${topic.purpose}` : '',
-        topic.desiredOutcome ? `   Desired Outcome: ${topic.desiredOutcome}` : '',
-      ].filter(Boolean))
-    : normalizeListText(meeting.purpose).map((line, index) => `${index + 1}. ${line}`)
+  const agendaLines = topics.length
+    ? uniqueLines(topics.flatMap((topic) => normalizeListText(topic.purpose || topic.topic)))
+    : normalizeListText(meeting.purpose)
+  const discussionLines = normalizeListText(closingNotes || meeting.closingNotes)
 
   const pointLines = actionPoints.length
-    ? actionPoints.map((point, index) => {
-        const owner = point.assignedTo ? ` | Owner: ${point.assignedTo}` : ''
-        const due = point.dueDate ? ` | Due: ${toDateLabel(point.dueDate)}` : ''
-        return `${index + 1}. ${point.task}${owner}${due}`
-      })
-    : ['No action points recorded.']
+    ? [
+        'Action\tOwner\tDue Date',
+        ...actionPoints.map((point) => [
+          point.task || 'Action item',
+          point.assignedTo || '-',
+          point.dueDate ? toDateLabel(point.dueDate) : '-',
+        ].join('\t')),
+      ]
+    : ['No action item recorded.']
 
   const followupRequired = meeting.followupRequired || meeting.followup?.required
   const followupDate = meeting.followupDate || meeting.followup?.date || ''
   const followupTime = meeting.followupTime || meeting.followup?.time || ''
   const followupPurpose = meeting.followupPurpose || meeting.followup?.purpose || ''
-  const followupNote = meeting.followupNote || meeting.followup?.note || ''
+  const followupLines = followupRequired
+    ? [
+        followupDate ? `Date: ${toNoticeDateLabel(followupDate)}` : '',
+        followupTime ? `Time: ${toNoticeTimeLabel(followupTime)}` : '',
+        followupPurpose ? `Purpose: ${followupPurpose}` : '',
+      ].filter(Boolean)
+    : ['No follow-up meeting required.']
 
   return [
-    '*MINUTES OF MEETING (MoM)*',
+    'MINUTES OF MEETING (MoM)',
     '',
-    `*Subject:* ${meeting.title || 'Meeting'}`,
-    meeting.meetingHeader ? `*Meeting Header:* ${meeting.meetingHeader}` : '',
-    meeting.refNo ? `*Ref No:* ${meeting.refNo}` : '',
-    `*Date:* ${toNoticeDateLabel(meeting.date)}`,
-    `*Time:* ${toNoticeTimeRange(meeting)}`,
-    `*Venue:* ${getMeetingVenue(meeting) || '(Not recorded)'}`,
-    `*Chaired / Called By:* ${meeting.calledBy || meeting.calledByName || 'Organizer'}`,
+    `Subject: ${meeting.title || 'Meeting'}`,
+    `Date: ${toNoticeDateLabel(meeting.date)}`,
+    `Time: ${toNoticeTimeRange(meeting)}`,
+    `Venue: ${getMeetingVenue(meeting) || '(Not recorded)'}`,
     '',
-    '*Attendees:*',
+    'Attendees',
     ...(attendeeLines.length ? attendeeLines : ['Concerned Team Members']),
     '',
-    '*Agenda / Discussion Points:*',
-    ...(topicLines.length ? topicLines : ['1. General discussion']),
+    'Agenda',
+    ...(agendaLines.length ? agendaLines : ['General discussion']),
     '',
-    '*Minutes / Key Decisions:*',
-    closingNotes || meeting.closingNotes || 'As discussed in the meeting.',
+    'Key Discussion Points',
+    ...(discussionLines.length ? discussionLines : ['As discussed in the meeting.']),
     '',
-    '*Action Points:*',
+    actionPoints.length === 1 ? 'Action Item' : 'Action Items',
     ...pointLines,
     '',
-    '*Follow-up:*',
-    followupRequired
-      ? [
-          [followupDate ? toDateLabel(followupDate) : '', followupTime].filter(Boolean).join(' at '),
-          followupPurpose,
-          followupNote,
-        ].filter(Boolean).join('\n') || 'Follow-up required.'
-      : 'No follow-up meeting required.',
+    'Follow-up Meeting',
+    ...followupLines,
   ]
     .filter((line) => line !== null && line !== undefined && line !== '')
     .join('\n')
