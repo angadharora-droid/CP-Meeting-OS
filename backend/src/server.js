@@ -14,6 +14,21 @@ const KEEP_ALIVE_URL = process.env.KEEP_ALIVE_URL || process.env.BACKEND_URL;
 const KEEP_ALIVE_INTERVAL_MS = process.env.KEEP_ALIVE_INTERVAL_MS
   ? Number(process.env.KEEP_ALIVE_INTERVAL_MS)
   : 5 * 60 * 1000;
+const CORS_ORIGINS = (process.env.CORS_ORIGINS || process.env.FRONTEND_URL || '')
+  .split(',')
+  .map((origin) => origin.trim())
+  .filter(Boolean);
+
+function corsOptions(req, callback) {
+  const origin = req.header('Origin');
+
+  if (!origin || CORS_ORIGINS.length === 0 || CORS_ORIGINS.includes(origin)) {
+    callback(null, { origin: true });
+    return;
+  }
+
+  callback(null, { origin: false });
+}
 
 function startKeepAlivePing() {
   if (!KEEP_ALIVE_ENABLED || !KEEP_ALIVE_URL) return;
@@ -57,7 +72,7 @@ async function start() {
   await connectToMongo(MONGO_URI);
 
   const app = express();
-  app.use(cors());
+  app.use(cors(corsOptions));
   app.use(express.json({ limit: '2mb' }));
 
   app.get('/health', (_req, res) => res.json({ ok: true }));
