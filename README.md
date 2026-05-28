@@ -84,4 +84,7 @@ The React app proxies `/api` requests to the backend during development.
 ## Notes
 
 - The frontend uses a local dev proxy to reach the Express API.
-- If you want to deploy separately, point the frontend to your API host and update the proxy as needed.
+- If you deploy the frontend and backend separately, set the frontend host's `VITE_API_URL`
+  to the public Meeting OS backend URL, for example `https://your-meeting-os-backend.example.com`.
+- On the backend host, set `CORS_ORIGINS` to the browser origins allowed to call the API,
+  for example `https://meetingos.centrepointgroup.in`.
