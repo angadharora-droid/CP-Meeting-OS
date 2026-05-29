@@ -116,15 +116,25 @@ async function getMeetingActor(req, meeting) {
   return null;
 }
 
-function managerMeetingQuery(user) {
+function escapeRegex(value) {
+  return String(value || '').replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+function managerMeetingQuery(user, assignedMeetingIds = []) {
   if (!user || user.role === 'admin') return {};
-  return {
-    $or: [
-      { calledById: user.id },
-      { calledBy: user.name },
-      { attendees: { $regex: user.name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), $options: 'i' } },
-    ],
-  };
+  const clauses = [
+    { calledById: user.id },
+    { calledBy: user.name },
+    { attendees: { $regex: escapeRegex(user.name), $options: 'i' } },
+    { 'attendeeDetails.id': user.id },
+    { 'attendeeDetails.name': user.name },
+  ];
+
+  if (assignedMeetingIds.length) {
+    clauses.push({ meetingId: { $in: assignedMeetingIds } });
+  }
+
+  return { $or: clauses };
 }
 
 router.get('/', async (req, res) => {
@@ -154,7 +164,10 @@ router.get('/', async (req, res) => {
 
     if (action === 'get_meetings') {
       const user = await getRequestUser(req);
-      const meetings = await Meeting.find(managerMeetingQuery(user), { _id: 0, __v: 0 })
+      const assignedMeetingIds = user && user.role !== 'admin'
+        ? await Task.distinct('meetingId', { assignedTo: user.name, meetingId: { $ne: '' } })
+        : [];
+      const meetings = await Meeting.find(managerMeetingQuery(user, assignedMeetingIds), { _id: 0, __v: 0 })
         .sort({ createdAt: -1 })
         .lean();
       return res.json(meetings);
