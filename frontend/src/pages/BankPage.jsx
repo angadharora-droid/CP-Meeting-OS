@@ -466,9 +466,11 @@ function previewNotice(app, meeting) {
 }
 
 function previewMom(app, meeting) {
+  const taskPoints = (app.tasks || []).filter((task) => task.meetingId === meeting.meetingId)
+  const actionPoints = meeting.actionPoints?.length ? meeting.actionPoints : taskPoints
   app.setPreview({
     title: 'Minutes of Meeting (MoM)',
-    content: buildMom(meeting, getNoticeAttendees(meeting), meeting.closingNotes, meeting.actionPoints || []),
+    content: meeting.momText || buildMom(meeting, getNoticeAttendees(meeting), meeting.closingNotes, actionPoints),
   })
 }
 
@@ -483,6 +485,7 @@ function MeetingCard({ meeting, onPreview, onPreviewMom, onPreviewForm, onEdit, 
   const [expanded, setExpanded] = useState(false)
   const s = STATUS_STYLES[meeting.status] || STATUS_STYLES.Open
   const canEdit = user?.role === 'admin' || meeting.calledById === user?.id || meeting.calledBy === user?.name
+  const actionPoints = meeting.actionPoints?.length ? meeting.actionPoints : meeting.trackerActionPoints
 
   const attendees = meeting.attendeeDetails?.length
     ? meeting.attendeeDetails.map((a) => a.name)
@@ -607,7 +610,7 @@ function MeetingCard({ meeting, onPreview, onPreviewMom, onPreviewForm, onEdit, 
             )}
 
             <DetailRow label="Special note" value={meeting.note || meeting.specialNote} />
-            {statusNote && (
+            {statusNote && meeting.status !== 'Closed' && (
               <DetailRow
                 label={noteLbl}
                 value={statusNote}
@@ -621,7 +624,12 @@ function MeetingCard({ meeting, onPreview, onPreviewMom, onPreviewForm, onEdit, 
             )}
             {meeting.status === 'Closed' && (
               <>
-                <ActionPointList points={meeting.actionPoints} />
+                <DetailRow
+                  label="Closing notes"
+                  value={meeting.closingNotes || 'No closing notes recorded.'}
+                  variant="accent"
+                />
+                <ActionPointList points={actionPoints} />
                 <FollowupDetail meeting={meeting} />
               </>
             )}
@@ -983,7 +991,10 @@ function BankTab({ app }) {
       {meetings.length > 0 ? (
         <div className="grid gap-2">
           {meetings.map((meeting) => (
-            <MeetingCard key={meeting.meetingId} meeting={meeting} user={app.user}
+            <MeetingCard key={meeting.meetingId} meeting={{
+              ...meeting,
+              trackerActionPoints: (app.tasks || []).filter((task) => task.meetingId === meeting.meetingId),
+            }} user={app.user}
               onPreview={app.setPreview ? (m) => previewNotice(app, m) : null}
               onPreviewMom={app.setPreview ? (m) => previewMom(app, m) : null}
               onPreviewForm={app.setPreview ? (m) => previewForm(app, m) : null}
@@ -1096,7 +1107,10 @@ function HeadersTab({ app }) {
               onDelete={app.deleteMeetingHeader}
             >
               {group.meetings.map((meeting) => (
-                <MeetingCard key={meeting.meetingId} meeting={meeting} user={app.user}
+                <MeetingCard key={meeting.meetingId} meeting={{
+                  ...meeting,
+                  trackerActionPoints: (app.tasks || []).filter((task) => task.meetingId === meeting.meetingId),
+                }} user={app.user}
                   onPreview={app.setPreview ? (m) => previewNotice(app, m) : null}
                   onPreviewMom={app.setPreview ? (m) => previewMom(app, m) : null}
                   onPreviewForm={app.setPreview ? (m) => previewForm(app, m) : null}

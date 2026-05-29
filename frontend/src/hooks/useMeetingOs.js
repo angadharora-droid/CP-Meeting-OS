@@ -75,12 +75,27 @@ export function useMeetingOs(navigate, page) {
   const isAdmin = user?.role === 'admin'
   const isManager = user?.role === 'manager'
   const validPages = useMemo(() => ['dashboard', 'new-meeting', 'close-meeting', 'tracker', 'bank', 'people'], [])
+  const assignedTaskMeetingIds = useMemo(() => {
+    if (!user?.name) return new Set()
+    return new Set(
+      tasks
+        .filter((task) => task.assignedTo === user.name && task.meetingId)
+        .map((task) => task.meetingId),
+    )
+  }, [tasks, user?.name])
   const isUsersMeeting = useCallback((meeting) => {
     if (!user || user.role === 'admin') return true
     const attendeeLines = String(meeting.attendees || '').toLowerCase()
     const name = String(user.name || '').toLowerCase()
-    return meeting.calledById === user.id || meeting.calledBy === user.name || attendeeLines.includes(name)
-  }, [user])
+    const attendeeDetails = Array.isArray(meeting.attendeeDetails) ? meeting.attendeeDetails : []
+    return (
+      meeting.calledById === user.id ||
+      meeting.calledBy === user.name ||
+      attendeeLines.includes(name) ||
+      attendeeDetails.some((attendee) => attendee.id === user.id || attendee.name === user.name) ||
+      assignedTaskMeetingIds.has(meeting.meetingId)
+    )
+  }, [assignedTaskMeetingIds, user])
 
   useEffect(() => {
     if (!authed) return
