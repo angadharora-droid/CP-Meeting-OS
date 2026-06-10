@@ -1,6 +1,7 @@
 import { getMeetingCallerLabel, toDateLabel } from '../lib/meetingOs'
 import { useRef, useState } from 'react'
 import { DateField, TimeField } from '../components/DateTimePickers'
+import NewMeetingPage from './NewMeetingPage'
 
 const P = {
   primary:  'w-full min-h-[48px] px-5 py-[13px] rounded-xl bg-slate-700 text-white font-semibold text-[13px] tracking-[0.08em] uppercase cursor-pointer border-none transition-all hover:bg-slate-800 active:scale-[0.98] disabled:opacity-40 disabled:cursor-not-allowed disabled:active:scale-100 shadow-[0_1px_2px_rgba(15,23,42,0.06),0_4px_12px_rgba(15,23,42,0.10)]',
@@ -125,6 +126,18 @@ export default function CloseMeetingPage({ app }) {
   const [postponeForm, setPostponeForm] = useState({ date: '', time: '', reason: '' })
   const [cancelReason, setCancelReason] = useState('')
   const actionPointsRef = useRef(null)
+  const followupModalApp = app.followupDraft
+    ? {
+        ...app,
+        meetingForm: app.followupDraft,
+        setMeetingForm: app.setFollowupDraft,
+        editingMeetingId: 'followup-draft',
+        followupMode: true,
+        generateMeeting: app.saveFollowupDraftAndClose,
+        cancelEditMeeting: app.closeFollowupDraft,
+      }
+    : null
+
   function handleAddActionPoint() {
     app.addActionPoint()
     if (actionPointsRef.current) {
@@ -351,14 +364,29 @@ export default function CloseMeetingPage({ app }) {
         </div>
       </details>
 
-      {app.followupDraft && (
-        <FollowupModal
-          draft={app.followupDraft}
-          setDraft={app.setFollowupDraft}
-          onSave={app.saveFollowupDraftAndClose}
-          onCancel={app.closeFollowupDraft}
-          activeMeeting={app.activeMeeting}
-        />
+      {followupModalApp && (
+        <div className="fixed inset-0 z-[1000] flex flex-col bg-white">
+
+          {/* Sticky header */}
+          <div className="flex items-center justify-between px-5 py-4 border-b border-slate-200 shrink-0 bg-white">
+            <div>
+              <p className="m-0 text-[10px] uppercase tracking-[0.15em] text-slate-400 font-semibold">Close Meeting</p>
+              <h2 className="m-0 text-[17px] font-bold text-slate-900 leading-tight">Schedule Follow-up Meeting</h2>
+            </div>
+            <button
+              type="button"
+              onClick={app.closeFollowupDraft}
+              className="w-9 h-9 rounded-full bg-slate-100 hover:bg-slate-200 border-none cursor-pointer transition-colors flex items-center justify-center text-slate-500 text-[15px] font-bold shrink-0"
+              aria-label="Close"
+            >✕</button>
+          </div>
+
+          {/* Scrollable form */}
+          <div className="overflow-y-auto flex-1 p-5">
+            <NewMeetingPage app={followupModalApp} />
+          </div>
+
+        </div>
       )}
 
     </section>
