@@ -574,21 +574,23 @@ function App() {
           cancelEditMeeting: app.closeFollowupDraft,
         }
         return (
-          <div className="fixed inset-0 z-[9999] flex flex-col bg-white">
-            <div className="flex items-center justify-between px-5 py-4 border-b border-slate-200 shrink-0 bg-white shadow-[0_1px_0_rgba(15,23,42,0.06)]">
-              <div>
-                <p className="m-0 text-[10px] uppercase tracking-[0.15em] text-slate-400 font-semibold">Close Meeting</p>
-                <h2 className="m-0 text-[17px] font-bold text-slate-900 leading-tight">Schedule Follow-up Meeting</h2>
+          <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-[2px]">
+            <div className="w-full max-w-[700px] max-h-[88dvh] bg-white rounded-2xl flex flex-col shadow-[0_24px_60px_rgba(15,23,42,0.22)] border border-slate-200">
+              {/* Header */}
+              <div className="flex items-center justify-between px-5 py-4 border-b border-slate-200 shrink-0 rounded-t-2xl bg-white">
+                <div>
+                  <p className="m-0 text-[10px] uppercase tracking-[0.15em] text-slate-400 font-semibold">Close Meeting</p>
+                  <h2 className="m-0 text-[17px] font-bold text-slate-900 leading-tight">Schedule Follow-up Meeting</h2>
+                </div>
+                <button
+                  type="button"
+                  onClick={app.closeFollowupDraft}
+                  className="w-9 h-9 rounded-full bg-slate-100 hover:bg-slate-200 border-none cursor-pointer transition-colors flex items-center justify-center text-slate-500 text-[15px] font-bold shrink-0"
+                  aria-label="Close"
+                >✕</button>
               </div>
-              <button
-                type="button"
-                onClick={app.closeFollowupDraft}
-                className="w-9 h-9 rounded-full bg-slate-100 hover:bg-slate-200 border-none cursor-pointer transition-colors flex items-center justify-center text-slate-500 text-[15px] font-bold shrink-0"
-                aria-label="Close"
-              >✕</button>
-            </div>
-            <div className="overflow-y-auto flex-1 px-4 sm:px-6 lg:px-8 py-5">
-              <div className="max-w-[780px] mx-auto">
+              {/* Scrollable body */}
+              <div className="overflow-y-auto flex-1 p-5">
                 <NewMeetingPage app={followupModalApp} />
               </div>
             </div>
