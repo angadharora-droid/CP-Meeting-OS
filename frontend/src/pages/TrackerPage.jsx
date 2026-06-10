@@ -91,7 +91,7 @@ function buildActionUpdateNotice(task, meetings = []) {
 }
 
 function HeaderSection({ header, children }) {
-  const [open, setOpen] = useState(true)
+  const [open, setOpen] = useState(false)
   return (
     <div className="grid gap-3">
       <button
@@ -113,7 +113,7 @@ function HeaderSection({ header, children }) {
 }
 
 function MeetingGroup({ meetingTitle, meetingDate, taskCount, children }) {
-  const [open, setOpen] = useState(true)
+  const [open, setOpen] = useState(false)
   return (
     <div className="grid gap-2">
       <button
