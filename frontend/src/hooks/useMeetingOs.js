@@ -169,9 +169,6 @@ export function useMeetingOs(navigate, page) {
     list.sort((a, b) => {
       const statusDiff = (STATUS_ORDER[a.status] ?? 4) - (STATUS_ORDER[b.status] ?? 4)
       if (statusDiff !== 0) return statusDiff
-      if (bankSort === 'date-asc') return (a.date || '').localeCompare(b.date || '')
-      if (bankSort === 'title-asc') return (a.title || '').localeCompare(b.title || '')
-      if (bankSort === 'caller') return (a.calledBy || '').localeCompare(b.calledBy || '')
       return (b.date || '').localeCompare(a.date || '')
     })
 
