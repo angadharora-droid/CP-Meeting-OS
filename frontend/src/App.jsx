@@ -211,46 +211,62 @@ function AgendaFormPreview({ content, orgName }) {
   )
 }
 
-function MomPreview({ content }) {
+function renderMomLines(content) {
   const sections = new Set(['Attendees', 'Agenda', 'Key Discussion Points', 'Action Item', 'Action Items', 'Follow-up Meeting'])
 
+  return String(content || '').split('\n').map((rawLine, index) => {
+    const line = rawLine.trimEnd()
+
+    if (!line) return <div key={index} className="mom-preview-spacer" />
+
+    if (index === 0) {
+      return <h1 key={index}>{line}</h1>
+    }
+
+    if (sections.has(line)) {
+      return <h2 key={index}>{line}</h2>
+    }
+
+    if (line.includes('\t')) {
+      const cells = line.split('\t')
+      const isHeader = cells.join('|') === 'Action|Owner|Due Date'
+      return (
+        <div key={index} className={`mom-preview-row ${isHeader ? 'mom-preview-row-head' : ''}`}>
+          {cells.map((cell, cellIndex) => <span key={cellIndex}>{cell}</span>)}
+        </div>
+      )
+    }
+
+    const labelMatch = line.match(/^([^:]+):\s*(.*)$/)
+    if (labelMatch) {
+      return (
+        <p key={index}>
+          <strong>{labelMatch[1]}:</strong>{labelMatch[2] ? ` ${labelMatch[2]}` : ''}
+        </p>
+      )
+    }
+
+    return <p key={index}>{line}</p>
+  })
+}
+
+function MomPreview({ content }) {
   return (
-    <article className="document-preview-page mom-preview-page">
-      {String(content || '').split('\n').map((rawLine, index) => {
-        const line = rawLine.trimEnd()
+    <>
+      {/* On-screen preview */}
+      <article className="document-preview-page mom-preview-page agenda-screen-page">
+        {renderMomLines(content)}
+      </article>
 
-        if (!line) return <div key={index} className="mom-preview-spacer" />
-
-        if (index === 0) {
-          return <h1 key={index}>{line}</h1>
-        }
-
-        if (sections.has(line)) {
-          return <h2 key={index}>{line}</h2>
-        }
-
-        if (line.includes('\t')) {
-          const cells = line.split('\t')
-          const isHeader = cells.join('|') === 'Action|Owner|Due Date'
-          return (
-            <div key={index} className={`mom-preview-row ${isHeader ? 'mom-preview-row-head' : ''}`}>
-              {cells.map((cell, cellIndex) => <span key={cellIndex}>{cell}</span>)}
-            </div>
-          )
-        }
-
-        const labelMatch = line.match(/^([^:]+):\s*(.*)$/)
-        if (labelMatch) {
-          return (
-            <p key={index}>
-              <strong>{labelMatch[1]}:</strong>{labelMatch[2] ? ` ${labelMatch[2]}` : ''}
-            </p>
-          )
-        }
-
-        return <p key={index}>{line}</p>
-      })}
-    </article>
+      {/* Print layout with the Centre Point Hospitality header/footer */}
+      <div className="agenda-print-pages">
+        <AgendaPrintPage>
+          <div className="mom-preview-page mom-print-page">
+            {renderMomLines(content)}
+          </div>
+        </AgendaPrintPage>
+      </div>
+    </>
   )
 }
 
