@@ -481,7 +481,7 @@ function previewForm(app, meeting) {
   })
 }
 
-function MeetingCard({ meeting, onPreview, onPreviewMom, onPreviewForm, onEdit, user }) {
+function MeetingCard({ meeting, onPreview, onPreviewMom, onPreviewForm, onEdit, onDelete, user }) {
   const [expanded, setExpanded] = useState(false)
   const s = STATUS_STYLES[meeting.status] || STATUS_STYLES.Open
   const canEdit = user?.role === 'admin' || meeting.calledById === user?.id || meeting.calledBy === user?.name
@@ -648,7 +648,7 @@ function MeetingCard({ meeting, onPreview, onPreviewMom, onPreviewForm, onEdit, 
             )}
             {(onPreview || onPreviewForm || (meeting.status === 'Closed' && onPreviewMom)) && (
               <div className="flex flex-wrap gap-2 pt-2 border-t border-[#E2E8F0]">
-                {canEdit && onEdit && (
+                {canEdit && onEdit && meeting.status !== 'Closed' && meeting.status !== 'Cancelled' && (
                   <button
                     className="min-h-[40px] px-4 py-2 rounded-xl bg-slate-700 text-white border border-slate-700 text-[11px] tracking-[0.08em] uppercase cursor-pointer transition-colors hover:bg-slate-800 hover:border-slate-800 font-semibold"
                     onClick={() => onEdit(meeting)}
@@ -680,6 +680,19 @@ function MeetingCard({ meeting, onPreview, onPreviewMom, onPreviewForm, onEdit, 
                     Preview notice
                   </button>
                 )}
+              </div>
+            )}
+            {canEdit && onDelete && (
+              <div className="flex pt-2 border-t border-[#E2E8F0]">
+                <button
+                  className="min-h-[36px] px-3 py-[6px] rounded-xl bg-white text-red-600 border border-red-200 text-[10px] tracking-[0.08em] uppercase cursor-pointer transition-colors hover:bg-red-50 hover:border-red-300 font-semibold"
+                  onClick={() => {
+                    const ok = window.confirm(`Delete "${meeting.title}"? This cannot be undone.`)
+                    if (ok) onDelete(meeting.meetingId)
+                  }}
+                >
+                  Delete meeting
+                </button>
               </div>
             )}
           </div>
@@ -999,6 +1012,7 @@ function BankTab({ app }) {
               onPreviewMom={app.setPreview ? (m) => previewMom(app, m) : null}
               onPreviewForm={app.setPreview ? (m) => previewForm(app, m) : null}
               onEdit={app.editMeeting}
+              onDelete={app.deleteMeeting}
             />
           ))}
         </div>
@@ -1115,6 +1129,7 @@ function HeadersTab({ app }) {
                   onPreviewMom={app.setPreview ? (m) => previewMom(app, m) : null}
                   onPreviewForm={app.setPreview ? (m) => previewForm(app, m) : null}
                   onEdit={app.editMeeting}
+                  onDelete={app.deleteMeeting}
                 />
               ))}
             </MeetingHeaderGroup>
