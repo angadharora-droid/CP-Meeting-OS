@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import { DateField } from '../components/DateTimePickers'
 
 const P = {
@@ -90,6 +90,120 @@ function buildActionUpdateNotice(task, meetings = []) {
   ].filter(Boolean).join('\n')
 }
 
+function HeaderSection({ header, children }) {
+  const [open, setOpen] = useState(true)
+  return (
+    <div className="grid gap-3">
+      <button
+        type="button"
+        className="flex items-center gap-3 text-left cursor-pointer bg-transparent border-none p-0 group"
+        onClick={() => setOpen(v => !v)}
+      >
+        <div className="w-6 h-6 rounded-lg bg-white border border-slate-200 flex items-center justify-center shrink-0 group-hover:border-slate-400 transition-colors">
+          <svg width="10" height="10" viewBox="0 0 12 12" fill="none" style={{ color: '#94A3B8', transition: 'transform 150ms', transform: open ? 'rotate(90deg)' : 'rotate(0deg)' }}>
+            <path d="M4 2l4 4-4 4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+        </div>
+        <span className="text-[13px] font-bold text-slate-700 tracking-tight">{header}</span>
+        <div className="flex-1 h-px bg-slate-200 group-hover:bg-slate-300 transition-colors" />
+      </button>
+      {open && <div className="grid gap-4 pl-4 sm:pl-[36px]">{children}</div>}
+    </div>
+  )
+}
+
+function MeetingGroup({ meetingTitle, meetingDate, taskCount, children }) {
+  const [open, setOpen] = useState(true)
+  return (
+    <div className="grid gap-2">
+      <button
+        type="button"
+        className="flex items-center gap-2 text-left cursor-pointer bg-transparent border-none p-0 group"
+        onClick={() => setOpen(v => !v)}
+      >
+        <div className="w-5 h-5 rounded-md bg-slate-50 border border-slate-200 flex items-center justify-center shrink-0 group-hover:border-slate-300 transition-colors">
+          <svg width="8" height="8" viewBox="0 0 12 12" fill="none" style={{ color: '#94A3B8', transition: 'transform 150ms', transform: open ? 'rotate(90deg)' : 'rotate(0deg)' }}>
+            <path d="M4 2l4 4-4 4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+        </div>
+        <span className="text-[12px] font-semibold text-slate-600 tracking-tight truncate">{meetingTitle}</span>
+        {meetingDate && <span className="text-[10px] text-slate-400 font-mono shrink-0">{formatDateLabel(meetingDate)}</span>}
+        <span className="shrink-0 text-[10px] text-slate-400 tabular-nums">{taskCount} task{taskCount !== 1 ? 's' : ''}</span>
+      </button>
+      {open && <div className="grid gap-2 pl-5 sm:pl-7">{children}</div>}
+    </div>
+  )
+}
+
+function TaskCard({ task, app }) {
+  const s = STATUS_STYLE[task.status] || STATUS_STYLE.Open
+  const isDone = task.status === 'Done'
+  const dueDateLabel = formatDateLabel(task.dueDate)
+  return (
+    <article className="border border-slate-200 bg-white rounded-2xl overflow-hidden shadow-[0_1px_2px_rgba(15,23,42,0.04)]">
+      <div className={`h-[2px] ${s.bar} opacity-70`} />
+      <div className="p-4 grid gap-3">
+        <div className="flex items-start justify-between gap-3">
+          <h3 className={`m-0 font-semibold text-[14px] leading-snug ${isDone ? 'line-through text-slate-400' : 'text-slate-900'}`}>
+            {task.task}
+          </h3>
+          <span className={`shrink-0 px-[10px] py-[4px] text-[9px] uppercase tracking-[0.12em] font-bold rounded-full border ${s.badge}`}>
+            {task.status}
+          </span>
+        </div>
+        <div className="flex items-center gap-3">
+          {task.assignedTo ? (
+            <>
+              <Initials name={task.assignedTo} />
+              <div>
+                <div className="text-slate-900 text-[11px] font-medium">{task.assignedTo}</div>
+                <div className="text-slate-500 text-[10px]">
+                  {[task.assignedToDesig, task.assignedToMobile, dueDateLabel ? `Due ${dueDateLabel}` : 'No due date'].filter(Boolean).join(' - ')}
+                </div>
+              </div>
+            </>
+          ) : (
+            <div className="text-slate-500 text-[11px]">Unassigned{dueDateLabel ? ` · Due ${dueDateLabel}` : ''}</div>
+          )}
+        </div>
+        {!isDone && (
+          <div className="flex flex-wrap gap-2 pt-1 border-t border-slate-100">
+            <button className={P.primary} onClick={() => app.markTask(task.taskId, 'Done')}>✓ Mark done</button>
+            {task.status !== 'Overdue' && (
+              <button
+                className="min-h-[40px] px-4 py-[9px] rounded-xl bg-white text-red-700 border border-red-200 text-[11px] tracking-[0.06em] cursor-pointer transition-colors hover:border-red-300 hover:bg-red-50 font-semibold"
+                onClick={() => app.markTask(task.taskId, 'Overdue')}
+              >
+                Flag overdue
+              </button>
+            )}
+            {task.status === 'Overdue' && (
+              <button className={P.ghost} onClick={() => app.markTask(task.taskId, 'Open')}>Reset to open</button>
+            )}
+            <button
+              className={P.ghost}
+              onClick={() => app.setPreview({ title: 'Action Update Notice', content: buildActionUpdateNotice(task, app.meetings) })}
+            >
+              Preview notice
+            </button>
+          </div>
+        )}
+        {isDone && (
+          <div className="flex flex-wrap gap-2 pt-1 border-t border-slate-100">
+            <button className={P.ghost} onClick={() => app.markTask(task.taskId, 'Open')}>Reopen task</button>
+            <button
+              className={P.ghost}
+              onClick={() => app.setPreview({ title: 'Action Update Notice', content: buildActionUpdateNotice(task, app.meetings) })}
+            >
+              Preview notice
+            </button>
+          </div>
+        )}
+      </div>
+    </article>
+  )
+}
+
 export default function TrackerPage({ app }) {
   const [fromDate, setFromDate] = useState('')
   const [toDate, setToDate]     = useState('')
@@ -100,6 +214,41 @@ export default function TrackerPage({ app }) {
     if (!d) return true
     return (!fromDate || d >= fromDate) && (!toDate || d <= toDate)
   })
+
+  const grouped = useMemo(() => {
+    const meetingMap = new Map()
+    filteredTasks.forEach(task => {
+      const id = task.meetingId || '__none__'
+      if (!meetingMap.has(id)) {
+        const meeting = (app.meetings || []).find(m => m.meetingId === task.meetingId)
+        meetingMap.set(id, {
+          meetingId: id,
+          meetingTitle: task.meetingTitle || meeting?.title || 'Unknown Meeting',
+          meetingDate: task.meetingDate || meeting?.date || '',
+          meetingHeader: meeting?.meetingHeader?.trim() || '',
+          tasks: [],
+        })
+      }
+      meetingMap.get(id).tasks.push(task)
+    })
+
+    const headerMap = new Map()
+    meetingMap.forEach(meeting => {
+      const h = meeting.meetingHeader
+      if (!headerMap.has(h)) headerMap.set(h, [])
+      headerMap.get(h).push(meeting)
+    })
+
+    const withHeader = []
+    const noHeader = []
+    headerMap.forEach((meetings, header) => {
+      if (header) withHeader.push({ header, meetings })
+      else noHeader.push(...meetings)
+    })
+    withHeader.sort((a, b) => a.header.localeCompare(b.header))
+
+    return { withHeader, noHeader }
+  }, [filteredTasks, app.meetings])
 
   function exportTasks() {
     const headers = ['Task', 'Status', 'Assigned To', 'Designation', 'Mobile', 'Due Date', 'Meeting', 'Meeting Date']
@@ -209,101 +358,33 @@ export default function TrackerPage({ app }) {
         </button>
       </div>
 
-      {/* ── Task list ── */}
+      {/* ── Grouped task list ── */}
       {filteredTasks.length ? (
-        <div className="grid gap-3">
-          {filteredTasks.map((task) => {
-            const s = STATUS_STYLE[task.status] || STATUS_STYLE.Open
-            const isDone = task.status === 'Done'
-            const dueDateLabel = formatDateLabel(task.dueDate)
-            return (
-              <article key={task.taskId} className="border border-slate-200 bg-white rounded-2xl overflow-hidden shadow-[0_1px_2px_rgba(15,23,42,0.04)]">
-                {/* Status indicator bar */}
-                <div className={`h-[2px] ${s.bar} opacity-70`} />
-
-                <div className="p-4 grid gap-3">
-                  {/* Header */}
-                  <div className="flex items-start justify-between gap-3">
-                    <div className="min-w-0">
-                      <h3 className={`m-0 font-semibold text-[14px] leading-snug ${isDone ? 'line-through text-slate-400' : 'text-slate-900'}`}>
-                        {task.task}
-                      </h3>
-                      <p className="m-0 mt-[4px] text-slate-500 text-[11px] truncate">{task.meetingTitle || 'From meeting'}</p>
-                    </div>
-                    <span className={`shrink-0 px-[10px] py-[4px] text-[9px] uppercase tracking-[0.12em] font-bold rounded-full border ${s.badge}`}>
-                      {task.status}
-                    </span>
-                  </div>
-
-                  {/* Assignee & due date */}
-                  <div className="flex items-center gap-3">
-                    {task.assignedTo ? (
-                      <>
-                        <Initials name={task.assignedTo} />
-                        <div>
-                          <div className="text-slate-900 text-[11px] font-medium">{task.assignedTo}</div>
-                          <div className="text-slate-500 text-[10px]">
-                            {[task.assignedToDesig, task.assignedToMobile, dueDateLabel ? `Due ${dueDateLabel}` : 'No due date'].filter(Boolean).join(' - ')}
-                          </div>
-                        </div>
-                      </>
-                    ) : (
-                      <div className="text-slate-500 text-[11px]">
-                        Unassigned{dueDateLabel ? ` · Due ${dueDateLabel}` : ''}
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Actions */}
-                  {!isDone && (
-                    <div className="flex flex-wrap gap-2 pt-1 border-t border-slate-100">
-                      <button className={P.primary} onClick={() => app.markTask(task.taskId, 'Done')}>
-                        ✓ Mark done
-                      </button>
-                      {task.status !== 'Overdue' && (
-                        <button
-                          className="min-h-[40px] px-4 py-[9px] rounded-xl bg-white text-red-700 border border-red-200 text-[11px] tracking-[0.06em] cursor-pointer transition-colors hover:border-red-300 hover:bg-red-50 font-semibold"
-                          onClick={() => app.markTask(task.taskId, 'Overdue')}
-                        >
-                          Flag overdue
-                        </button>
-                      )}
-                      {task.status === 'Overdue' && (
-                        <button className={P.ghost} onClick={() => app.markTask(task.taskId, 'Open')}>
-                          Reset to open
-                        </button>
-                      )}
-                      <button
-                        className={P.ghost}
-                        onClick={() => app.setPreview({
-                          title: 'Action Update Notice',
-                          content: buildActionUpdateNotice(task, app.meetings),
-                        })}
-                      >
-                        Preview notice
-                      </button>
-                    </div>
-                  )}
-                  {isDone && (
-                    <div className="flex flex-wrap gap-2 pt-1 border-t border-slate-100">
-                      <button className={P.ghost} onClick={() => app.markTask(task.taskId, 'Open')}>
-                        Reopen task
-                      </button>
-                      <button
-                        className={P.ghost}
-                        onClick={() => app.setPreview({
-                          title: 'Action Update Notice',
-                          content: buildActionUpdateNotice(task, app.meetings),
-                        })}
-                      >
-                        Preview notice
-                      </button>
-                    </div>
-                  )}
-                </div>
-              </article>
-            )
-          })}
+        <div className="grid gap-5">
+          {grouped.withHeader.map(({ header, meetings }) => (
+            <HeaderSection key={header} header={header}>
+              {meetings.map(meeting => (
+                <MeetingGroup
+                  key={meeting.meetingId}
+                  meetingTitle={meeting.meetingTitle}
+                  meetingDate={meeting.meetingDate}
+                  taskCount={meeting.tasks.length}
+                >
+                  {meeting.tasks.map(task => <TaskCard key={task.taskId} task={task} app={app} />)}
+                </MeetingGroup>
+              ))}
+            </HeaderSection>
+          ))}
+          {grouped.noHeader.map(meeting => (
+            <MeetingGroup
+              key={meeting.meetingId}
+              meetingTitle={meeting.meetingTitle}
+              meetingDate={meeting.meetingDate}
+              taskCount={meeting.tasks.length}
+            >
+              {meeting.tasks.map(task => <TaskCard key={task.taskId} task={task} app={app} />)}
+            </MeetingGroup>
+          ))}
         </div>
       ) : (
         <div className="py-14 px-4 border border-dashed border-slate-300 rounded-2xl text-center leading-[1.6] bg-white/60">
