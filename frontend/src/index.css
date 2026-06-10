@@ -383,7 +383,8 @@
 
 .agenda-print-pages,
 .agenda-print-header,
-.agenda-print-footer {
+.agenda-print-footer,
+.mom-print-page {
   display: none;
 }
 
@@ -560,6 +561,18 @@
     position: static;
     padding: 0;
     break-inside: auto;
+  }
+
+  /* MoM body inside the Centre Point Hospitality print frame */
+  .mom-print-page {
+    display: block !important;
+    visibility: visible !important;
+    overflow: visible !important;
+    padding: 4mm 0 0 !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    background: #ffffff !important;
+    color: #000000 !important;
   }
 
   .agenda-print-body .agenda-meta {
