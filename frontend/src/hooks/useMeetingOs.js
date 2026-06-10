@@ -166,10 +166,16 @@ export function useMeetingOs(navigate, page) {
 
     const STATUS_ORDER = { Open: 0, Postponed: 1, Closed: 2, Cancelled: 3 }
 
+    function toSortableDate(d) {
+      if (!d) return ''
+      if (/^\d{2}\/\d{2}\/\d{4}/.test(d)) { const [dd, mm, yyyy] = d.split('/'); return `${yyyy}-${mm}-${dd}` }
+      return d.slice(0, 10)
+    }
+
     list.sort((a, b) => {
       const statusDiff = (STATUS_ORDER[a.status] ?? 4) - (STATUS_ORDER[b.status] ?? 4)
       if (statusDiff !== 0) return statusDiff
-      return (b.date || '').localeCompare(a.date || '')
+      return toSortableDate(b.date).localeCompare(toSortableDate(a.date))
     })
 
     return list
