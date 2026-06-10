@@ -164,12 +164,15 @@ export function useMeetingOs(navigate, page) {
       )
     }
 
+    const STATUS_ORDER = { Open: 0, Postponed: 1, Closed: 2, Cancelled: 3 }
+
     list.sort((a, b) => {
-      if (bankSort === 'date-desc') return (b.date || '').localeCompare(a.date || '')
+      const statusDiff = (STATUS_ORDER[a.status] ?? 4) - (STATUS_ORDER[b.status] ?? 4)
+      if (statusDiff !== 0) return statusDiff
       if (bankSort === 'date-asc') return (a.date || '').localeCompare(b.date || '')
       if (bankSort === 'title-asc') return (a.title || '').localeCompare(b.title || '')
       if (bankSort === 'caller') return (a.calledBy || '').localeCompare(b.calledBy || '')
-      return 0
+      return (b.date || '').localeCompare(a.date || '')
     })
 
     return list
@@ -1000,6 +1003,19 @@ export function useMeetingOs(navigate, page) {
     showToast('Meeting cancelled')
   }
 
+  async function deleteMeeting(meetingId) {
+    if (!meetingId) return
+
+    const result = await apiPost({ action: 'delete_meeting', meetingId })
+    if (!result?.ok) {
+      showToast(result?.error || 'Could not delete meeting')
+      return
+    }
+
+    setMeetings((current) => current.filter((meeting) => meeting.meetingId !== meetingId))
+    showToast('Meeting deleted')
+  }
+
   async function renameMeetingHeader(oldHeader, newHeader) {
     const cleanOld = String(oldHeader || '').trim()
     const cleanNew = String(newHeader || '').trim()
@@ -1186,6 +1202,7 @@ export function useMeetingOs(navigate, page) {
     closeMeeting,
     postponeMeeting,
     cancelMeeting,
+    deleteMeeting,
     renameMeetingHeader,
     deleteMeetingHeader,
     markTask,

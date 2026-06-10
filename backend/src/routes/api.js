@@ -878,6 +878,37 @@ router.post('/', async (req, res) => {
       return res.json({ ok: true });
     }
 
+    if (action === 'delete_meeting') {
+      const meetingId = String(req.body?.meetingId || '').trim();
+
+      if (!meetingId) {
+        return res.status(400).json({ ok: false, error: 'meetingId required' });
+      }
+
+      const meeting = await Meeting.findOne({ meetingId }).lean();
+      if (!meeting) {
+        return res.status(404).json({ ok: false, error: 'Meeting not found' });
+      }
+
+      const actor = await getMeetingActor(req, meeting);
+      if (!actor) {
+        return res.status(403).json({ ok: false, error: 'Only the caller or admin can delete this meeting' });
+      }
+
+      await Meeting.deleteOne({ meetingId });
+      await Task.deleteMany({ meetingId });
+
+      try {
+        if (meeting.googleEventId) {
+          await cancelCalendarEvent(meeting.googleEventId);
+        }
+      } catch (calErr) {
+        console.error('Google Calendar delete failed:', calErr.message);
+      }
+
+      return res.json({ ok: true });
+    }
+
     return res.status(400).json({ ok: false, error: 'Unknown action' });
   } catch (err) {
     return res.status(500).json({ ok: false, error: 'Server error' });
