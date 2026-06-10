@@ -483,6 +483,7 @@ function previewForm(app, meeting) {
 
 function MeetingCard({ meeting, onPreview, onPreviewMom, onPreviewForm, onEdit, onDelete, user }) {
   const [expanded, setExpanded] = useState(false)
+  const [menuOpen, setMenuOpen] = useState(false)
   const s = STATUS_STYLES[meeting.status] || STATUS_STYLES.Open
   const canEdit = user?.role === 'admin' || meeting.calledById === user?.id || meeting.calledBy === user?.name
   const actionPoints = meeting.actionPoints?.length ? meeting.actionPoints : meeting.trackerActionPoints
@@ -510,9 +511,49 @@ function MeetingCard({ meeting, onPreview, onPreviewMom, onPreviewForm, onEdit, 
               {meeting.duration ? ` · ${meeting.duration}` : ''}
             </p>
           </div>
-          <span className={`shrink-0 px-[10px] py-[4px] text-[9px] uppercase tracking-[0.12em] font-bold rounded-full border ${s.badge}`}>
-            {meeting.status}
-          </span>
+          <div className="flex items-center gap-2 shrink-0">
+            <span className={`px-[10px] py-[4px] text-[9px] uppercase tracking-[0.12em] font-bold rounded-full border ${s.badge}`}>
+              {meeting.status}
+            </span>
+            {canEdit && (onEdit || onDelete) && (
+              <div className="relative">
+                <button
+                  type="button"
+                  className="h-7 w-7 rounded-lg bg-white text-[#64748B] border border-[#CBD5E1] cursor-pointer transition-colors hover:bg-[#F8FAFC] hover:border-[#94A3B8] hover:text-[#334155] font-bold leading-none flex items-center justify-center text-[16px]"
+                  onClick={() => setMenuOpen((v) => !v)}
+                  aria-label="Meeting actions"
+                >
+                  ⋮
+                </button>
+                {menuOpen && (
+                  <div className="absolute right-0 top-[calc(100%+4px)] z-20 grid min-w-[140px] overflow-hidden rounded-xl border border-[#E2E8F0] bg-white shadow-[0_12px_30px_rgba(15,23,42,0.12)]">
+                    {canEdit && onEdit && meeting.status !== 'Closed' && meeting.status !== 'Cancelled' && (
+                      <button
+                        type="button"
+                        className="px-3 py-2 text-left text-[11px] font-semibold text-[#334155] hover:bg-[#F8FAFC] cursor-pointer"
+                        onClick={() => { setMenuOpen(false); onEdit(meeting) }}
+                      >
+                        Edit meeting
+                      </button>
+                    )}
+                    {canEdit && onDelete && (
+                      <button
+                        type="button"
+                        className="px-3 py-2 text-left text-[11px] font-semibold text-red-600 hover:bg-red-50 cursor-pointer"
+                        onClick={() => {
+                          setMenuOpen(false)
+                          const ok = window.confirm(`Delete "${meeting.title}"? This cannot be undone.`)
+                          if (ok) onDelete(meeting.meetingId)
+                        }}
+                      >
+                        Delete meeting
+                      </button>
+                    )}
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
         </div>
 
         <div className="flex flex-wrap gap-x-3 gap-y-[4px] text-[11px] text-[#64748B]">
@@ -648,14 +689,6 @@ function MeetingCard({ meeting, onPreview, onPreviewMom, onPreviewForm, onEdit, 
             )}
             {(onPreview || onPreviewForm || (meeting.status === 'Closed' && onPreviewMom)) && (
               <div className="flex flex-wrap gap-2 pt-2 border-t border-[#E2E8F0]">
-                {canEdit && onEdit && meeting.status !== 'Closed' && meeting.status !== 'Cancelled' && (
-                  <button
-                    className="min-h-[40px] px-4 py-2 rounded-xl bg-slate-700 text-white border border-slate-700 text-[11px] tracking-[0.08em] uppercase cursor-pointer transition-colors hover:bg-slate-800 hover:border-slate-800 font-semibold"
-                    onClick={() => onEdit(meeting)}
-                  >
-                    Edit meeting
-                  </button>
-                )}
                 {meeting.status === 'Closed' && onPreviewMom && (
                   <button
                     className="min-h-[40px] px-4 py-2 rounded-xl bg-emerald-600 text-white border border-emerald-600 text-[11px] tracking-[0.08em] uppercase cursor-pointer transition-all hover:bg-emerald-700 hover:border-emerald-700 active:scale-[0.98] font-semibold shadow-[0_1px_2px_rgba(15,23,42,0.06),0_4px_10px_rgba(15,23,42,0.10)]"
@@ -680,19 +713,6 @@ function MeetingCard({ meeting, onPreview, onPreviewMom, onPreviewForm, onEdit, 
                     Preview notice
                   </button>
                 )}
-              </div>
-            )}
-            {canEdit && onDelete && (
-              <div className="flex pt-2 border-t border-[#E2E8F0]">
-                <button
-                  className="min-h-[36px] px-3 py-[6px] rounded-xl bg-white text-red-600 border border-red-200 text-[10px] tracking-[0.08em] uppercase cursor-pointer transition-colors hover:bg-red-50 hover:border-red-300 font-semibold"
-                  onClick={() => {
-                    const ok = window.confirm(`Delete "${meeting.title}"? This cannot be undone.`)
-                    if (ok) onDelete(meeting.meetingId)
-                  }}
-                >
-                  Delete meeting
-                </button>
               </div>
             )}
           </div>
