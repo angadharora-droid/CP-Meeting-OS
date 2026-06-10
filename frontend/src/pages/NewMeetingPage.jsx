@@ -671,18 +671,19 @@ export default function NewMeetingPage({ app }) {
   return (
     <section className="grid gap-4">
 
-      {/* Hero */}
-      <div className={P.card} style={{ gap: '20px' }}>
-        <div>
-          <p className="m-0 mb-[5px] uppercase tracking-[0.2em] text-[10px] text-[#64748B]">
-            {app.orgName || 'Organisation'}
-          </p>
-          <h1 className="m-0 font-black text-[22px] text-[#0F172A] leading-tight tracking-tight">
-            {app.followupMode ? 'Follow-up Meeting' : app.editingMeetingId ? 'Edit Meeting' : 'New Meeting'}
-          </h1>
+      {/* Hero — hidden in followup modal (parent provides its own header) */}
+      {!app.followupMode && (
+        <div className={P.card} style={{ gap: '20px' }}>
+          <div>
+            <p className="m-0 mb-[5px] uppercase tracking-[0.2em] text-[10px] text-[#64748B]">
+              {app.orgName || 'Organisation'}
+            </p>
+            <h1 className="m-0 font-black text-[22px] text-[#0F172A] leading-tight tracking-tight">
+              {app.editingMeetingId ? 'Edit Meeting' : 'New Meeting'}
+            </h1>
+          </div>
         </div>
-
-      </div>
+      )}
 
       {/* 01 Identity */}
       <div className={P.card}>

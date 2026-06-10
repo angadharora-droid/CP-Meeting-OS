@@ -277,11 +277,37 @@ export default function CloseMeetingPage({ app }) {
       </details>
 
       {followupModalApp && (
-        <section className="fixed inset-0 z-[1000] grid place-items-center bg-slate-900/40 p-4 backdrop-blur-sm">
-          <div className="w-full max-w-[980px] max-h-[88dvh] overflow-auto rounded-2xl border border-slate-200 bg-white p-4 shadow-[0_24px_60px_rgba(15,23,42,0.18)]">
-            <NewMeetingPage app={followupModalApp} />
+        <div className="fixed inset-0 z-[1000] flex flex-col justify-end sm:justify-center sm:items-center bg-slate-900/50 backdrop-blur-[2px]">
+          <div className="w-full sm:max-w-[660px] bg-white rounded-t-3xl sm:rounded-2xl shadow-[0_-20px_60px_rgba(15,23,42,0.18)] sm:shadow-[0_24px_60px_rgba(15,23,42,0.20)] flex flex-col max-h-[92dvh] sm:max-h-[88dvh]">
+
+            {/* Drag handle (mobile only) */}
+            <div className="flex justify-center pt-3 pb-1 sm:hidden shrink-0">
+              <div className="w-10 h-1 rounded-full bg-slate-300" />
+            </div>
+
+            {/* Sticky header */}
+            <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100 shrink-0">
+              <div>
+                <p className="m-0 text-[10px] uppercase tracking-[0.15em] text-slate-400 font-semibold">Close Meeting</p>
+                <h2 className="m-0 text-[17px] font-bold text-slate-900 leading-tight">Schedule Follow-up Meeting</h2>
+              </div>
+              <button
+                type="button"
+                onClick={app.closeFollowupDraft}
+                className="w-9 h-9 rounded-full bg-slate-100 hover:bg-slate-200 border-none cursor-pointer transition-colors flex items-center justify-center text-slate-500 text-[16px] font-bold shrink-0"
+                aria-label="Close"
+              >
+                ✕
+              </button>
+            </div>
+
+            {/* Scrollable form body */}
+            <div className="overflow-y-auto flex-1 px-5 py-4">
+              <NewMeetingPage app={followupModalApp} />
+            </div>
+
           </div>
-        </section>
+        </div>
       )}
 
     </section>
