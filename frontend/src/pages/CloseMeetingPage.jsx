@@ -1,7 +1,6 @@
 import { getMeetingCallerLabel, toDateLabel } from '../lib/meetingOs'
 import { useRef, useState } from 'react'
 import { DateField, TimeField } from '../components/DateTimePickers'
-import NewMeetingPage from './NewMeetingPage'
 
 const P = {
   primary:  'w-full min-h-[48px] px-5 py-[13px] rounded-xl bg-slate-700 text-white font-semibold text-[13px] tracking-[0.08em] uppercase cursor-pointer border-none transition-all hover:bg-slate-800 active:scale-[0.98] disabled:opacity-40 disabled:cursor-not-allowed disabled:active:scale-100 shadow-[0_1px_2px_rgba(15,23,42,0.06),0_4px_12px_rgba(15,23,42,0.10)]',
@@ -13,6 +12,94 @@ const P = {
   card:     'p-4 grid gap-4 border border-slate-200 bg-white rounded-2xl shadow-[0_1px_2px_rgba(15,23,42,0.04)]',
   label:    'flex flex-col gap-[6px] text-[11px] tracking-[0.15em] uppercase text-slate-500 font-semibold',
   secHead:  'flex items-center gap-2 text-[10px] uppercase tracking-[0.18em] text-slate-700 font-semibold',
+}
+
+function FollowupModal({ draft, setDraft, onSave, onCancel, activeMeeting }) {
+  const set = (field, value) => setDraft(d => ({ ...d, [field]: value }))
+  const attendeeCount = draft.attendeeDetails?.length || 0
+  const contextParts = [draft.meetingHeader, draft.unit, attendeeCount ? `${attendeeCount} attendee${attendeeCount !== 1 ? 's' : ''}` : ''].filter(Boolean)
+
+  return (
+    <div className="fixed inset-0 z-[1000] flex flex-col justify-end sm:justify-center sm:items-center bg-slate-900/50 backdrop-blur-[2px]">
+      <div className="w-full sm:max-w-[500px] bg-white rounded-t-3xl sm:rounded-2xl flex flex-col max-h-[90dvh] sm:max-h-[85dvh] shadow-[0_-20px_60px_rgba(15,23,42,0.2)] sm:shadow-[0_24px_60px_rgba(15,23,42,0.20)]">
+
+        {/* Mobile drag handle */}
+        <div className="flex justify-center pt-3 pb-1 sm:hidden shrink-0">
+          <div className="w-10 h-1 rounded-full bg-slate-300" />
+        </div>
+
+        {/* Header */}
+        <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100 shrink-0">
+          <div>
+            <p className="m-0 text-[10px] uppercase tracking-[0.15em] text-slate-400 font-semibold">Close Meeting</p>
+            <h2 className="m-0 text-[17px] font-bold text-slate-900 leading-tight">Schedule Follow-up</h2>
+          </div>
+          <button
+            type="button"
+            onClick={onCancel}
+            className="w-9 h-9 rounded-full bg-slate-100 hover:bg-slate-200 border-none cursor-pointer transition-colors flex items-center justify-center text-slate-500 text-[15px] font-bold shrink-0"
+            aria-label="Close"
+          >✕</button>
+        </div>
+
+        {/* Scrollable body */}
+        <div className="overflow-y-auto flex-1 px-5 py-4 grid gap-4 content-start">
+
+          {/* Context — what's being carried over */}
+          <div className="p-3 rounded-xl bg-slate-50 border border-slate-200 grid gap-[4px]">
+            <p className="m-0 text-[9px] uppercase tracking-[0.14em] text-slate-400 font-semibold">Continuing from</p>
+            <p className="m-0 text-[13px] font-semibold text-slate-800 leading-snug">{activeMeeting?.title || 'Selected meeting'}</p>
+            {contextParts.length > 0 && (
+              <p className="m-0 text-[11px] text-slate-500">{contextParts.join(' · ')}</p>
+            )}
+            <p className="m-0 text-[10px] text-slate-400 mt-[2px]">Attendees, venue &amp; mode are pre-filled from the original meeting.</p>
+          </div>
+
+          {/* Meeting name */}
+          <Field label="Meeting name *">
+            <input
+              className={P.input}
+              value={draft.title || ''}
+              onChange={(e) => set('title', e.target.value)}
+              placeholder="Follow-up meeting name"
+            />
+          </Field>
+
+          {/* Date & Time */}
+          <div className="grid grid-cols-2 gap-3">
+            <Field label="Date *">
+              <DateField value={draft.date || ''} onChange={(date) => set('date', date)} />
+            </Field>
+            <Field label="Time *">
+              <TimeField value={draft.time || ''} onChange={(time) => set('time', time)} />
+            </Field>
+          </div>
+
+          {/* Duration */}
+          <Field label="Duration">
+            <input
+              className={P.input}
+              value={draft.duration || ''}
+              onChange={(e) => set('duration', e.target.value)}
+              placeholder="e.g. 1 hour"
+            />
+          </Field>
+
+        </div>
+
+        {/* Footer */}
+        <div className="px-5 pb-6 pt-3 border-t border-slate-100 grid gap-2 shrink-0">
+          <button className={P.primary} onClick={onSave}>
+            Save Follow-up &amp; Close Meeting
+          </button>
+          <button className={P.ghost} onClick={onCancel}>
+            Cancel
+          </button>
+        </div>
+
+      </div>
+    </div>
+  )
 }
 
 function SecHead({ n, children }) {
@@ -38,18 +125,6 @@ export default function CloseMeetingPage({ app }) {
   const [postponeForm, setPostponeForm] = useState({ date: '', time: '', reason: '' })
   const [cancelReason, setCancelReason] = useState('')
   const actionPointsRef = useRef(null)
-  const followupModalApp = app.followupDraft
-    ? {
-        ...app,
-        meetingForm: app.followupDraft,
-        setMeetingForm: app.setFollowupDraft,
-        editingMeetingId: 'followup-draft',
-        followupMode: true,
-        generateMeeting: app.saveFollowupDraftAndClose,
-        cancelEditMeeting: app.closeFollowupDraft,
-      }
-    : null
-
   function handleAddActionPoint() {
     app.addActionPoint()
     if (actionPointsRef.current) {
@@ -276,38 +351,14 @@ export default function CloseMeetingPage({ app }) {
         </div>
       </details>
 
-      {followupModalApp && (
-        <div className="fixed inset-0 z-[1000] flex flex-col justify-end sm:justify-center sm:items-center bg-slate-900/50 backdrop-blur-[2px]">
-          <div className="w-full sm:max-w-[660px] bg-white rounded-t-3xl sm:rounded-2xl shadow-[0_-20px_60px_rgba(15,23,42,0.18)] sm:shadow-[0_24px_60px_rgba(15,23,42,0.20)] flex flex-col max-h-[92dvh] sm:max-h-[88dvh]">
-
-            {/* Drag handle (mobile only) */}
-            <div className="flex justify-center pt-3 pb-1 sm:hidden shrink-0">
-              <div className="w-10 h-1 rounded-full bg-slate-300" />
-            </div>
-
-            {/* Sticky header */}
-            <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100 shrink-0">
-              <div>
-                <p className="m-0 text-[10px] uppercase tracking-[0.15em] text-slate-400 font-semibold">Close Meeting</p>
-                <h2 className="m-0 text-[17px] font-bold text-slate-900 leading-tight">Schedule Follow-up Meeting</h2>
-              </div>
-              <button
-                type="button"
-                onClick={app.closeFollowupDraft}
-                className="w-9 h-9 rounded-full bg-slate-100 hover:bg-slate-200 border-none cursor-pointer transition-colors flex items-center justify-center text-slate-500 text-[16px] font-bold shrink-0"
-                aria-label="Close"
-              >
-                ✕
-              </button>
-            </div>
-
-            {/* Scrollable form body */}
-            <div className="overflow-y-auto flex-1 px-5 py-4">
-              <NewMeetingPage app={followupModalApp} />
-            </div>
-
-          </div>
-        </div>
+      {app.followupDraft && (
+        <FollowupModal
+          draft={app.followupDraft}
+          setDraft={app.setFollowupDraft}
+          onSave={app.saveFollowupDraftAndClose}
+          onCancel={app.closeFollowupDraft}
+          activeMeeting={app.activeMeeting}
+        />
       )}
 
     </section>
