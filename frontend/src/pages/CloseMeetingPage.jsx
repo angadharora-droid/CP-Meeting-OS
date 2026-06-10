@@ -126,18 +126,6 @@ export default function CloseMeetingPage({ app }) {
   const [postponeForm, setPostponeForm] = useState({ date: '', time: '', reason: '' })
   const [cancelReason, setCancelReason] = useState('')
   const actionPointsRef = useRef(null)
-  const followupModalApp = app.followupDraft
-    ? {
-        ...app,
-        meetingForm: app.followupDraft,
-        setMeetingForm: app.setFollowupDraft,
-        editingMeetingId: 'followup-draft',
-        followupMode: true,
-        generateMeeting: app.saveFollowupDraftAndClose,
-        cancelEditMeeting: app.closeFollowupDraft,
-      }
-    : null
-
   function handleAddActionPoint() {
     app.addActionPoint()
     if (actionPointsRef.current) {
@@ -364,30 +352,6 @@ export default function CloseMeetingPage({ app }) {
         </div>
       </details>
 
-      {followupModalApp && (
-        <div className="fixed inset-0 z-[1000] flex flex-col bg-white">
-
-          {/* Sticky header */}
-          <div className="flex items-center justify-between px-5 py-4 border-b border-slate-200 shrink-0 bg-white">
-            <div>
-              <p className="m-0 text-[10px] uppercase tracking-[0.15em] text-slate-400 font-semibold">Close Meeting</p>
-              <h2 className="m-0 text-[17px] font-bold text-slate-900 leading-tight">Schedule Follow-up Meeting</h2>
-            </div>
-            <button
-              type="button"
-              onClick={app.closeFollowupDraft}
-              className="w-9 h-9 rounded-full bg-slate-100 hover:bg-slate-200 border-none cursor-pointer transition-colors flex items-center justify-center text-slate-500 text-[15px] font-bold shrink-0"
-              aria-label="Close"
-            >✕</button>
-          </div>
-
-          {/* Scrollable form */}
-          <div className="overflow-y-auto flex-1 p-5">
-            <NewMeetingPage app={followupModalApp} />
-          </div>
-
-        </div>
-      )}
 
     </section>
   )

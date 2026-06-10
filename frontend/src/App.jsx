@@ -562,6 +562,40 @@ function App() {
         {pageMap[page] || pageMap['new-meeting']}
       </main>
 
+      {/* FOLLOW-UP MEETING OVERLAY — root-level so it covers header + nav */}
+      {app.followupDraft && (() => {
+        const followupModalApp = {
+          ...app,
+          meetingForm: app.followupDraft,
+          setMeetingForm: app.setFollowupDraft,
+          editingMeetingId: 'followup-draft',
+          followupMode: true,
+          generateMeeting: app.saveFollowupDraftAndClose,
+          cancelEditMeeting: app.closeFollowupDraft,
+        }
+        return (
+          <div className="fixed inset-0 z-[9999] flex flex-col bg-white">
+            <div className="flex items-center justify-between px-5 py-4 border-b border-slate-200 shrink-0 bg-white shadow-[0_1px_0_rgba(15,23,42,0.06)]">
+              <div>
+                <p className="m-0 text-[10px] uppercase tracking-[0.15em] text-slate-400 font-semibold">Close Meeting</p>
+                <h2 className="m-0 text-[17px] font-bold text-slate-900 leading-tight">Schedule Follow-up Meeting</h2>
+              </div>
+              <button
+                type="button"
+                onClick={app.closeFollowupDraft}
+                className="w-9 h-9 rounded-full bg-slate-100 hover:bg-slate-200 border-none cursor-pointer transition-colors flex items-center justify-center text-slate-500 text-[15px] font-bold shrink-0"
+                aria-label="Close"
+              >✕</button>
+            </div>
+            <div className="overflow-y-auto flex-1 px-4 sm:px-6 lg:px-8 py-5">
+              <div className="max-w-[780px] mx-auto">
+                <NewMeetingPage app={followupModalApp} />
+              </div>
+            </div>
+          </div>
+        )
+      })()}
+
       {/* MOBILE BOTTOM NAV — app-like tab bar, hidden on tablet/desktop */}
       <nav
         className="md:hidden fixed inset-x-0 bottom-0 z-40 border-t border-slate-200/80 bg-white/90 backdrop-blur-xl pb-[env(safe-area-inset-bottom)]"
