@@ -26,6 +26,18 @@ const APPS = [
     status: "Live",
     index: "02",
   },
+  {
+    key: "mickys-crm",
+    short: "MC",
+    label: "Micky's CRM",
+    desc: "Manage customer relationships, track leads and deals, and oversee the full sales pipeline.",
+    href: "https://mickys-crm.centrepointgroup.in/",
+    accent: "#B5179E",
+    accentRgb: "181,23,158",
+    tags: ["CRM", "Sales", "Clients"],
+    status: "Live",
+    index: "03",
+  },
 ];
 
 function today() {
