@@ -38,6 +38,18 @@ const APPS = [
     status: "Live",
     index: "03",
   },
+  {
+    key: "assets",
+    short: "AS",
+    label: "Assets",
+    desc: "Central library for brand assets, media, and shared files across all Centre Point Group apps.",
+    href: "https://assets.centrepointgroup.in/",
+    accent: "#9D0CB5",
+    accentRgb: "157,12,181",
+    tags: ["Media", "Brand", "Files"],
+    status: "Live",
+    index: "04",
+  },
 ];
 
 function today() {
