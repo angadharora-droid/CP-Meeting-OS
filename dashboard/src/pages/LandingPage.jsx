@@ -50,6 +50,18 @@ const APPS = [
     status: "Live",
     index: "04",
   },
+  {
+    key: "handover",
+    short: "HO",
+    label: "Handover",
+    desc: "Capture and track shift handovers — pending tasks, open issues, and key updates between teams.",
+    href: "https://handover.centrepointgroup.in/",
+    accent: "#7209B7",
+    accentRgb: "114,9,183",
+    tags: ["Shifts", "Handoff", "Teams"],
+    status: "Live",
+    index: "05",
+  },
 ];
 
 function today() {
