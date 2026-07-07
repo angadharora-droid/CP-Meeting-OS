@@ -62,6 +62,18 @@ const APPS = [
     status: "Live",
     index: "05",
   },
+  {
+    key: "purosoul",
+    short: "PS",
+    label: "Purosoul",
+    desc: "Purosoul spa and wellness — manage services, appointments, and guest experiences in one place.",
+    href: "https://purosoul.centrepointgroup.in/",
+    accent: "#560BAD",
+    accentRgb: "86,11,173",
+    tags: ["Spa", "Wellness", "Guests"],
+    status: "Live",
+    index: "06",
+  },
 ];
 
 function today() {
