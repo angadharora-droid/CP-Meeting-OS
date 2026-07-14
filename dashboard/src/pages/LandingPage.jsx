@@ -86,6 +86,18 @@ const APPS = [
     status: "Live",
     index: "07",
   },
+  {
+    key: "purosoul-cash",
+    short: "PC",
+    label: "Purosoul Cash",
+    desc: "Track Purosoul cash operations — daily collections, expenses, and settlements with full visibility.",
+    href: "https://purosoulcash.centrepointgroup.in/",
+    accent: "#3A0CA3",
+    accentRgb: "58,12,163",
+    tags: ["Cash", "Daily", "Finance"],
+    status: "Live",
+    index: "08",
+  },
 ];
 
 function today() {
