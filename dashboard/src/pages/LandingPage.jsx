@@ -74,6 +74,18 @@ const APPS = [
     status: "Live",
     index: "06",
   },
+  {
+    key: "cp-leads",
+    short: "CL",
+    label: "CP Leads",
+    desc: "Capture, qualify, and track incoming leads — follow-ups, conversions, and pipeline visibility in one place.",
+    href: "https://cp-leads.centrepointgroup.in/",
+    accent: "#480CA8",
+    accentRgb: "72,12,168",
+    tags: ["Leads", "Sales", "Pipeline"],
+    status: "Live",
+    index: "07",
+  },
 ];
 
 function today() {
