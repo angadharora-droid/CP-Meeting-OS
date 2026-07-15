@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Sans:wght@300;400;500;600&family=Space+Mono:wght@400;700&display=swap');
+/* Fonts are loaded once in index.html — no @import here to avoid a duplicate request. */
 
 @keyframes blink {
   0%, 100% { opacity: 1; }
@@ -32,4 +32,53 @@
   0%   { transform: translate(0, 0); }
   50%  { transform: translate(-5%, -4%); }
   100% { transform: translate(0, 0); }
+}
+
+/* ─── Interaction states (inline styles can't express these) ─────────────── */
+
+.app-card:focus-visible {
+  outline: 2px solid #C2006E;
+  outline-offset: 3px;
+}
+
+.app-card .launch-arrow {
+  display: inline-block;
+  transition: transform 0.25s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.app-card:hover .launch-arrow,
+.app-card:focus-visible .launch-arrow {
+  transform: translateX(4px);
+}
+
+.theme-btn:hover,
+.theme-btn:focus-visible {
+  border-color: rgba(194, 0, 110, 0.45) !important;
+}
+
+.theme-btn:focus-visible {
+  outline: 2px solid #C2006E;
+  outline-offset: 2px;
+}
+
+.portal-search:focus-within {
+  border-color: rgba(194, 0, 110, 0.55) !important;
+  box-shadow: 0 0 0 3px rgba(194, 0, 110, 0.12);
+}
+
+.portal-search input::placeholder {
+  color: currentColor;
+  opacity: 0.55;
+}
+
+/* ─── Reduced motion ─────────────────────────────────────────────────────── */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }

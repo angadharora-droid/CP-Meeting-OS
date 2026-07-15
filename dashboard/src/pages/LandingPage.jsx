@@ -111,6 +111,9 @@ function today() {
 
 const CELL = 36;
 const GLOW_R = 260;
+const THEME_KEY = "cpg-theme";
+
+const lerp = (a, b, t) => a + (b - a) * t;
 
 const FONTS = {
   display: "'Syne', sans-serif",
@@ -127,7 +130,7 @@ const DARK = {
   txt: "#F0EEF8",
   muted: "rgba(240,238,248,0.82)",
   faint: "rgba(240,238,248,0.65)",
-  vfaint: "rgba(240,238,248,0.45)",
+  vfaint: "rgba(240,238,248,0.5)",
   border: "rgba(255,255,255,0.07)",
   borderMid: "rgba(255,255,255,0.1)",
   dot: "rgba(255,255,255,0.06)",
@@ -152,10 +155,10 @@ const LIGHT = {
   headerBg: "rgba(255,255,255,0.95)",
   surface: "rgba(194,0,110,0.04)",
   txt: "#0D0A14",
-  muted: "rgba(13,10,20,0.65)",
-  faint: "rgba(13,10,20,0.45)",
-  vfaint: "rgba(13,10,20,0.28)",
-  border: "rgba(0,0,0,0.07)",
+  muted: "rgba(13,10,20,0.72)",
+  faint: "rgba(13,10,20,0.56)",
+  vfaint: "rgba(13,10,20,0.42)",
+  border: "rgba(0,0,0,0.09)",
   borderMid: "rgba(194,0,110,0.15)",
   dot: "rgba(0,0,0,0.065)",
   cardBg: "#FFFFFF",
@@ -224,7 +227,7 @@ function makeStyles(C, m = false) {
       height: "100%", display: "flex", flexDirection: "column",
     },
     header: {
-      padding: m ? "0 16px" : "0 28px", height: m ? 54 : 58,
+      padding: m ? "0 16px" : "0 28px", height: m ? 56 : 60,
       display: "flex", alignItems: "center",
       borderBottom: `0.5px solid ${C.border}`,
       background: C.headerBg,
@@ -250,13 +253,13 @@ function makeStyles(C, m = false) {
       color: C.txt, lineHeight: 1,
     },
     brandSub: {
-      fontFamily: FONTS.mono, fontSize: 8, letterSpacing: "0.16em",
+      fontFamily: FONTS.mono, fontSize: 9, letterSpacing: "0.16em",
       textTransform: "uppercase", color: C.muted, lineHeight: 1,
     },
     nav: { display: "flex", alignItems: "center", gap: m ? 10 : 14 },
     statusPill: {
       display: "flex", alignItems: "center", gap: 7,
-      padding: "5px 12px", borderRadius: 100,
+      padding: "6px 12px", borderRadius: 100,
       border: `0.5px solid rgba(194,0,110,0.25)`,
       background: "rgba(194,0,110,0.07)",
     },
@@ -266,19 +269,21 @@ function makeStyles(C, m = false) {
       animation: "blink 2.5s ease-in-out infinite",
     },
     statusLabel: {
-      fontFamily: FONTS.mono, fontSize: 8, letterSpacing: "0.1em",
+      fontFamily: FONTS.mono, fontSize: 9, letterSpacing: "0.1em",
       textTransform: "uppercase", color: C.pink,
     },
     navDivider: { width: 1, height: 16, background: C.border },
-    dateTag: { fontFamily: FONTS.mono, fontSize: 9, color: C.faint, letterSpacing: "0.08em" },
+    dateTag: { fontFamily: FONTS.mono, fontSize: 10, color: C.faint, letterSpacing: "0.08em" },
     themeBtn: {
       display: "flex", alignItems: "center", justifyContent: "center",
-      width: 32, height: 32, borderRadius: 8,
+      width: 38, height: 38, borderRadius: 10,
       border: `0.5px solid ${C.border}`,
       background: C.surface,
-      cursor: "pointer", fontSize: 14,
-      transition: "background 0.2s, border-color 0.2s",
+      color: C.txt,
+      cursor: "pointer",
+      transition: "background 0.2s, border-color 0.2s, color 0.2s",
       flexShrink: 0,
+      padding: 0,
     },
     main: {
       flex: 1, minHeight: 0, padding: m ? "20px 16px 28px" : "28px 28px 28px",
@@ -289,10 +294,10 @@ function makeStyles(C, m = false) {
       scrollbarWidth: "thin", scrollbarColor: "rgba(194,0,110,0.4) transparent",
     },
     hero: { display: "flex", alignItems: "center", marginBottom: m ? 16 : 22 },
-    heroLeft: { maxWidth: 560 },
+    heroLeft: { maxWidth: 580 },
     eyebrowRow: { display: "flex", alignItems: "center", gap: 14, marginBottom: m ? 12 : 14 },
     eyebrowChip: {
-      fontFamily: FONTS.mono, fontSize: 9, fontWeight: 700,
+      fontFamily: FONTS.mono, fontSize: 10, fontWeight: 700,
       letterSpacing: "0.22em", textTransform: "uppercase",
       color: C.pink, padding: "5px 10px",
       border: `0.5px solid rgba(194,0,110,0.3)`,
@@ -313,18 +318,44 @@ function makeStyles(C, m = false) {
       color: C.pink,
     },
     sub: {
-      fontSize: 13, color: C.muted, lineHeight: 1.65,
-      maxWidth: 420, fontWeight: 400, marginBottom: m ? 0 : 14,
+      fontSize: 14.5, color: C.muted, lineHeight: 1.65,
+      maxWidth: 470, fontWeight: 400, marginBottom: m ? 0 : 14,
     },
-    sectionRow: { display: "flex", alignItems: "center", gap: 14, marginBottom: m ? 12 : 14 },
+    sectionRow: { display: "flex", alignItems: "center", gap: 14, marginBottom: m ? 10 : 14 },
     sectionLabel: {
-      fontFamily: FONTS.mono, fontSize: 8, letterSpacing: "0.22em",
+      fontFamily: FONTS.mono, fontSize: 9, letterSpacing: "0.22em",
       textTransform: "uppercase", color: C.faint, flexShrink: 0,
     },
     sectionLine: { flex: 1, height: "0.5px", background: C.border },
     sectionCount: {
-      fontFamily: FONTS.mono, fontSize: 8, letterSpacing: "0.12em",
+      fontFamily: FONTS.mono, fontSize: 9, letterSpacing: "0.12em",
       textTransform: "uppercase", color: C.faint, flexShrink: 0,
+    },
+    searchWrap: {
+      display: "flex", alignItems: "center", gap: 8,
+      padding: "0 10px", height: m ? 40 : 34,
+      borderRadius: 8, border: `0.5px solid ${C.border}`,
+      background: C.surface, color: C.faint,
+      width: m ? "100%" : 240, flexShrink: 0, boxSizing: "border-box",
+      marginBottom: m ? 12 : 0,
+      transition: "border-color 0.2s, box-shadow 0.2s",
+    },
+    searchInput: {
+      flex: 1, minWidth: 0,
+      background: "transparent", border: "none", outline: "none",
+      fontFamily: FONTS.body, fontSize: m ? 16 : 12.5,
+      color: C.txt, padding: 0,
+    },
+    searchClear: {
+      display: "flex", alignItems: "center", justifyContent: "center",
+      width: 22, height: 22, padding: 0, borderRadius: 4,
+      border: "none", background: "transparent",
+      color: C.faint, cursor: "pointer", flexShrink: 0,
+    },
+    kbdHint: {
+      fontFamily: FONTS.mono, fontSize: 9, color: C.vfaint,
+      border: `0.5px solid ${C.border}`, borderRadius: 4,
+      padding: "2px 6px", lineHeight: 1, flexShrink: 0,
     },
     cards: { display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 300px), 1fr))", gap: 12 },
     card: {
@@ -353,7 +384,7 @@ function makeStyles(C, m = false) {
     },
     livePill: {
       display: "flex", alignItems: "center", gap: 5,
-      fontFamily: FONTS.mono, fontSize: 7, fontWeight: 700,
+      fontFamily: FONTS.mono, fontSize: 8.5, fontWeight: 700,
       letterSpacing: "0.14em", textTransform: "uppercase",
       padding: "4px 9px", borderRadius: 100, border: "0.5px solid",
     },
@@ -362,24 +393,39 @@ function makeStyles(C, m = false) {
     iconBox: { width: 40, height: 40, borderRadius: 10, border: "0.5px solid", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 },
     iconText: { fontFamily: FONTS.mono, fontSize: 10, fontWeight: 700, letterSpacing: "0.08em" },
     cardContent: { flex: 1, minWidth: 0, display: "flex", flexDirection: "column", gap: 5 },
-    cardTitle: { fontFamily: FONTS.display, fontSize: 18, fontWeight: 800, lineHeight: 1.1, letterSpacing: "-0.02em", color: C.txt },
-    cardDesc: { fontSize: 11.5, color: C.muted, lineHeight: 1.65, fontWeight: 400 },
-    cardFoot: { paddingTop: m ? 10 : 12, borderTop: `0.5px solid ${C.vfaint}`, display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12 },
+    cardTitle: { fontFamily: FONTS.display, fontSize: 18, fontWeight: 800, lineHeight: 1.1, letterSpacing: "-0.02em", color: C.txt, margin: 0 },
+    cardDesc: { fontSize: 13, color: C.muted, lineHeight: 1.6, fontWeight: 400 },
+    cardFoot: { paddingTop: m ? 10 : 12, borderTop: `0.5px solid ${C.border}`, display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12 },
     tags: { display: "flex", flexWrap: "wrap", gap: 5 },
     tag: {
-      fontFamily: FONTS.mono, fontSize: 7, fontWeight: 700,
+      fontFamily: FONTS.mono, fontSize: 8.5, fontWeight: 700,
       letterSpacing: "0.1em", textTransform: "uppercase",
-      color: C.faint, border: `0.5px solid ${C.vfaint}`,
+      color: C.faint, border: `0.5px solid ${C.border}`,
       background: C.tagBg, padding: "3px 7px", borderRadius: 4,
     },
     launchBtn: {
       display: "flex", alignItems: "center", gap: 5,
-      fontFamily: FONTS.mono, fontSize: 8, fontWeight: 700,
+      fontFamily: FONTS.mono, fontSize: 9.5, fontWeight: 700,
       letterSpacing: "0.12em", textTransform: "uppercase",
       padding: "6px 12px", borderRadius: 8,
       border: "0.5px solid", background: C.launchBg, flexShrink: 0,
     },
-    launchArrow: { fontSize: 11 },
+    launchArrow: { fontSize: 12 },
+    emptyState: {
+      padding: "44px 24px", textAlign: "center",
+      border: `1px dashed ${C.borderMid}`, borderRadius: 16,
+      display: "flex", flexDirection: "column", alignItems: "center", gap: 6,
+    },
+    emptyTitle: { fontFamily: FONTS.display, fontSize: 16, fontWeight: 700, color: C.txt, margin: 0 },
+    emptyDesc: { fontSize: 13, color: C.muted, margin: 0 },
+    emptyClear: {
+      marginTop: 12,
+      fontFamily: FONTS.mono, fontSize: 10, fontWeight: 700,
+      letterSpacing: "0.12em", textTransform: "uppercase",
+      color: C.pink, background: "rgba(194,0,110,0.08)",
+      border: "0.5px solid rgba(194,0,110,0.35)",
+      borderRadius: 100, padding: "9px 18px", cursor: "pointer",
+    },
     footer: {
       borderTop: `0.5px solid ${C.border}`,
       padding: m ? "10px 16px" : "12px 28px",
@@ -391,36 +437,98 @@ function makeStyles(C, m = false) {
     footerInner: { maxWidth: 1120, margin: "0 auto", width: "100%", display: "flex", alignItems: "center", justifyContent: m ? "space-between" : "flex-start", gap: 16 },
     footerLeft: { display: "flex", alignItems: "center", gap: 8, flexShrink: 0 },
     footerLogo: { width: 22, height: 22, borderRadius: 5, background: C.footerLogoBg, display: "flex", alignItems: "center", justifyContent: "center" },
-    footerCopy: { fontFamily: FONTS.mono, fontSize: 8, color: C.faint, letterSpacing: "0.1em", textTransform: "uppercase", whiteSpace: "nowrap" },
-    tickerWrap: { overflow: "hidden", fontFamily: FONTS.mono, fontSize: 8, color: C.vfaint, letterSpacing: "0.08em", whiteSpace: "nowrap", flex: 1 },
+    footerCopy: { fontFamily: FONTS.mono, fontSize: 9, color: C.faint, letterSpacing: "0.1em", textTransform: "uppercase", whiteSpace: "nowrap" },
+    tickerWrap: { overflow: "hidden", fontFamily: FONTS.mono, fontSize: 9, color: C.vfaint, letterSpacing: "0.08em", whiteSpace: "nowrap", flex: 1 },
     tickerInner: { display: "inline-block", animation: "ticker 20s linear infinite" },
     footerRight: { flexShrink: 0 },
-    footerVersion: { fontFamily: FONTS.mono, fontSize: 8, color: C.vfaint, letterSpacing: "0.1em", padding: "3px 8px", border: `0.5px solid ${C.vfaint}`, borderRadius: 4 },
+    footerVersion: { fontFamily: FONTS.mono, fontSize: 9, color: C.faint, letterSpacing: "0.1em", padding: "3px 8px", border: `0.5px solid ${C.border}`, borderRadius: 4 },
   };
+}
+
+/* ─── Icons ──────────────────────────────────────────────────────────────────── */
+function SunIcon() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <circle cx="12" cy="12" r="4" />
+      <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41" />
+    </svg>
+  );
+}
+
+function MoonIcon() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+    </svg>
+  );
+}
+
+function SearchIcon() {
+  return (
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" style={{ flexShrink: 0 }}>
+      <circle cx="11" cy="11" r="7" />
+      <line x1="21" y1="21" x2="16.65" y2="16.65" />
+    </svg>
+  );
+}
+
+function ClearIcon() {
+  return (
+    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <path d="M18 6 6 18M6 6l12 12" />
+    </svg>
+  );
 }
 
 /* ─── Landing Page ───────────────────────────────────────────────────────────── */
 export default function LandingPage() {
-  const canvasRef = useRef(null);
-  const shellRef  = useRef(null);
-  const mouseRef  = useRef({ x: -999, y: -999 });
-  const targetRef = useRef({ x: -999, y: -999 });
-  const rafRef    = useRef(null);
-  const themeRef  = useRef(true); // true = dark
+  const canvasRef  = useRef(null);
+  const shellRef   = useRef(null);
+  const searchRef  = useRef(null);
+  const mouseRef   = useRef({ x: -999, y: -999 });
+  const targetRef  = useRef({ x: -999, y: -999 });
+  const rafRef     = useRef(null);
+  const runningRef = useRef(false);
+  const fancyRef   = useRef(false);
 
   const [mounted, setMounted] = useState(false);
-  const [isDark, setIsDark]   = useState(true);
+  const [query, setQuery]     = useState("");
+  const [isDark, setIsDark]   = useState(() => {
+    if (typeof window === "undefined") return true;
+    try {
+      const stored = localStorage.getItem(THEME_KEY);
+      if (stored === "light") return false;
+      if (stored === "dark") return true;
+    } catch { /* private mode */ }
+    return !window.matchMedia("(prefers-color-scheme: light)").matches;
+  });
   const [isMobile, setIsMobile] = useState(
     typeof window !== "undefined" ? window.innerWidth < 640 : false
   );
+  const [reducedMotion, setReducedMotion] = useState(
+    typeof window !== "undefined" ? window.matchMedia("(prefers-reduced-motion: reduce)").matches : false
+  );
+  const [hoverFine, setHoverFine] = useState(
+    typeof window !== "undefined" ? window.matchMedia("(hover: hover) and (pointer: fine)").matches : false
+  );
+
+  const themeRef = useRef(isDark);
+  const fancy    = hoverFine && !reducedMotion;
 
   const C      = isDark ? DARK : LIGHT;
   const styles = useMemo(() => makeStyles(C, isMobile), [isDark, isMobile]);
 
+  const q = query.trim().toLowerCase();
+  const filtered = useMemo(
+    () => (!q ? APPS : APPS.filter((a) => [a.label, a.desc, ...a.tags].join(" ").toLowerCase().includes(q))),
+    [q]
+  );
+
   const toggleTheme = () => {
     setIsDark((d) => {
-      themeRef.current = !d;
-      return !d;
+      const next = !d;
+      try { localStorage.setItem(THEME_KEY, next ? "dark" : "light"); } catch { /* private mode */ }
+      return next;
     });
   };
 
@@ -430,34 +538,47 @@ export default function LandingPage() {
   }, []);
 
   useEffect(() => {
-    const mq = window.matchMedia("(max-width: 639px)");
-    const onChange = (e) => setIsMobile(e.matches);
-    setIsMobile(mq.matches);
-    mq.addEventListener("change", onChange);
-    return () => mq.removeEventListener("change", onChange);
+    const watch = (queryStr, setter) => {
+      const mq = window.matchMedia(queryStr);
+      const onChange = (e) => setter(e.matches);
+      setter(mq.matches);
+      mq.addEventListener("change", onChange);
+      return () => mq.removeEventListener("change", onChange);
+    };
+    const cleanups = [
+      watch("(max-width: 639px)", setIsMobile),
+      watch("(prefers-reduced-motion: reduce)", setReducedMotion),
+      watch("(hover: hover) and (pointer: fine)", setHoverFine),
+    ];
+    return () => cleanups.forEach((fn) => fn());
   }, []);
 
-  const lerp = (a, b, t) => a + (b - a) * t;
-
-  const resize = useCallback(() => {
-    const canvas = canvasRef.current;
-    const shell  = shellRef.current;
-    if (!canvas || !shell) return;
-    canvas.width  = shell.offsetWidth;
-    canvas.height = shell.offsetHeight;
+  // "/" focuses search, from anywhere on the page
+  useEffect(() => {
+    const onKey = (e) => {
+      const tag = document.activeElement?.tagName;
+      if (e.key === "/" && tag !== "INPUT" && tag !== "TEXTAREA") {
+        e.preventDefault();
+        searchRef.current?.focus();
+      }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
   }, []);
 
   const drawGrid = useCallback(() => {
     const canvas = canvasRef.current;
-    if (!canvas) return;
+    if (!canvas || !canvas.width) return;
     const ctx  = canvas.getContext("2d");
-    const W    = canvas.width;
-    const H    = canvas.height;
+    const dpr  = window.devicePixelRatio || 1;
+    const W    = canvas.width / dpr;
+    const H    = canvas.height / dpr;
     const cols = Math.ceil(W / CELL) + 2;
     const rows = Math.ceil(H / CELL) + 2;
     const { x: lx, y: ly } = mouseRef.current;
     const dark = themeRef.current;
 
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     ctx.clearRect(0, 0, W, H);
 
     for (let row = 0; row <= rows; row++) {
@@ -495,30 +616,71 @@ export default function LandingPage() {
   const animate = useCallback(() => {
     const t = targetRef.current;
     const m = mouseRef.current;
-    mouseRef.current = { x: lerp(m.x, t.x, 0.1), y: lerp(m.y, t.y, 0.1) };
+    const nx = lerp(m.x, t.x, 0.1);
+    const ny = lerp(m.y, t.y, 0.1);
+    mouseRef.current = { x: nx, y: ny };
     drawGrid();
+    // Glow has settled on the cursor — stop the loop until the mouse moves again
+    if (Math.abs(t.x - nx) < 0.4 && Math.abs(t.y - ny) < 0.4) {
+      mouseRef.current = { x: t.x, y: t.y };
+      runningRef.current = false;
+      return;
+    }
     rafRef.current = requestAnimationFrame(animate);
+  }, [drawGrid]);
+
+  const wake = useCallback(() => {
+    if (!fancyRef.current || runningRef.current) return;
+    runningRef.current = true;
+    rafRef.current = requestAnimationFrame(animate);
+  }, [animate]);
+
+  const resize = useCallback(() => {
+    const canvas = canvasRef.current;
+    const shell  = shellRef.current;
+    if (!canvas || !shell) return;
+    const dpr = window.devicePixelRatio || 1;
+    canvas.width  = shell.offsetWidth * dpr;
+    canvas.height = shell.offsetHeight * dpr;
+    drawGrid();
   }, [drawGrid]);
 
   useEffect(() => {
     resize();
     window.addEventListener("resize", resize);
-    rafRef.current = requestAnimationFrame(animate);
     return () => {
       window.removeEventListener("resize", resize);
       if (rafRef.current) cancelAnimationFrame(rafRef.current);
+      runningRef.current = false;
     };
-  }, [resize, animate]);
+  }, [resize]);
+
+  useEffect(() => {
+    fancyRef.current = fancy;
+    if (!fancy) {
+      targetRef.current = { x: -999, y: -999 };
+      mouseRef.current  = { x: -999, y: -999 };
+      drawGrid();
+    }
+  }, [fancy, drawGrid]);
+
+  useEffect(() => {
+    themeRef.current = isDark;
+    drawGrid();
+    document.querySelector('meta[name="theme-color"]')?.setAttribute("content", isDark ? "#07070A" : "#F8F5FC");
+  }, [isDark, drawGrid]);
 
   const handleMouseMove = useCallback((e) => {
     const rect = shellRef.current?.getBoundingClientRect();
     if (!rect) return;
     targetRef.current = { x: e.clientX - rect.left, y: e.clientY - rect.top };
-  }, []);
+    wake();
+  }, [wake]);
 
   const handleMouseLeave = useCallback(() => {
     targetRef.current = { x: -999, y: -999 };
-  }, []);
+    wake();
+  }, [wake]);
 
   return (
     <div ref={shellRef} onMouseMove={handleMouseMove} onMouseLeave={handleMouseLeave} style={styles.shell}>
@@ -529,7 +691,7 @@ export default function LandingPage() {
         <div style={{ ...styles.blob, ...styles.blob2 }} />
       </div>
 
-      <canvas ref={canvasRef} style={styles.canvas} />
+      <canvas ref={canvasRef} style={styles.canvas} aria-hidden="true" />
 
       <div style={styles.heroBg}>
         <div style={{ ...styles.heroBgLogo, WebkitMaskImage: `url(${cpgLogo})`, maskImage: `url(${cpgLogo})` }} />
@@ -542,7 +704,7 @@ export default function LandingPage() {
           <div style={styles.inner}>
             <div style={styles.brand}>
               <div style={styles.badge}>
-                <img src={cpgLogo} alt="CPG" style={{ width: "100%", height: "100%", objectFit: "contain", filter: "brightness(0) invert(1)" }} draggable={false} />
+                <img src={cpgLogo} alt="Centre Point Group logo" style={{ width: "100%", height: "100%", objectFit: "contain", filter: "brightness(0) invert(1)" }} draggable={false} />
               </div>
               <div style={styles.brandText}>
                 <div style={styles.brandName}>Centre Point Group</div>
@@ -550,8 +712,8 @@ export default function LandingPage() {
               </div>
             </div>
 
-            <nav style={styles.nav}>
-              <div style={styles.statusPill}>
+            <nav style={styles.nav} aria-label="Portal status">
+              <div style={styles.statusPill} role="status" aria-label="All systems live" title="All systems live">
                 <span style={styles.statusDot} />
                 {!isMobile && <span style={styles.statusLabel}>All systems live</span>}
               </div>
@@ -562,8 +724,14 @@ export default function LandingPage() {
                 </>
               )}
               <div style={styles.navDivider} />
-              <button onClick={toggleTheme} style={styles.themeBtn} title={isDark ? "Switch to light" : "Switch to dark"}>
-                {isDark ? "☀️" : "🌙"}
+              <button
+                onClick={toggleTheme}
+                className="theme-btn"
+                style={styles.themeBtn}
+                aria-label={isDark ? "Switch to light theme" : "Switch to dark theme"}
+                title={isDark ? "Switch to light theme" : "Switch to dark theme"}
+              >
+                {isDark ? <SunIcon /> : <MoonIcon />}
               </button>
             </nav>
           </div>
@@ -590,14 +758,37 @@ export default function LandingPage() {
           <div id="apps" style={styles.sectionRow}>
             <span style={styles.sectionLabel}>Applications</span>
             <div style={styles.sectionLine} />
-            <span style={styles.sectionCount}>{APPS.length} active</span>
+            {!isMobile && (
+              <SearchBox
+                inputRef={searchRef}
+                query={query}
+                setQuery={setQuery}
+                styles={styles}
+                showHint
+              />
+            )}
+            <span style={styles.sectionCount} aria-live="polite">
+              {q ? `${filtered.length} of ${APPS.length}` : `${APPS.length} active`}
+            </span>
           </div>
 
-          <div style={styles.cards}>
-            {APPS.map((app, i) => (
-              <AppCard key={app.key} app={app} delay={i * 90} styles={styles} />
-            ))}
-          </div>
+          {isMobile && (
+            <SearchBox inputRef={searchRef} query={query} setQuery={setQuery} styles={styles} />
+          )}
+
+          {filtered.length > 0 ? (
+            <div style={styles.cards}>
+              {filtered.map((app, i) => (
+                <AppCard key={app.key} app={app} delay={i * 60} styles={styles} tilt={fancy} />
+              ))}
+            </div>
+          ) : (
+            <div style={styles.emptyState}>
+              <p style={styles.emptyTitle}>No applications match “{query}”</p>
+              <p style={styles.emptyDesc}>Try a different name or tag — for example “sales” or “daily”.</p>
+              <button style={styles.emptyClear} onClick={() => setQuery("")}>Clear search</button>
+            </div>
+          )}
         </main>
 
         {/* Footer */}
@@ -605,19 +796,19 @@ export default function LandingPage() {
           <div style={styles.footerInner}>
             <div style={styles.footerLeft}>
               <div style={styles.footerLogo}>
-                <img src={cpgLogo} alt="CPG" style={{ width: 18, height: 18, objectFit: "contain", filter: isDark ? "brightness(0) invert(1)" : "none", opacity: 0.55 }} draggable={false} />
+                <img src={cpgLogo} alt="" aria-hidden="true" style={{ width: 18, height: 18, objectFit: "contain", filter: isDark ? "brightness(0) invert(1)" : "none", opacity: 0.55 }} draggable={false} />
               </div>
               <span style={styles.footerCopy}>© {new Date().getFullYear()} Centre Point Group</span>
             </div>
             {!isMobile && (
-              <div style={styles.tickerWrap}>
+              <div style={styles.tickerWrap} aria-hidden="true">
                 <span style={styles.tickerInner}>
                   CENTRE POINT GROUP &nbsp;·&nbsp; INTERNAL USE ONLY &nbsp;·&nbsp; OPERATIONS PORTAL &nbsp;·&nbsp; CENTRE POINT GROUP &nbsp;·&nbsp; INTERNAL USE ONLY &nbsp;·&nbsp; OPERATIONS PORTAL &nbsp;·&nbsp;
                 </span>
               </div>
             )}
             <div style={styles.footerRight}>
-              <span style={styles.footerVersion}>v2.0</span>
+              <span style={styles.footerVersion}>v2.1</span>
             </div>
           </div>
         </footer>
@@ -626,13 +817,48 @@ export default function LandingPage() {
   );
 }
 
+/* ─── SearchBox ──────────────────────────────────────────────────────────────── */
+function SearchBox({ inputRef, query, setQuery, styles, showHint = false }) {
+  return (
+    <div className="portal-search" style={styles.searchWrap} role="search">
+      <SearchIcon />
+      <input
+        ref={inputRef}
+        type="text"
+        value={query}
+        onChange={(e) => setQuery(e.target.value)}
+        onKeyDown={(e) => {
+          if (e.key === "Escape") {
+            setQuery("");
+            e.currentTarget.blur();
+          }
+        }}
+        placeholder="Search apps…"
+        aria-label="Search applications"
+        autoComplete="off"
+        spellCheck={false}
+        enterKeyHint="search"
+        style={styles.searchInput}
+      />
+      {query ? (
+        <button style={styles.searchClear} onClick={() => setQuery("")} aria-label="Clear search">
+          <ClearIcon />
+        </button>
+      ) : (
+        showHint && <kbd style={styles.kbdHint}>/</kbd>
+      )}
+    </div>
+  );
+}
+
 /* ─── AppCard ────────────────────────────────────────────────────────────────── */
-function AppCard({ app, delay, styles }) {
+function AppCard({ app, delay, styles, tilt }) {
   const cardRef = useRef(null);
   const glowRef = useRef(null);
   const { accent, accentRgb } = app;
 
   const handleMouseMove = (e) => {
+    if (!tilt) return;
     const card = cardRef.current;
     const glow = glowRef.current;
     if (!card || !glow) return;
@@ -649,6 +875,7 @@ function AppCard({ app, delay, styles }) {
   };
 
   const handleMouseLeave = () => {
+    if (!tilt) return;
     const card = cardRef.current;
     const glow = glowRef.current;
     if (!card || !glow) return;
@@ -657,7 +884,15 @@ function AppCard({ app, delay, styles }) {
   };
 
   return (
-    <a ref={cardRef} href={app.href} style={{ ...styles.card, animationDelay: `${delay}ms` }} onMouseMove={handleMouseMove} onMouseLeave={handleMouseLeave}>
+    <a
+      ref={cardRef}
+      href={app.href}
+      className="app-card"
+      style={{ ...styles.card, animationDelay: `${delay}ms` }}
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
+      aria-label={`Open ${app.label} — ${app.desc}`}
+    >
       <div ref={glowRef} style={styles.cardGlow} />
       <div style={styles.cardEdge} />
 
@@ -673,7 +908,7 @@ function AppCard({ app, delay, styles }) {
           <span style={{ ...styles.iconText, color: accent }}>{app.short}</span>
         </div>
         <div style={styles.cardContent}>
-          <div style={styles.cardTitle}>{app.label}</div>
+          <h2 style={styles.cardTitle}>{app.label}</h2>
           <div style={styles.cardDesc}>{app.desc}</div>
         </div>
       </div>
@@ -683,7 +918,7 @@ function AppCard({ app, delay, styles }) {
           {app.tags.map((tag) => <span key={tag} style={styles.tag}>{tag}</span>)}
         </div>
         <div style={{ ...styles.launchBtn, borderColor: `rgba(${accentRgb},0.3)`, color: accent }}>
-          <span>Open</span><span style={styles.launchArrow}>→</span>
+          <span>Open</span><span className="launch-arrow" style={styles.launchArrow}>→</span>
         </div>
       </div>
     </a>
