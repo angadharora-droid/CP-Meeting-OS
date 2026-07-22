@@ -236,7 +236,7 @@ function makeStyles(C, m = false) {
       transition: "background 0.3s ease, border-color 0.3s ease",
     },
     inner: {
-      maxWidth: 1120, margin: "0 auto", width: "100%",
+      maxWidth: 1440, margin: "0 auto", width: "100%",
       display: "flex", alignItems: "center", justifyContent: "space-between", gap: 16,
     },
     brand: { display: "flex", alignItems: "center", gap: 11 },
@@ -287,7 +287,7 @@ function makeStyles(C, m = false) {
     },
     main: {
       flex: 1, minHeight: 0, padding: m ? "20px 16px 28px" : "28px 28px 28px",
-      maxWidth: 1120, margin: "0 auto",
+      maxWidth: 1440, margin: "0 auto",
       width: "100%", boxSizing: "border-box",
       overflowY: "auto", overflowX: "hidden", display: "flex", flexDirection: "column",
       justifyContent: "flex-start",
@@ -357,7 +357,7 @@ function makeStyles(C, m = false) {
       border: `0.5px solid ${C.border}`, borderRadius: 4,
       padding: "2px 6px", lineHeight: 1, flexShrink: 0,
     },
-    cards: { display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 240px), 1fr))", gap: 10 },
+    cards: { display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 320px), 1fr))", gap: 16 },
     card: {
       display: "flex", flexDirection: "column",
       borderRadius: 14, border: `0.5px solid ${C.borderMid}`,
@@ -434,7 +434,7 @@ function makeStyles(C, m = false) {
       flexShrink: 0,
       transition: "background 0.3s ease",
     },
-    footerInner: { maxWidth: 1120, margin: "0 auto", width: "100%", display: "flex", alignItems: "center", justifyContent: m ? "space-between" : "flex-start", gap: 16 },
+    footerInner: { maxWidth: 1440, margin: "0 auto", width: "100%", display: "flex", alignItems: "center", justifyContent: m ? "space-between" : "flex-start", gap: 16 },
     footerLeft: { display: "flex", alignItems: "center", gap: 8, flexShrink: 0 },
     footerLogo: { width: 22, height: 22, borderRadius: 5, background: C.footerLogoBg, display: "flex", alignItems: "center", justifyContent: "center" },
     footerCopy: { fontFamily: FONTS.mono, fontSize: 9, color: C.faint, letterSpacing: "0.1em", textTransform: "uppercase", whiteSpace: "nowrap" },
