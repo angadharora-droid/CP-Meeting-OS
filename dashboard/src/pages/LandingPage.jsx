@@ -384,6 +384,20 @@ function makeStyles(C, m = false) {
       border: `0.5px solid ${C.border}`, borderRadius: 4,
       padding: "2px 6px", lineHeight: 1, flexShrink: 0,
     },
+    pillRow: { display: "flex", flexWrap: "wrap", gap: 8, marginBottom: m ? 14 : 18 },
+    pill: {
+      fontFamily: FONTS.mono, fontSize: 9.5, fontWeight: 700,
+      letterSpacing: "0.14em", textTransform: "uppercase",
+      padding: "7px 14px", borderRadius: 100,
+      border: `0.5px solid ${C.border}`, background: C.surface,
+      color: C.faint, cursor: "pointer",
+      transition: "color 0.2s, border-color 0.2s, background 0.2s",
+    },
+    pillActive: {
+      color: C.pink,
+      border: "0.5px solid rgba(194,0,110,0.4)",
+      background: "rgba(194,0,110,0.08)",
+    },
     sectionBlock: { marginBottom: m ? 20 : 26 },
     groupRow: { display: "flex", alignItems: "center", gap: 14, marginBottom: m ? 10 : 12 },
     groupLabel: {
@@ -527,6 +541,7 @@ export default function LandingPage() {
 
   const [mounted, setMounted] = useState(false);
   const [query, setQuery]     = useState("");
+  const [activeSection, setActiveSection] = useState("all");
   const [isDark, setIsDark]   = useState(() => {
     if (typeof window === "undefined") return true;
     try {
@@ -556,6 +571,10 @@ export default function LandingPage() {
   const filtered = useMemo(
     () => (!q ? APPS : APPS.filter((a) => [a.label, a.desc, ...a.tags].join(" ").toLowerCase().includes(q))),
     [q]
+  );
+  const visible = useMemo(
+    () => (activeSection === "all" ? filtered : filtered.filter((a) => a.section === activeSection)),
+    [filtered, activeSection]
   );
 
   const toggleTheme = () => {
@@ -802,7 +821,7 @@ export default function LandingPage() {
               />
             )}
             <span style={styles.sectionCount} aria-live="polite">
-              {q ? `${filtered.length} of ${APPS.length}` : `${APPS.length} active`}
+              {q || activeSection !== "all" ? `${visible.length} of ${APPS.length}` : `${APPS.length} active`}
             </span>
           </div>
 
@@ -810,9 +829,25 @@ export default function LandingPage() {
             <SearchBox inputRef={searchRef} query={query} setQuery={setQuery} styles={styles} />
           )}
 
-          {filtered.length > 0 ? (
+          <div style={styles.pillRow} role="group" aria-label="Filter by section">
+            {[{ key: "all", label: "All" }, ...SECTIONS].map((s) => {
+              const active = activeSection === s.key;
+              return (
+                <button
+                  key={s.key}
+                  onClick={() => setActiveSection(s.key)}
+                  style={{ ...styles.pill, ...(active ? styles.pillActive : {}) }}
+                  aria-pressed={active}
+                >
+                  {s.label}
+                </button>
+              );
+            })}
+          </div>
+
+          {visible.length > 0 ? (
             SECTIONS.map((section) => {
-              const apps = filtered.filter((a) => a.section === section.key);
+              const apps = visible.filter((a) => a.section === section.key);
               if (apps.length === 0) return null;
               return (
                 <section key={section.key} style={styles.sectionBlock} aria-label={section.label}>
@@ -823,7 +858,7 @@ export default function LandingPage() {
                   </div>
                   <div style={styles.cards}>
                     {apps.map((app) => (
-                      <AppCard key={app.key} app={app} delay={filtered.indexOf(app) * 60} styles={styles} tilt={fancy} />
+                      <AppCard key={app.key} app={app} delay={visible.indexOf(app) * 60} styles={styles} tilt={fancy} />
                     ))}
                   </div>
                 </section>
@@ -831,9 +866,9 @@ export default function LandingPage() {
             })
           ) : (
             <div style={styles.emptyState}>
-              <p style={styles.emptyTitle}>No applications match “{query}”</p>
+              <p style={styles.emptyTitle}>No applications match “{query}”{activeSection !== "all" ? ` in ${SECTIONS.find((s) => s.key === activeSection)?.label}` : ""}</p>
               <p style={styles.emptyDesc}>Try a different name or tag — for example “sales” or “daily”.</p>
-              <button style={styles.emptyClear} onClick={() => setQuery("")}>Clear search</button>
+              <button style={styles.emptyClear} onClick={() => { setQuery(""); setActiveSection("all"); }}>Clear filters</button>
             </div>
           )}
         </main>
