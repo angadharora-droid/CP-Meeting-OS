@@ -1,9 +1,16 @@
 import { useEffect, useRef, useCallback, useState, useMemo } from "react";
 import cpgLogo from "../assets/cpg-logo.png";
 
+const SECTIONS = [
+  { key: "admin", label: "Admin" },
+  { key: "outlets", label: "Outlets" },
+  { key: "purosoul", label: "Purosoul" },
+];
+
 const APPS = [
   {
     key: "meeting-os",
+    section: "admin",
     short: "MO",
     label: "Meeting OS",
     desc: "Schedule meetings, record closure notes, track action points, and manage the full meeting lifecycle.",
@@ -16,6 +23,7 @@ const APPS = [
   },
   {
     key: "flash-report",
+    section: "admin",
     short: "FR",
     label: "CP Flash Report",
     desc: "Daily hospitality pulse — occupancy, revenue, costs, and operational metrics across all hotels.",
@@ -27,19 +35,21 @@ const APPS = [
     index: "02",
   },
   {
-    key: "mickys-crm",
-    short: "MC",
-    label: "Micky's CRM",
-    desc: "Manage customer relationships, track leads and deals, and oversee the full sales pipeline.",
-    href: "https://mickys-crm.centrepointgroup.in/",
+    key: "cp-leads",
+    section: "admin",
+    short: "CL",
+    label: "CP Leads",
+    desc: "Capture, qualify, and track incoming leads — follow-ups, conversions, and pipeline visibility in one place.",
+    href: "https://cp-leads.centrepointgroup.in/",
     accent: "#B5179E",
     accentRgb: "181,23,158",
-    tags: ["CRM", "Sales", "Clients"],
+    tags: ["Leads", "Sales", "Pipeline"],
     status: "Live",
     index: "03",
   },
   {
     key: "assets",
+    section: "admin",
     short: "AS",
     label: "Assets",
     desc: "Central library for brand assets, media, and shared files across all Centre Point Group apps.",
@@ -52,6 +62,7 @@ const APPS = [
   },
   {
     key: "handover",
+    section: "admin",
     short: "HO",
     label: "Handover",
     desc: "Capture and track shift handovers — pending tasks, open issues, and key updates between teams.",
@@ -63,50 +74,54 @@ const APPS = [
     index: "05",
   },
   {
-    key: "purosoul",
-    short: "PS",
-    label: "Purosoul",
-    desc: "Purosoul spa and wellness — manage services, appointments, and guest experiences in one place.",
-    href: "https://purosoul.centrepointgroup.in/",
-    accent: "#560BAD",
-    accentRgb: "86,11,173",
-    tags: ["Spa", "Wellness", "Guests"],
-    status: "Live",
-    index: "06",
-  },
-  {
-    key: "cp-leads",
-    short: "CL",
-    label: "CP Leads",
-    desc: "Capture, qualify, and track incoming leads — follow-ups, conversions, and pipeline visibility in one place.",
-    href: "https://cp-leads.centrepointgroup.in/",
-    accent: "#480CA8",
-    accentRgb: "72,12,168",
-    tags: ["Leads", "Sales", "Pipeline"],
-    status: "Live",
-    index: "07",
-  },
-  {
-    key: "purosoul-cash",
-    short: "PC",
-    label: "Purosoul Cash",
-    desc: "Track Purosoul cash operations — daily collections, expenses, and settlements with full visibility.",
-    href: "https://purosoulcash.centrepointgroup.in/",
-    accent: "#3A0CA3",
-    accentRgb: "58,12,163",
-    tags: ["Cash", "Daily", "Finance"],
-    status: "Live",
-    index: "08",
-  },
-  {
     key: "procurement-model",
+    section: "outlets",
     short: "PM",
     label: "Procurement Model",
     desc: "Raise and track DPR and UPR purchase requisitions — requests, approvals, and procurement status.",
     href: "https://dpr-upr.centrepointgroup.in/",
+    accent: "#560BAD",
+    accentRgb: "86,11,173",
+    tags: ["DPR", "UPR", "Procurement"],
+    status: "Live",
+    index: "06",
+  },
+  {
+    key: "mickys-crm",
+    section: "outlets",
+    short: "MC",
+    label: "Micky's CRM",
+    desc: "Manage customer relationships, track leads and deals, and oversee the full sales pipeline.",
+    href: "https://mickys-crm.centrepointgroup.in/",
+    accent: "#480CA8",
+    accentRgb: "72,12,168",
+    tags: ["CRM", "Sales", "Clients"],
+    status: "Live",
+    index: "07",
+  },
+  {
+    key: "purosoul",
+    section: "purosoul",
+    short: "PS",
+    label: "Purosoul",
+    desc: "Purosoul spa and wellness — manage services, appointments, and guest experiences in one place.",
+    href: "https://purosoul.centrepointgroup.in/",
+    accent: "#3A0CA3",
+    accentRgb: "58,12,163",
+    tags: ["Spa", "Wellness", "Guests"],
+    status: "Live",
+    index: "08",
+  },
+  {
+    key: "purosoul-cash",
+    section: "purosoul",
+    short: "PC",
+    label: "Purosoul Cash",
+    desc: "Track Purosoul cash operations — daily collections, expenses, and settlements with full visibility.",
+    href: "https://purosoulcash.centrepointgroup.in/",
     accent: "#3F37C9",
     accentRgb: "63,55,201",
-    tags: ["DPR", "UPR", "Procurement"],
+    tags: ["Cash", "Daily", "Finance"],
     status: "Live",
     index: "09",
   },
@@ -368,6 +383,13 @@ function makeStyles(C, m = false) {
       fontFamily: FONTS.mono, fontSize: 9, color: C.vfaint,
       border: `0.5px solid ${C.border}`, borderRadius: 4,
       padding: "2px 6px", lineHeight: 1, flexShrink: 0,
+    },
+    sectionBlock: { marginBottom: m ? 20 : 26 },
+    groupRow: { display: "flex", alignItems: "center", gap: 14, marginBottom: m ? 10 : 12 },
+    groupLabel: {
+      fontFamily: FONTS.mono, fontSize: 10, fontWeight: 700,
+      letterSpacing: "0.22em", textTransform: "uppercase",
+      color: C.pink, flexShrink: 0,
     },
     cards: { display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 320px), 1fr))", gap: 16 },
     card: {
@@ -789,11 +811,24 @@ export default function LandingPage() {
           )}
 
           {filtered.length > 0 ? (
-            <div style={styles.cards}>
-              {filtered.map((app, i) => (
-                <AppCard key={app.key} app={app} delay={i * 60} styles={styles} tilt={fancy} />
-              ))}
-            </div>
+            SECTIONS.map((section) => {
+              const apps = filtered.filter((a) => a.section === section.key);
+              if (apps.length === 0) return null;
+              return (
+                <section key={section.key} style={styles.sectionBlock} aria-label={section.label}>
+                  <div style={styles.groupRow}>
+                    <span style={styles.groupLabel}>{section.label}</span>
+                    <div style={styles.sectionLine} />
+                    <span style={styles.sectionCount}>{apps.length} {apps.length === 1 ? "app" : "apps"}</span>
+                  </div>
+                  <div style={styles.cards}>
+                    {apps.map((app) => (
+                      <AppCard key={app.key} app={app} delay={filtered.indexOf(app) * 60} styles={styles} tilt={fancy} />
+                    ))}
+                  </div>
+                </section>
+              );
+            })
           ) : (
             <div style={styles.emptyState}>
               <p style={styles.emptyTitle}>No applications match “{query}”</p>
