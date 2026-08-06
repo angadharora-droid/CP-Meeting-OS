@@ -98,6 +98,18 @@ const APPS = [
     status: "Live",
     index: "08",
   },
+  {
+    key: "cph-requisitions",
+    short: "RQ",
+    label: "CPH Requisitions",
+    desc: "Raise and track DPR and UPR purchase requisitions — requests, approvals, and procurement status.",
+    href: "https://dpr-upr.centrepointgroup.in/",
+    accent: "#3F37C9",
+    accentRgb: "63,55,201",
+    tags: ["DPR", "UPR", "Procurement"],
+    status: "Live",
+    index: "09",
+  },
 ];
 
 function today() {
