@@ -99,9 +99,9 @@ const APPS = [
     index: "08",
   },
   {
-    key: "dpr-upr",
-    short: "DU",
-    label: "DPR UPR",
+    key: "procurement-model",
+    short: "PM",
+    label: "Procurement Model",
     desc: "Raise and track DPR and UPR purchase requisitions — requests, approvals, and procurement status.",
     href: "https://dpr-upr.centrepointgroup.in/",
     accent: "#3F37C9",
