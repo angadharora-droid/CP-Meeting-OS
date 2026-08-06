@@ -405,7 +405,7 @@ function makeStyles(C, m = false) {
       letterSpacing: "0.22em", textTransform: "uppercase",
       color: C.pink, flexShrink: 0,
     },
-    cards: { display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 320px), 1fr))", gap: 16 },
+    cards: { display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(min(100%, 320px), 1fr))", gap: 16 },
     card: {
       display: "flex", flexDirection: "column",
       borderRadius: 14, border: `0.5px solid ${C.borderMid}`,
