@@ -585,10 +585,13 @@ export default function NewMeetingPage({ app }) {
   const displayCallerOptions = app.isAdmin ? adminCallerOptions : callerOptions
   const callerPerson = displayCallerOptions.find((p) => p.id === app.meetingForm.calledBy)
   const callerName = callerPerson?.name ?? app.user?.name ?? 'Organizer'
-  const meetingHeaders = useMemo(
-    () => [...new Set(app.meetings.map((meeting) => meeting.meetingHeader).filter(Boolean))].sort((a, b) => a.localeCompare(b)),
-    [app.meetings],
-  )
+  const meetingHeaders = useMemo(() => {
+    const names = new Set((app.meetingHeaders || []).map((header) => header?.name).filter(Boolean))
+    app.meetings.forEach((meeting) => {
+      if (meeting.meetingHeader) names.add(meeting.meetingHeader)
+    })
+    return [...names].sort((a, b) => a.localeCompare(b))
+  }, [app.meetingHeaders, app.meetings])
   const filteredMeetingHeaders = useMemo(() => {
     const q = app.meetingForm.meetingHeader.trim().toLowerCase()
     if (!q) return meetingHeaders
