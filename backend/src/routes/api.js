@@ -2,6 +2,7 @@ const express = require('express');
 
 const Person = require('../models/Person');
 const Meeting = require('../models/Meeting');
+const MeetingHeader = require('../models/MeetingHeader');
 const Task = require('../models/Task');
 const PinResetRequest = require('../models/PinResetRequest');
 const User = require('../models/User');
@@ -120,6 +121,72 @@ function escapeRegex(value) {
   return String(value || '').replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
 
+// The header list is the union of headers still referenced by a meeting and
+// headers that exist only as a record. Counts are always over every meeting,
+// never the caller's visible subset, so a manager never sees a header as empty
+// because of meetings they cannot read.
+async function listMeetingHeaders() {
+  const [stats, records] = await Promise.all([
+    Meeting.aggregate([
+      { $match: { meetingHeader: { $nin: ['', null] } } },
+      {
+        $group: {
+          _id: '$meetingHeader',
+          meetingCount: { $sum: 1 },
+          openCount: { $sum: { $cond: [{ $eq: ['$status', 'Open'] }, 1, 0] } },
+          latestDate: { $max: '$date' },
+        },
+      },
+    ]),
+    MeetingHeader.find({}, { _id: 0, name: 1 }).lean(),
+  ]);
+
+  const byName = new Map();
+  stats.forEach((row) => {
+    const name = String(row._id || '').trim();
+    if (!name) return;
+    byName.set(name, {
+      name,
+      meetingCount: row.meetingCount,
+      openCount: row.openCount,
+      latestDate: row.latestDate || '',
+    });
+  });
+  records.forEach((record) => {
+    const name = String(record.name || '').trim();
+    if (!name || byName.has(name)) return;
+    byName.set(name, { name, meetingCount: 0, openCount: 0, latestDate: '' });
+  });
+
+  return [...byName.values()].sort((a, b) => a.name.localeCompare(b.name));
+}
+
+// Resolves a typed name to the existing header it matches case-insensitively,
+// so "ops review" lands in "Ops Review" instead of forking a near-duplicate.
+async function resolveHeaderName(name) {
+  const clean = String(name || '').trim();
+  if (!clean) return '';
+  const headers = await listMeetingHeaders();
+  const match = headers.find((header) => header.name.toLowerCase() === clean.toLowerCase());
+  return match ? match.name : '';
+}
+
+async function countHeaderMeetings(name) {
+  return Meeting.countDocuments({ meetingHeader: String(name || '').trim() });
+}
+
+// Emptying a header must not make it vanish before it can be deleted.
+async function preserveEmptyHeader(name, createdBy = '') {
+  const clean = String(name || '').trim();
+  if (!clean) return;
+  if (await countHeaderMeetings(clean)) return;
+  await MeetingHeader.updateOne(
+    { name: clean },
+    { $setOnInsert: { name: clean, createdBy } },
+    { upsert: true },
+  );
+}
+
 function managerMeetingQuery(user, assignedMeetingIds = []) {
   if (!user || user.role === 'admin') return {};
   const clauses = [
@@ -171,6 +238,12 @@ router.get('/', async (req, res) => {
         .sort({ createdAt: -1 })
         .lean();
       return res.json(meetings);
+    }
+
+    if (action === 'get_meeting_headers') {
+      const user = await getRequestUser(req);
+      if (!user) return res.status(401).json({ ok: false, error: 'Login required' });
+      return res.json(await listMeetingHeaders());
     }
 
     if (action === 'get_action_points') {
@@ -610,7 +683,17 @@ router.post('/', async (req, res) => {
         }
       }
 
+      // Free text here folds into an existing header when it differs only by case.
+      if (update.meetingHeader) {
+        update.meetingHeader = (await resolveHeaderName(update.meetingHeader)) || update.meetingHeader;
+      }
+
       await Meeting.updateOne({ meetingId }, { $set: update }, { upsert: true });
+
+      const previousHeader = String(existing?.meetingHeader || '').trim();
+      if (previousHeader && previousHeader !== update.meetingHeader) {
+        await preserveEmptyHeader(previousHeader);
+      }
 
       // Link the source meeting to its newly created follow-up.
       if (update.followupOfMeetingId) {
@@ -693,6 +776,31 @@ router.post('/', async (req, res) => {
       return res.json({ ok: true });
     }
 
+    if (action === 'create_meeting_header') {
+      const user = await getRequestUser(req);
+      if (!user || user.role !== 'admin') {
+        return res.status(403).json({ ok: false, error: 'Admin access required' });
+      }
+
+      const name = String(req.body?.name || '').trim();
+      if (!name) {
+        return res.status(400).json({ ok: false, error: 'name required' });
+      }
+
+      const existing = await resolveHeaderName(name);
+      if (existing) {
+        return res.status(400).json({ ok: false, error: `Header "${existing}" already exists` });
+      }
+
+      await MeetingHeader.updateOne(
+        { name },
+        { $setOnInsert: { name, createdBy: user.id } },
+        { upsert: true },
+      );
+
+      return res.json({ ok: true, name, headers: await listMeetingHeaders() });
+    }
+
     if (action === 'rename_meeting_header') {
       const user = await getRequestUser(req);
       if (!user || user.role !== 'admin') {
@@ -706,12 +814,32 @@ router.post('/', async (req, res) => {
         return res.status(400).json({ ok: false, error: 'oldHeader and newHeader required' });
       }
 
+      if (oldHeader !== newHeader) {
+        const clash = await resolveHeaderName(newHeader);
+        if (clash && clash.toLowerCase() !== oldHeader.toLowerCase()) {
+          return res.status(400).json({ ok: false, error: `Header "${clash}" already exists` });
+        }
+      }
+
       const result = await Meeting.updateMany(
         { meetingHeader: oldHeader },
         { $set: { meetingHeader: newHeader } },
       );
 
-      return res.json({ ok: true, modifiedCount: result.modifiedCount || 0 });
+      await MeetingHeader.deleteOne({ name: oldHeader });
+      if (!(await countHeaderMeetings(newHeader))) {
+        await MeetingHeader.updateOne(
+          { name: newHeader },
+          { $setOnInsert: { name: newHeader, createdBy: user.id } },
+          { upsert: true },
+        );
+      }
+
+      return res.json({
+        ok: true,
+        modifiedCount: result.modifiedCount || 0,
+        headers: await listMeetingHeaders(),
+      });
     }
 
     if (action === 'delete_meeting_header') {
@@ -725,12 +853,84 @@ router.post('/', async (req, res) => {
         return res.status(400).json({ ok: false, error: 'header required' });
       }
 
-      const result = await Meeting.updateMany(
-        { meetingHeader: header },
-        { $set: { meetingHeader: '' } },
-      );
+      const inUse = await countHeaderMeetings(header);
+      if (inUse) {
+        return res.status(400).json({
+          ok: false,
+          error: `"${header}" still has ${inUse} meeting${inUse === 1 ? '' : 's'}. Move them to another header first.`,
+        });
+      }
 
-      return res.json({ ok: true, modifiedCount: result.modifiedCount || 0 });
+      await MeetingHeader.deleteOne({ name: header });
+      return res.json({ ok: true, headers: await listMeetingHeaders() });
+    }
+
+    if (action === 'move_meeting_header') {
+      const meetingId = String(req.body?.meetingId || '').trim();
+      if (!meetingId) {
+        return res.status(400).json({ ok: false, error: 'meetingId required' });
+      }
+
+      const meeting = await Meeting.findOne({ meetingId }).lean();
+      if (!meeting) {
+        return res.status(404).json({ ok: false, error: 'Meeting not found' });
+      }
+
+      const actor = await getMeetingActor(req, meeting);
+      if (!actor) {
+        return res.status(403).json({ ok: false, error: 'Only the caller or admin can move this meeting' });
+      }
+
+      const requested = String(req.body?.header || '').trim();
+      let header = '';
+      if (requested) {
+        header = await resolveHeaderName(requested);
+        // Only an admin may bring a brand-new header into existence.
+        if (!header && actor.role !== 'admin') {
+          return res.status(400).json({ ok: false, error: 'Header not found' });
+        }
+        if (!header) header = requested;
+      }
+
+      const previousHeader = String(meeting.meetingHeader || '').trim();
+      if (previousHeader === header) {
+        return res.json({ ok: true, header, headers: await listMeetingHeaders() });
+      }
+
+      await Meeting.updateOne({ meetingId }, { $set: { meetingHeader: header } });
+      await preserveEmptyHeader(previousHeader, actor.id);
+
+      return res.json({ ok: true, header, headers: await listMeetingHeaders() });
+    }
+
+    if (action === 'move_all_meetings_to_header') {
+      const user = await getRequestUser(req);
+      if (!user || user.role !== 'admin') {
+        return res.status(403).json({ ok: false, error: 'Admin access required' });
+      }
+
+      const fromHeader = String(req.body?.fromHeader || '').trim();
+      if (!fromHeader) {
+        return res.status(400).json({ ok: false, error: 'fromHeader required' });
+      }
+
+      const requested = String(req.body?.toHeader || '').trim();
+      const toHeader = requested ? (await resolveHeaderName(requested)) || requested : '';
+      if (fromHeader === toHeader) {
+        return res.json({ ok: true, modifiedCount: 0, headers: await listMeetingHeaders() });
+      }
+
+      const result = await Meeting.updateMany(
+        { meetingHeader: fromHeader },
+        { $set: { meetingHeader: toHeader } },
+      );
+      await preserveEmptyHeader(fromHeader, user.id);
+
+      return res.json({
+        ok: true,
+        modifiedCount: result.modifiedCount || 0,
+        headers: await listMeetingHeaders(),
+      });
     }
 
     if (action === 'close_meeting') {
@@ -897,6 +1097,7 @@ router.post('/', async (req, res) => {
 
       await Meeting.deleteOne({ meetingId });
       await Task.deleteMany({ meetingId });
+      await preserveEmptyHeader(meeting.meetingHeader, actor.id);
 
       try {
         if (meeting.googleEventId) {

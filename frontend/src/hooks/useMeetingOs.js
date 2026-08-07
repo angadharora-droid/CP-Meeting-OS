@@ -37,6 +37,7 @@ export function useMeetingOs(navigate, page) {
   const [people, setPeople] = useState([])
   const [managers, setManagers] = useState([])
   const [meetings, setMeetings] = useState([])
+  const [meetingHeaders, setMeetingHeaders] = useState([])
   const [tasks, setTasks] = useState([])
   const [pinResetRequests, setPinResetRequests] = useState([])
 
@@ -104,9 +105,10 @@ export function useMeetingOs(navigate, page) {
 
     async function load() {
       const userParam = user?.id ? `&userId=${encodeURIComponent(user.id)}` : ''
-      const [peopleRes, meetingsRes, tasksRes, usersRes, pinResetRes] = await Promise.all([
+      const [peopleRes, meetingsRes, headersRes, tasksRes, usersRes, pinResetRes] = await Promise.all([
         fetch(`${API}?action=get_people`).then((res) => res.json()).catch(() => []),
         fetch(`${API}?action=get_meetings${userParam}`).then((res) => res.json()).catch(() => []),
+        fetch(`${API}?action=get_meeting_headers${userParam}`).then((res) => res.json()).catch(() => []),
         fetch(`${API}?action=get_action_points${userParam}`).then((res) => res.json()).catch(() => []),
         isAdmin ? fetch(`${API}?action=get_users${userParam}`).then((res) => res.json()).catch(() => []) : Promise.resolve([]),
         isAdmin ? fetch(`${API}?action=get_pin_reset_requests${userParam}`).then((res) => res.json()).catch(() => []) : Promise.resolve([]),
@@ -117,6 +119,7 @@ export function useMeetingOs(navigate, page) {
       setPeople(Array.isArray(peopleRes) ? peopleRes : [])
       setManagers(Array.isArray(usersRes) ? usersRes.filter((item) => item.role === 'manager') : [])
       setMeetings(Array.isArray(meetingsRes) ? meetingsRes : [])
+      setMeetingHeaders(Array.isArray(headersRes) ? headersRes : [])
       setTasks(Array.isArray(tasksRes) ? tasksRes : [])
       setPinResetRequests(Array.isArray(pinResetRes) ? pinResetRes : [])
     }
@@ -612,6 +615,7 @@ export function useMeetingOs(navigate, page) {
     } else {
       setMeetings((current) => [{ ...meeting, noticeText, formText }, ...current])
     }
+    refreshMeetingHeaders()
     setCloseMeetingId(meeting.meetingId)
     setMeetingForm(blankMeeting)
     setEditingMeetingId('')
@@ -1016,7 +1020,40 @@ export function useMeetingOs(navigate, page) {
     }
 
     setMeetings((current) => current.filter((meeting) => meeting.meetingId !== meetingId))
+    refreshMeetingHeaders()
     showToast('Meeting deleted')
+  }
+
+  // Every header mutation returns the recomputed list, so the counts the UI
+  // gates Delete on stay the server's, never a guess from the visible meetings.
+  function applyHeaderList(result) {
+    if (Array.isArray(result?.headers)) setMeetingHeaders(result.headers)
+  }
+
+  async function refreshMeetingHeaders() {
+    const userParam = user?.id ? `&userId=${encodeURIComponent(user.id)}` : ''
+    const headers = await fetch(`${API}?action=get_meeting_headers${userParam}`)
+      .then((res) => res.json())
+      .catch(() => null)
+    if (Array.isArray(headers)) setMeetingHeaders(headers)
+  }
+
+  async function createMeetingHeader(name) {
+    const cleanName = String(name || '').trim()
+    if (!cleanName) {
+      showToast('Header name is required')
+      return false
+    }
+
+    const result = await apiPost({ action: 'create_meeting_header', name: cleanName })
+    if (!result?.ok) {
+      showToast(result?.error || 'Could not create header')
+      return false
+    }
+
+    applyHeaderList(result)
+    showToast('Header created')
+    return true
   }
 
   async function renameMeetingHeader(oldHeader, newHeader) {
@@ -1044,6 +1081,7 @@ export function useMeetingOs(navigate, page) {
         ? { ...meeting, meetingHeader: cleanNew }
         : meeting
     )))
+    applyHeaderList(result)
     showToast('Header renamed')
     return true
   }
@@ -1062,12 +1100,60 @@ export function useMeetingOs(navigate, page) {
       return false
     }
 
+    applyHeaderList(result)
+    showToast('Header deleted')
+    return true
+  }
+
+  async function moveMeetingToHeader(meetingId, header) {
+    const cleanId = String(meetingId || '').trim()
+    if (!cleanId) return false
+    const cleanHeader = String(header || '').trim()
+
+    const result = await apiPost({
+      action: 'move_meeting_header',
+      meetingId: cleanId,
+      header: cleanHeader,
+    })
+
+    if (!result?.ok) {
+      showToast(result?.error || 'Could not move meeting')
+      return false
+    }
+
+    const saved = typeof result.header === 'string' ? result.header : cleanHeader
     setMeetings((current) => current.map((meeting) => (
-      (meeting.meetingHeader || '').trim() === cleanHeader
-        ? { ...meeting, meetingHeader: '' }
+      meeting.meetingId === cleanId ? { ...meeting, meetingHeader: saved } : meeting
+    )))
+    applyHeaderList(result)
+    showToast(saved ? `Moved to ${saved}` : 'Removed from header')
+    return true
+  }
+
+  async function moveAllMeetingsToHeader(fromHeader, toHeader) {
+    const cleanFrom = String(fromHeader || '').trim()
+    if (!cleanFrom) return false
+    const cleanTo = String(toHeader || '').trim()
+    if (cleanFrom === cleanTo) return true
+
+    const result = await apiPost({
+      action: 'move_all_meetings_to_header',
+      fromHeader: cleanFrom,
+      toHeader: cleanTo,
+    })
+
+    if (!result?.ok) {
+      showToast(result?.error || 'Could not move meetings')
+      return false
+    }
+
+    setMeetings((current) => current.map((meeting) => (
+      (meeting.meetingHeader || '').trim() === cleanFrom
+        ? { ...meeting, meetingHeader: cleanTo }
         : meeting
     )))
-    showToast('Header deleted')
+    applyHeaderList(result)
+    showToast(cleanTo ? `Meetings moved to ${cleanTo}` : 'Meetings removed from header')
     return true
   }
 
@@ -1206,8 +1292,13 @@ export function useMeetingOs(navigate, page) {
     postponeMeeting,
     cancelMeeting,
     deleteMeeting,
+    meetingHeaders,
+    refreshMeetingHeaders,
+    createMeetingHeader,
     renameMeetingHeader,
     deleteMeetingHeader,
+    moveMeetingToHeader,
+    moveAllMeetingsToHeader,
     markTask,
     copyText,
     openCalendarLinks,

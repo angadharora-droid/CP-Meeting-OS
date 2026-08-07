@@ -481,7 +481,7 @@ function previewForm(app, meeting) {
   })
 }
 
-function MeetingCard({ meeting, onPreview, onPreviewMom, onPreviewForm, onEdit, onDelete, user }) {
+function MeetingCard({ meeting, onPreview, onPreviewMom, onPreviewForm, onEdit, onDelete, onMoveHeader, user }) {
   const [expanded, setExpanded] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
   const s = STATUS_STYLES[meeting.status] || STATUS_STYLES.Open
@@ -515,7 +515,7 @@ function MeetingCard({ meeting, onPreview, onPreviewMom, onPreviewForm, onEdit, 
             <span className={`px-[10px] py-[4px] text-[9px] uppercase tracking-[0.12em] font-bold rounded-full border ${s.badge}`}>
               {meeting.status}
             </span>
-            {canEdit && (onEdit || onDelete) && (
+            {canEdit && (onEdit || onDelete || onMoveHeader) && (
               <div className="relative">
                 <button
                   type="button"
@@ -526,7 +526,7 @@ function MeetingCard({ meeting, onPreview, onPreviewMom, onPreviewForm, onEdit, 
                   ⋮
                 </button>
                 {menuOpen && (
-                  <div className="absolute right-0 top-[calc(100%+4px)] z-20 grid min-w-[140px] overflow-hidden rounded-xl border border-[#E2E8F0] bg-white shadow-[0_12px_30px_rgba(15,23,42,0.12)]">
+                  <div className="absolute right-0 top-[calc(100%+4px)] z-20 grid min-w-[152px] overflow-hidden rounded-xl border border-[#E2E8F0] bg-white shadow-[0_12px_30px_rgba(15,23,42,0.12)]">
                     {canEdit && onEdit && meeting.status !== 'Closed' && meeting.status !== 'Cancelled' && (
                       <button
                         type="button"
@@ -534,6 +534,15 @@ function MeetingCard({ meeting, onPreview, onPreviewMom, onPreviewForm, onEdit, 
                         onClick={() => { setMenuOpen(false); onEdit(meeting) }}
                       >
                         Edit meeting
+                      </button>
+                    )}
+                    {canEdit && onMoveHeader && (
+                      <button
+                        type="button"
+                        className="px-3 py-2 text-left text-[11px] font-semibold text-[#334155] hover:bg-[#F8FAFC] cursor-pointer"
+                        onClick={() => { setMenuOpen(false); onMoveHeader(meeting) }}
+                      >
+                        Move to header…
                       </button>
                     )}
                     {canEdit && onDelete && (
@@ -754,10 +763,111 @@ function FilterPill({ label, count, active, color, onClick }) {
   )
 }
 
+/* ─── Header names available across the app ──────────────────── */
+function headerNamesFrom(app) {
+  const names = new Set((app.meetingHeaders || []).map((h) => h?.name).filter(Boolean))
+  app.meetings.forEach((m) => {
+    const name = (m.meetingHeader || '').trim()
+    if (name) names.add(name)
+  })
+  return [...names].sort((a, b) => a.localeCompare(b))
+}
+
+/* ─── Header picker ──────────────────────────────────────────── */
+function HeaderPickerDialog({ title, subtitle, headers, currentHeader, allowCreate, onPick, onClose }) {
+  const [query, setQuery] = useState('')
+  const trimmed = query.trim()
+  const filtered = headers.filter((name) => name.toLowerCase().includes(trimmed.toLowerCase()))
+  const exists = headers.some((name) => name.toLowerCase() === trimmed.toLowerCase())
+
+  return (
+    <div
+      className="fixed inset-0 z-50 flex items-start justify-center bg-[#0F172A]/40 p-4 pt-[10vh]"
+      onClick={onClose}
+    >
+      <div
+        className="w-full max-w-[420px] overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-[0_24px_60px_rgba(15,23,42,0.22)]"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="flex items-start justify-between gap-3 border-b border-slate-200 p-4">
+          <div className="min-w-0">
+            <h3 className="m-0 text-[14px] font-semibold tracking-tight text-slate-900">{title}</h3>
+            {subtitle && <p className="m-0 mt-[3px] truncate text-[11px] text-[#64748B]">{subtitle}</p>}
+          </div>
+          <button
+            type="button"
+            className="shrink-0 text-[14px] text-[#94A3B8] hover:text-[#475569] cursor-pointer transition-colors"
+            onClick={onClose}
+            aria-label="Close"
+          >
+            ✕
+          </button>
+        </div>
+
+        <div className="p-3">
+          <input
+            autoFocus
+            className={P.input}
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder={allowCreate ? 'Search or type a new header…' : 'Search headers…'}
+          />
+        </div>
+
+        <div className="max-h-[46vh] overflow-y-auto px-3 pb-3 grid gap-1">
+          <button
+            type="button"
+            className="w-full rounded-lg px-3 py-[10px] text-left text-[12px] font-semibold text-[#64748B] hover:bg-slate-100 cursor-pointer transition-colors"
+            onClick={() => onPick('')}
+          >
+            No header
+            {!currentHeader && <span className="ml-2 text-[9px] uppercase tracking-[0.1em] text-slate-400">Current</span>}
+          </button>
+
+          {filtered.map((name) => (
+            <button
+              key={name}
+              type="button"
+              disabled={name === currentHeader}
+              className={`w-full rounded-lg px-3 py-[10px] text-left text-[12px] font-semibold transition-colors ${
+                name === currentHeader
+                  ? 'text-slate-400 cursor-default bg-slate-50'
+                  : 'text-slate-700 hover:bg-slate-100 cursor-pointer'
+              }`}
+              onClick={() => onPick(name)}
+            >
+              <span className="truncate">{name}</span>
+              {name === currentHeader && <span className="ml-2 text-[9px] uppercase tracking-[0.1em] text-slate-400">Current</span>}
+            </button>
+          ))}
+
+          {allowCreate && trimmed && !exists && (
+            <button
+              type="button"
+              className="w-full rounded-lg border border-dashed border-slate-300 px-3 py-[10px] text-left text-[12px] font-semibold text-slate-700 hover:bg-slate-50 cursor-pointer transition-colors"
+              onClick={() => onPick(trimmed)}
+            >
+              Create “{trimmed}” and move here
+            </button>
+          )}
+
+          {!filtered.length && !(allowCreate && trimmed) && (
+            <p className="m-0 px-3 py-6 text-center text-[11px] text-[#64748B]">
+              {trimmed ? `No headers match “${trimmed}”` : 'No other headers yet'}
+            </p>
+          )}
+        </div>
+      </div>
+    </div>
+  )
+}
+
 /* ─── Meeting Header Group ───────────────────────────────────── */
-function MeetingHeaderGroup({ group, children, canManage, onRename, onDelete }) {
+function MeetingHeaderGroup({ group, children, canManage, hasFilters, onRename, onDelete, onMoveAll }) {
   const [open, setOpen] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
+  // Emptiness is the server's count over every meeting, not the filtered rows.
+  const canDelete = group.meetingCount === 0
 
   function handleRename() {
     const next = window.prompt('Rename meeting header', group.header)
@@ -766,8 +876,13 @@ function MeetingHeaderGroup({ group, children, canManage, onRename, onDelete }) 
     onRename?.(group.header, next)
   }
 
+  function handleMoveAll() {
+    setMenuOpen(false)
+    onMoveAll?.(group.header)
+  }
+
   function handleDelete() {
-    const ok = window.confirm(`Remove header "${group.header}" from ${group.meetings.length} meeting${group.meetings.length === 1 ? '' : 's'}? The meetings will not be deleted.`)
+    const ok = window.confirm(`Delete the empty header "${group.header}"?`)
     if (!ok) return
     setMenuOpen(false)
     onDelete?.(group.header)
@@ -807,9 +922,15 @@ function MeetingHeaderGroup({ group, children, canManage, onRename, onDelete }) 
           {/* Meta */}
           <div className="flex items-center gap-[8px] shrink-0">
             <span className="text-[11px] text-[#64748B] font-mono tabular-nums">
-              {group.meetings.length} {group.meetings.length === 1 ? 'meeting' : 'meetings'}
+              {group.shownCount !== group.meetingCount
+                ? `${group.shownCount} of ${group.meetingCount} meetings`
+                : `${group.meetingCount} ${group.meetingCount === 1 ? 'meeting' : 'meetings'}`}
             </span>
-            {group.openCount > 0 && (
+            {canDelete ? (
+              <span className="px-[9px] py-[3px] rounded-full bg-slate-50 border border-slate-200 text-slate-400 text-[10px] uppercase tracking-[0.1em] font-semibold">
+                Empty
+              </span>
+            ) : group.openCount > 0 && (
               <span className="px-[9px] py-[3px] rounded-full bg-[#334155]/[0.07] border border-[#334155]/[0.15] text-[#334155]/60 text-[10px] uppercase tracking-[0.1em] font-semibold">
                 {group.openCount} open
               </span>
@@ -828,7 +949,7 @@ function MeetingHeaderGroup({ group, children, canManage, onRename, onDelete }) 
               ⋮
             </button>
             {menuOpen && (
-              <div className="absolute right-0 top-[calc(100%+6px)] z-20 grid min-w-[132px] overflow-hidden rounded-xl border border-[#E2E8F0] bg-white shadow-[0_12px_30px_rgba(15,23,42,0.12)]">
+              <div className="absolute right-0 top-[calc(100%+6px)] z-20 grid min-w-[168px] overflow-hidden rounded-xl border border-[#E2E8F0] bg-white shadow-[0_12px_30px_rgba(15,23,42,0.12)]">
                 <button
                   type="button"
                   className="px-3 py-2 text-left text-[11px] font-semibold text-[#334155] hover:bg-[#F8FAFC] cursor-pointer"
@@ -836,13 +957,33 @@ function MeetingHeaderGroup({ group, children, canManage, onRename, onDelete }) 
                 >
                   Rename
                 </button>
+                {group.meetingCount > 0 && (
+                  <button
+                    type="button"
+                    className="px-3 py-2 text-left text-[11px] font-semibold text-[#334155] hover:bg-[#F8FAFC] cursor-pointer"
+                    onClick={handleMoveAll}
+                  >
+                    Move all meetings…
+                  </button>
+                )}
                 <button
                   type="button"
-                  className="px-3 py-2 text-left text-[11px] font-semibold text-red-700 hover:bg-red-50 cursor-pointer"
+                  disabled={!canDelete}
+                  title={canDelete ? 'Delete this empty header' : 'Move its meetings out first'}
+                  className={`px-3 py-2 text-left text-[11px] font-semibold ${
+                    canDelete
+                      ? 'text-red-700 hover:bg-red-50 cursor-pointer'
+                      : 'text-slate-300 cursor-not-allowed'
+                  }`}
                   onClick={handleDelete}
                 >
                   Delete
                 </button>
+                {!canDelete && (
+                  <p className="m-0 border-t border-slate-100 px-3 py-2 text-[9px] leading-[1.5] text-slate-400">
+                    Move its {group.meetingCount} meeting{group.meetingCount === 1 ? '' : 's'} out to delete this header.
+                  </p>
+                )}
               </div>
             )}
           </div>
@@ -852,7 +993,15 @@ function MeetingHeaderGroup({ group, children, canManage, onRename, onDelete }) 
       {/* Indented cards */}
       {open && (
         <div className="grid gap-2 pl-3 sm:pl-[36px]">
-          {children}
+          {group.shownCount > 0 ? children : (
+            <p className="m-0 rounded-xl border border-dashed border-slate-200 px-3 py-4 text-[11px] text-[#64748B]">
+              {group.meetingCount === 0
+                ? 'No meetings under this header yet'
+                : hasFilters
+                  ? 'No meetings under this header match your filters'
+                  : 'The meetings under this header are not visible to your account'}
+            </p>
+          )}
         </div>
       )}
     </div>
@@ -910,7 +1059,7 @@ function toISODate(d) {
 }
 
 /* ─── Bank Tab content ───────────────────────────────────────── */
-function BankTab({ app }) {
+function BankTab({ app, onMoveHeader }) {
   const [fromDate, setFromDate] = useState('')
   const [toDate, setToDate]     = useState('')
 
@@ -1033,6 +1182,7 @@ function BankTab({ app }) {
               onPreviewForm={app.setPreview ? (m) => previewForm(app, m) : null}
               onEdit={app.editMeeting}
               onDelete={app.deleteMeeting}
+              onMoveHeader={onMoveHeader}
             />
           ))}
         </div>
@@ -1053,16 +1203,38 @@ function BankTab({ app }) {
 }
 
 /* ─── Headers Tab content ────────────────────────────────────── */
-function HeadersTab({ app }) {
+function HeadersTab({ app, onMoveHeader }) {
   const [query, setQuery]   = useState('')
   const [filter, setFilter] = useState('all')
+  const [moveAllFrom, setMoveAllFrom] = useState('')
 
   const statusCounts = ['Open', 'Postponed', 'Cancelled', 'Closed'].reduce((acc, s) => {
     acc[s] = app.meetings.filter((m) => m.status === s && (m.meetingHeader || '').trim()).length
     return acc
   }, {})
 
-  const groups = useMemo(() => {
+  const hasFilters = query || filter !== 'all'
+
+  // Server-side totals per header. A header the list doesn't know about (an
+  // unreachable fetch) still shows up from the meetings themselves.
+  const headerStats = useMemo(() => {
+    const byName = new Map()
+    ;(app.meetingHeaders || []).forEach((header) => {
+      if (!header?.name) return
+      byName.set(header.name, {
+        meetingCount: header.meetingCount || 0,
+        openCount:    header.openCount || 0,
+        latestDate:   header.latestDate || '',
+      })
+    })
+    app.meetings.forEach((m) => {
+      const name = (m.meetingHeader || '').trim()
+      if (name && !byName.has(name)) byName.set(name, { meetingCount: 0, openCount: 0, latestDate: '' })
+    })
+    return byName
+  }, [app.meetingHeaders, app.meetings])
+
+  const matchingByHeader = useMemo(() => {
     let source = app.meetings.filter((m) => (m.meetingHeader || '').trim())
     if (filter !== 'all') source = source.filter((m) => m.status === filter)
     if (query.trim()) {
@@ -1078,20 +1250,56 @@ function HeadersTab({ app }) {
       if (!map.has(h)) map.set(h, [])
       map.get(h).push(m)
     })
-    return [...map.entries()].map(([header, meetings]) => ({
-      header,
-      meetings,
-      openCount:  meetings.filter((m) => m.status === 'Open').length,
-      latestDate: meetings.map((m) => m.date).filter(Boolean).sort().at(-1) || '',
-    }))
+    return map
   }, [app.meetings, filter, query, app.user])
 
-  const totalHeadered = app.meetings.filter((m) => (m.meetingHeader || '').trim()).length
-  const hasFilters    = query || filter !== 'all'
-  const totalShown    = groups.reduce((n, g) => n + g.meetings.length, 0)
+  const groups = useMemo(() => {
+    const list = [...headerStats.entries()].map(([header, stat]) => {
+      const meetings = matchingByHeader.get(header) || []
+      return {
+        header,
+        meetings,
+        shownCount:   meetings.length,
+        meetingCount: stat.meetingCount,
+        openCount:    stat.openCount,
+        latestDate:   stat.latestDate,
+      }
+    })
+    // Filters are about meetings, so a header with no match drops out of view.
+    return (hasFilters ? list.filter((g) => g.shownCount) : list)
+      .sort((a, b) => a.header.localeCompare(b.header))
+  }, [headerStats, matchingByHeader, hasFilters])
+
+  const headerNames    = useMemo(() => headerNamesFrom(app), [app.meetingHeaders, app.meetings]) // eslint-disable-line react-hooks/exhaustive-deps
+  const totalShown     = groups.reduce((n, g) => n + g.shownCount, 0)
+  const emptyCount     = groups.filter((g) => g.meetingCount === 0).length
+  const totalHeadered  = app.meetings.filter((m) => (m.meetingHeader || '').trim()).length
+
+  function handleCreateHeader() {
+    const name = window.prompt('New meeting header')
+    if (name === null) return
+    app.createMeetingHeader?.(name)
+  }
 
   return (
     <div className="grid gap-4">
+
+      {/* Create */}
+      {app.isAdmin && (
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <p className="m-0 text-[11px] text-[#64748B]">
+            <span className="text-[#475569]">{groups.length}</span> header{groups.length !== 1 ? 's' : ''}
+            {emptyCount > 0 && !hasFilters && <span className="text-slate-400"> · {emptyCount} empty</span>}
+          </p>
+          <button
+            type="button"
+            onClick={handleCreateHeader}
+            className="shrink-0 min-h-[36px] px-4 py-2 rounded-xl bg-white text-[#334155] border border-[#CBD5E1] text-[10px] tracking-[0.08em] uppercase cursor-pointer transition-colors hover:bg-[#F8FAFC] hover:border-[#94A3B8] font-semibold"
+          >
+            New header
+          </button>
+        </div>
+      )}
 
       {/* Status filter pills */}
       <div className="flex gap-2 flex-wrap">
@@ -1137,8 +1345,10 @@ function HeadersTab({ app }) {
               key={group.header}
               group={group}
               canManage={app.isAdmin}
+              hasFilters={Boolean(hasFilters)}
               onRename={app.renameMeetingHeader}
               onDelete={app.deleteMeetingHeader}
+              onMoveAll={setMoveAllFrom}
             >
               {group.meetings.map((meeting) => (
                 <MeetingCard key={meeting.meetingId} meeting={{
@@ -1150,6 +1360,7 @@ function HeadersTab({ app }) {
                   onPreviewForm={app.setPreview ? (m) => previewForm(app, m) : null}
                   onEdit={app.editMeeting}
                   onDelete={app.deleteMeeting}
+                  onMoveHeader={onMoveHeader}
                 />
               ))}
             </MeetingHeaderGroup>
@@ -1159,7 +1370,7 @@ function HeadersTab({ app }) {
         <div className="py-14 px-4 border border-dashed border-[#E2E8F0] rounded-2xl text-center">
           <div className="text-[32px] mb-3 opacity-20 select-none">◎</div>
           <p className="m-0 text-[#64748B] text-[12px] leading-[1.6]">
-            {hasFilters ? 'No meetings match your filters' : 'No meetings have been assigned to a header yet'}
+            {hasFilters ? 'No meetings match your filters' : 'No headers yet'}
           </p>
           {hasFilters && (
             <button className="mt-4 px-4 py-[7px] rounded-xl border border-[#E2E8F0] text-[10.5px] text-[#64748B] uppercase tracking-[0.1em] cursor-pointer hover:border-[#E2E8F0] hover:text-[#475569] transition-all"
@@ -1169,6 +1380,22 @@ function HeadersTab({ app }) {
           )}
         </div>
       )}
+
+      {moveAllFrom && (
+        <HeaderPickerDialog
+          title="Move all meetings"
+          subtitle={`From “${moveAllFrom}”`}
+          headers={headerNames.filter((name) => name !== moveAllFrom)}
+          currentHeader={moveAllFrom}
+          allowCreate={app.isAdmin}
+          onClose={() => setMoveAllFrom('')}
+          onPick={(name) => {
+            const from = moveAllFrom
+            setMoveAllFrom('')
+            app.moveAllMeetingsToHeader?.(from, name)
+          }}
+        />
+      )}
     </div>
   )
 }
@@ -1176,8 +1403,10 @@ function HeadersTab({ app }) {
 /* ─── Bank Page (tabbed) ─────────────────────────────────────── */
 export default function BankPage({ app }) {
   const [activeTab, setActiveTab] = useState('bank')
+  const [movingMeeting, setMovingMeeting] = useState(null)
 
-  const totalHeadered = app.meetings.filter((m) => (m.meetingHeader || '').trim()).length
+  const headerCount = useMemo(() => headerNamesFrom(app).length, [app.meetingHeaders, app.meetings]) // eslint-disable-line react-hooks/exhaustive-deps
+  const headerNames = useMemo(() => headerNamesFrom(app), [app.meetingHeaders, app.meetings]) // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <section className="grid gap-4">
@@ -1194,7 +1423,7 @@ export default function BankPage({ app }) {
           </h1>
         </div>
         <div className="shrink-0 px-3 py-[6px] text-[10px] uppercase tracking-[0.12em] rounded-full text-slate-500 bg-slate-50 border border-slate-200 font-mono">
-          {activeTab === 'bank' ? app.meetings.length : totalHeadered} total
+          {activeTab === 'bank' ? app.meetings.length : headerCount} total
         </div>
       </div>
 
@@ -1203,14 +1432,30 @@ export default function BankPage({ app }) {
         active={activeTab}
         onChange={setActiveTab}
         bankCount={app.meetings.length}
-        headerCount={totalHeadered}
+        headerCount={headerCount}
       />
 
       {/* ── Tab content ── */}
       {activeTab === 'bank'
-        ? <BankTab app={app} />
-        : <HeadersTab app={app} />
+        ? <BankTab app={app} onMoveHeader={setMovingMeeting} />
+        : <HeadersTab app={app} onMoveHeader={setMovingMeeting} />
       }
+
+      {movingMeeting && (
+        <HeaderPickerDialog
+          title="Move to header"
+          subtitle={movingMeeting.title}
+          headers={headerNames}
+          currentHeader={(movingMeeting.meetingHeader || '').trim()}
+          allowCreate={app.isAdmin}
+          onClose={() => setMovingMeeting(null)}
+          onPick={(name) => {
+            const meetingId = movingMeeting.meetingId
+            setMovingMeeting(null)
+            app.moveMeetingToHeader?.(meetingId, name)
+          }}
+        />
+      )}
 
     </section>
   )
