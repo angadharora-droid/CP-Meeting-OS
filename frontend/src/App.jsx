@@ -40,21 +40,26 @@ function parseAgendaForm(content) {
     const line = rawLine.trim()
     if (!line || /^[-=]{3,}$/.test(line)) return
 
-    if (line.startsWith('Meeting Header')) {
-      meta.header = readValue('Meeting Header', line)
-      return
-    }
-    if (line.startsWith('Meeting Title')) {
-      meta.title = readValue('Meeting Title', line)
-      return
-    }
-    if (line.startsWith('Date')) {
-      meta.date = readValue('Date', line)
-      return
-    }
-    if (line.startsWith('Time')) {
-      meta.time = readValue('Time', line)
-      return
+    // Meta labels only count before the first topic starts, and only as
+    // real "Label : value" lines — agenda content like "Date of Increment"
+    // must not be mistaken for the Date header.
+    if (!current) {
+      if (/^Meeting Header\s*:/.test(line)) {
+        meta.header = readValue('Meeting Header', line)
+        return
+      }
+      if (/^Meeting Title\s*:/.test(line)) {
+        meta.title = readValue('Meeting Title', line)
+        return
+      }
+      if (/^Date\s*:/.test(line)) {
+        meta.date = readValue('Date', line)
+        return
+      }
+      if (/^Time\s*:/.test(line)) {
+        meta.time = readValue('Time', line)
+        return
+      }
     }
 
     const topicMatch = line.match(/^(\d+)([.)])\s+(.+)$/)
