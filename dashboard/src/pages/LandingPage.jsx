@@ -89,6 +89,19 @@ const APPS = [
     index: "06",
   },
   {
+    key: "cpa-controller",
+    section: "outlets",
+    short: "BC",
+    label: "CPA Budget & Purchase Control",
+    desc: "Control CPA budgets and purchases — budget allocations, purchase approvals, and spend tracking against plan.",
+    href: "https://cpa-controller.centrepointgroup.in/",
+    accent: "#4F0BAB",
+    accentRgb: "79,11,171",
+    tags: ["Budget", "Purchase", "Control"],
+    status: "Live",
+    index: "07",
+  },
+  {
     key: "mickys-crm",
     section: "outlets",
     short: "MC",
@@ -99,7 +112,7 @@ const APPS = [
     accentRgb: "72,12,168",
     tags: ["CRM", "Sales", "Clients"],
     status: "Live",
-    index: "07",
+    index: "08",
   },
   {
     key: "purosoul",
@@ -112,7 +125,7 @@ const APPS = [
     accentRgb: "58,12,163",
     tags: ["Spa", "Wellness", "Guests"],
     status: "Live",
-    index: "08",
+    index: "09",
   },
   {
     key: "purosoul-cash",
@@ -125,7 +138,7 @@ const APPS = [
     accentRgb: "63,55,201",
     tags: ["Cash", "Daily", "Finance"],
     status: "Live",
-    index: "09",
+    index: "10",
   },
   {
     key: "hr-recruitment",
@@ -138,7 +151,7 @@ const APPS = [
     accentRgb: "67,97,238",
     tags: ["Recruitment", "Positions", "Hiring"],
     status: "Live",
-    index: "10",
+    index: "11",
   },
   {
     key: "interview",
@@ -151,7 +164,7 @@ const APPS = [
     accentRgb: "58,111,224",
     tags: ["Interviews", "Candidates", "Feedback"],
     status: "Live",
-    index: "11",
+    index: "12",
   },
   {
     key: "careers",
@@ -164,7 +177,7 @@ const APPS = [
     accentRgb: "47,127,216",
     tags: ["Jobs", "Openings", "Apply"],
     status: "Live",
-    index: "12",
+    index: "13",
   },
   {
     key: "executive-scheduler",
@@ -177,7 +190,7 @@ const APPS = [
     accentRgb: "37,137,201",
     tags: ["Calendar", "Schedule", "Executive"],
     status: "Live",
-    index: "13",
+    index: "14",
   },
 ];
 
