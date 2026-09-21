@@ -36,9 +36,10 @@
 
 /* ─── Interaction states (inline styles can't express these) ─────────────── */
 
-.app-card:focus-visible {
+/* Inset: the card clips overflow, so an outset ring on the link would be cut off */
+.app-card-link:focus-visible {
   outline: 2px solid #C2006E;
-  outline-offset: 3px;
+  outline-offset: -2px;
 }
 
 .app-card .launch-arrow {
@@ -47,8 +48,33 @@
 }
 
 .app-card:hover .launch-arrow,
-.app-card:focus-visible .launch-arrow {
+.app-card-link:focus-visible .launch-arrow {
   transform: translateX(4px);
+}
+
+/* Favourite star — always shown on touch; on desktop it stays faint until the card is hovered */
+.fav-btn {
+  transition: opacity 0.2s, color 0.2s, transform 0.2s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.fav-btn:hover {
+  color: #C2006E !important;
+  transform: scale(1.15);
+}
+
+.fav-btn:focus-visible {
+  outline: 2px solid #C2006E;
+  outline-offset: -2px;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .fav-btn { opacity: 0.35; }
+
+  .app-card:hover .fav-btn,
+  .fav-btn:focus-visible,
+  .fav-btn[aria-pressed="true"] {
+    opacity: 1;
+  }
 }
 
 .theme-btn:hover,

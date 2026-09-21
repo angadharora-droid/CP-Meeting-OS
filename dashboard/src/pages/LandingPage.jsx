@@ -206,6 +206,18 @@ function today() {
 const CELL = 36;
 const GLOW_R = 260;
 const THEME_KEY = "cpg-theme";
+const FAV_KEY = "cpg-favourites";
+
+// No login on the portal — favourites live in this browser only
+function loadFavs() {
+  try {
+    const stored = JSON.parse(localStorage.getItem(FAV_KEY) || "[]");
+    if (!Array.isArray(stored)) return [];
+    return stored.filter((k) => APPS.some((a) => a.key === k));
+  } catch { /* private mode / corrupt value */
+    return [];
+  }
+}
 
 const lerp = (a, b, t) => a + (b - a) * t;
 
@@ -479,20 +491,34 @@ function makeStyles(C, m = false) {
       background: C.cardBg,
       boxShadow: C.cardShadow,
       backdropFilter: "blur(32px)", WebkitBackdropFilter: "blur(32px)",
-      padding: m ? "12px 14px 10px" : "14px 16px 12px", position: "relative",
-      textDecoration: "none", color: C.txt,
+      position: "relative", color: C.txt,
       transition: "border-color 0.35s, transform 0.4s cubic-bezier(0.23,1,0.32,1), box-shadow 0.3s",
-      cursor: "pointer", transformStyle: "preserve-3d",
+      transformStyle: "preserve-3d",
       willChange: "transform", overflow: "hidden",
       animation: "cardReveal 0.6s cubic-bezier(0.23,1,0.32,1) both",
     },
+    cardLink: {
+      display: "flex", flexDirection: "column", flex: 1,
+      padding: m ? "12px 14px 10px" : "14px 16px 12px",
+      borderRadius: "inherit",
+      textDecoration: "none", color: "inherit", cursor: "pointer",
+    },
+    favBtn: {
+      position: "absolute", top: m ? 3 : 8, right: m ? 4 : 8,
+      width: m ? 36 : 30, height: m ? 36 : 30, padding: 0, borderRadius: 8,
+      display: "flex", alignItems: "center", justifyContent: "center",
+      border: "none", background: "transparent",
+      color: C.faint, cursor: "pointer",
+    },
+    favBtnActive: { color: C.pink },
     cardGlow: { position: "absolute", inset: 0, opacity: 0, transition: "opacity 0.4s", pointerEvents: "none", borderRadius: "inherit" },
     cardEdge: {
       position: "absolute", top: 0, left: "15%", right: "15%", height: "0.5px",
       background: `linear-gradient(90deg, transparent, ${C.cardEdge}, transparent)`,
       pointerEvents: "none",
     },
-    cardHead: { display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: m ? 8 : 10 },
+    // paddingRight leaves room for the favourite star, which sits outside the link
+    cardHead: { display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: m ? 8 : 10, paddingRight: 24 },
     indexBadge: {
       fontFamily: FONTS.mono, fontSize: 9, fontWeight: 700, letterSpacing: "0.08em",
       padding: "2px 6px", borderRadius: 5, border: "0.5px solid", background: C.badgeBg,
@@ -578,6 +604,14 @@ function MoonIcon() {
   );
 }
 
+function StarIcon({ filled }) {
+  return (
+    <svg width="15" height="15" viewBox="0 0 24 24" fill={filled ? "currentColor" : "none"} stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <path d="M12 2.5l2.95 5.98 6.6.96-4.78 4.65 1.13 6.57L12 17.56l-5.9 3.1 1.13-6.57L2.45 9.44l6.6-.96L12 2.5z" />
+    </svg>
+  );
+}
+
 function SearchIcon() {
   return (
     <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" style={{ flexShrink: 0 }}>
@@ -609,6 +643,7 @@ export default function LandingPage() {
   const [mounted, setMounted] = useState(false);
   const [query, setQuery]     = useState("");
   const [activeSection, setActiveSection] = useState("all");
+  const [favs, setFavs]       = useState(loadFavs);
   const [isDark, setIsDark]   = useState(() => {
     if (typeof window === "undefined") return true;
     try {
@@ -643,6 +678,16 @@ export default function LandingPage() {
     () => (activeSection === "all" ? filtered : filtered.filter((a) => a.section === activeSection)),
     [filtered, activeSection]
   );
+  // Favourites follow the same search + section filter as everything else
+  const favApps = useMemo(() => visible.filter((a) => favs.includes(a.key)), [visible, favs]);
+
+  const toggleFav = useCallback((key) => {
+    setFavs((prev) => {
+      const next = prev.includes(key) ? prev.filter((k) => k !== key) : [...prev, key];
+      try { localStorage.setItem(FAV_KEY, JSON.stringify(next)); } catch { /* private mode */ }
+      return next;
+    });
+  }, []);
 
   const toggleTheme = () => {
     setIsDark((d) => {
@@ -913,24 +958,40 @@ export default function LandingPage() {
           </div>
 
           {visible.length > 0 ? (
-            SECTIONS.map((section) => {
-              const apps = visible.filter((a) => a.section === section.key);
-              if (apps.length === 0) return null;
-              return (
-                <section key={section.key} style={styles.sectionBlock} aria-label={section.label}>
+            <>
+              {favApps.length > 0 && (
+                <section style={styles.sectionBlock} aria-label="Favourites">
                   <div style={styles.groupRow}>
-                    <span style={styles.groupLabel}>{section.label}</span>
+                    <span style={styles.groupLabel}>★ Favourites</span>
                     <div style={styles.sectionLine} />
-                    <span style={styles.sectionCount}>{apps.length} {apps.length === 1 ? "app" : "apps"}</span>
+                    <span style={styles.sectionCount}>{favApps.length} {favApps.length === 1 ? "app" : "apps"}</span>
                   </div>
                   <div style={styles.cards}>
-                    {apps.map((app) => (
-                      <AppCard key={app.key} app={app} delay={visible.indexOf(app) * 60} styles={styles} tilt={fancy} />
+                    {favApps.map((app, i) => (
+                      <AppCard key={app.key} app={app} delay={i * 60} styles={styles} tilt={fancy} isFav onToggleFav={toggleFav} />
                     ))}
                   </div>
                 </section>
-              );
-            })
+              )}
+              {SECTIONS.map((section) => {
+                const apps = visible.filter((a) => a.section === section.key);
+                if (apps.length === 0) return null;
+                return (
+                  <section key={section.key} style={styles.sectionBlock} aria-label={section.label}>
+                    <div style={styles.groupRow}>
+                      <span style={styles.groupLabel}>{section.label}</span>
+                      <div style={styles.sectionLine} />
+                      <span style={styles.sectionCount}>{apps.length} {apps.length === 1 ? "app" : "apps"}</span>
+                    </div>
+                    <div style={styles.cards}>
+                      {apps.map((app) => (
+                        <AppCard key={app.key} app={app} delay={visible.indexOf(app) * 60} styles={styles} tilt={fancy} isFav={favs.includes(app.key)} onToggleFav={toggleFav} />
+                      ))}
+                    </div>
+                  </section>
+                );
+              })}
+            </>
           ) : (
             <div style={styles.emptyState}>
               <p style={styles.emptyTitle}>No applications match “{query}”{activeSection !== "all" ? ` in ${SECTIONS.find((s) => s.key === activeSection)?.label}` : ""}</p>
@@ -1001,7 +1062,7 @@ function SearchBox({ inputRef, query, setQuery, styles, showHint = false }) {
 }
 
 /* ─── AppCard ────────────────────────────────────────────────────────────────── */
-function AppCard({ app, delay, styles, tilt }) {
+function AppCard({ app, delay, styles, tilt, isFav, onToggleFav }) {
   const cardRef = useRef(null);
   const glowRef = useRef(null);
   const { accent, accentRgb } = app;
@@ -1033,43 +1094,61 @@ function AppCard({ app, delay, styles, tilt }) {
   };
 
   return (
-    <a
+    <div
       ref={cardRef}
-      href={app.href}
       className="app-card"
       style={{ ...styles.card, animationDelay: `${delay}ms` }}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
-      aria-label={`Open ${app.label} — ${app.desc}`}
     >
       <div ref={glowRef} style={styles.cardGlow} />
       <div style={styles.cardEdge} />
 
-      <div style={styles.cardHead}>
-        <div style={{ ...styles.indexBadge, color: accent, borderColor: `rgba(${accentRgb},0.2)` }}>{app.index}</div>
-        <div style={{ ...styles.livePill, color: accent, background: `rgba(${accentRgb},0.1)`, borderColor: `rgba(${accentRgb},0.25)` }}>
-          <span style={{ ...styles.liveDot, background: accent }} />{app.status}
+      <a
+        href={app.href}
+        className="app-card-link"
+        style={styles.cardLink}
+        aria-label={`Open ${app.label} — ${app.desc}`}
+      >
+        <div style={styles.cardHead}>
+          <div style={{ ...styles.indexBadge, color: accent, borderColor: `rgba(${accentRgb},0.2)` }}>{app.index}</div>
+          <div style={{ ...styles.livePill, color: accent, background: `rgba(${accentRgb},0.1)`, borderColor: `rgba(${accentRgb},0.25)` }}>
+            <span style={{ ...styles.liveDot, background: accent }} />{app.status}
+          </div>
         </div>
-      </div>
 
-      <div style={styles.cardBody}>
-        <div style={{ ...styles.iconBox, background: `rgba(${accentRgb},0.1)`, borderColor: `rgba(${accentRgb},0.2)` }}>
-          <span style={{ ...styles.iconText, color: accent }}>{app.short}</span>
+        <div style={styles.cardBody}>
+          <div style={{ ...styles.iconBox, background: `rgba(${accentRgb},0.1)`, borderColor: `rgba(${accentRgb},0.2)` }}>
+            <span style={{ ...styles.iconText, color: accent }}>{app.short}</span>
+          </div>
+          <div style={styles.cardContent}>
+            <h2 style={styles.cardTitle}>{app.label}</h2>
+            <div style={styles.cardDesc}>{app.desc}</div>
+          </div>
         </div>
-        <div style={styles.cardContent}>
-          <h2 style={styles.cardTitle}>{app.label}</h2>
-          <div style={styles.cardDesc}>{app.desc}</div>
-        </div>
-      </div>
 
-      <div style={styles.cardFoot}>
-        <div style={styles.tags}>
-          {app.tags.map((tag) => <span key={tag} style={styles.tag}>{tag}</span>)}
+        <div style={styles.cardFoot}>
+          <div style={styles.tags}>
+            {app.tags.map((tag) => <span key={tag} style={styles.tag}>{tag}</span>)}
+          </div>
+          <div style={{ ...styles.launchBtn, borderColor: `rgba(${accentRgb},0.3)`, color: accent }}>
+            <span>Open</span><span className="launch-arrow" style={styles.launchArrow}>→</span>
+          </div>
         </div>
-        <div style={{ ...styles.launchBtn, borderColor: `rgba(${accentRgb},0.3)`, color: accent }}>
-          <span>Open</span><span className="launch-arrow" style={styles.launchArrow}>→</span>
-        </div>
-      </div>
-    </a>
+      </a>
+
+      {/* Sibling of the link, not a child — a button inside an <a> is invalid and opens the app on click */}
+      <button
+        type="button"
+        className="fav-btn"
+        style={{ ...styles.favBtn, ...(isFav ? styles.favBtnActive : {}) }}
+        onClick={() => onToggleFav(app.key)}
+        aria-pressed={isFav}
+        aria-label={isFav ? `Remove ${app.label} from favourites` : `Add ${app.label} to favourites`}
+        title={isFav ? "Remove from favourites" : "Add to favourites"}
+      >
+        <StarIcon filled={isFav} />
+      </button>
+    </div>
   );
 }
