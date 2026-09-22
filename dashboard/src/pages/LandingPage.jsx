@@ -1,5 +1,7 @@
 import { useEffect, useRef, useCallback, useState, useMemo } from "react";
 import cpgLogo from "../assets/cpg-logo.png";
+import { authApi, authEnabled } from "../lib/auth";
+import AdminPanel from "./AdminPanel.jsx";
 
 const SECTIONS = [
   { key: "admin", label: "Admin" },
@@ -208,7 +210,7 @@ const GLOW_R = 260;
 const THEME_KEY = "cpg-theme";
 const FAV_KEY = "cpg-favourites";
 
-// No login on the portal — favourites live in this browser only
+// Favourites live in this browser; once signed in they also follow the account
 function loadFavs() {
   try {
     const stored = JSON.parse(localStorage.getItem(FAV_KEY) || "[]");
@@ -220,6 +222,15 @@ function loadFavs() {
 }
 
 const lerp = (a, b, t) => a + (b - a) * t;
+
+function initials(name) {
+  return String(name || "")
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((part) => part[0].toUpperCase())
+    .join("") || "?";
+}
 
 const FONTS = {
   display: "'Syne', sans-serif",
@@ -391,6 +402,78 @@ function makeStyles(C, m = false) {
       flexShrink: 0,
       padding: 0,
     },
+    navBtn: {
+      display: "flex", alignItems: "center", gap: 6,
+      height: 38, padding: "0 14px", borderRadius: 10,
+      border: `0.5px solid ${C.border}`, background: C.surface, color: C.txt,
+      fontFamily: FONTS.body, fontSize: 12, fontWeight: 600, cursor: "pointer",
+      whiteSpace: "nowrap", flexShrink: 0,
+      transition: "background 0.2s, border-color 0.2s, color 0.2s",
+    },
+    navBtnAccent: {
+      border: "0.5px solid rgba(194,0,110,0.35)", background: "rgba(194,0,110,0.09)", color: C.pink,
+    },
+    userChip: {
+      display: "flex", alignItems: "center", gap: 8,
+      height: 38, padding: m ? "0 8px" : "0 12px", borderRadius: 10,
+      border: `0.5px solid ${C.border}`, background: C.surface, color: C.txt,
+      fontFamily: FONTS.body, fontSize: 12, fontWeight: 600, cursor: "pointer", flexShrink: 0,
+    },
+    userAvatar: {
+      width: 22, height: 22, borderRadius: 6, background: C.pink, color: "#fff",
+      display: "flex", alignItems: "center", justifyContent: "center",
+      fontFamily: FONTS.mono, fontSize: 10, fontWeight: 700, flexShrink: 0,
+    },
+    userMenu: {
+      position: "absolute", top: "calc(100% + 8px)", right: 0, minWidth: 210,
+      background: C.bg, border: `0.5px solid ${C.borderMid}`, borderRadius: 12,
+      boxShadow: "0 12px 40px rgba(0,0,0,0.25)", padding: 6, zIndex: 20,
+      display: "flex", flexDirection: "column", gap: 2,
+    },
+    userMenuItem: {
+      textAlign: "left", background: "transparent", border: "none", color: C.txt,
+      fontFamily: FONTS.body, fontSize: 13, padding: "9px 10px", borderRadius: 8, cursor: "pointer",
+    },
+    userMenuMeta: {
+      fontFamily: FONTS.mono, fontSize: 10, color: C.faint, padding: "6px 10px 8px", letterSpacing: "0.06em",
+      borderBottom: `0.5px solid ${C.border}`, marginBottom: 4,
+    },
+    overlay: {
+      position: "fixed", inset: 0, zIndex: 50, background: "rgba(0,0,0,0.55)",
+      backdropFilter: "blur(6px)", WebkitBackdropFilter: "blur(6px)",
+      display: "flex", alignItems: "center", justifyContent: "center", padding: 16,
+    },
+    dialog: {
+      width: "100%", maxWidth: 400, background: C.bg, color: C.txt,
+      border: `0.5px solid ${C.borderMid}`, borderRadius: 16, padding: m ? 20 : 26,
+      boxShadow: "0 24px 80px rgba(0,0,0,0.35)", display: "flex", flexDirection: "column", gap: 14,
+      margin: 0,
+    },
+    dialogTitle: { fontFamily: FONTS.display, fontSize: 20, fontWeight: 800, letterSpacing: "-0.02em", margin: 0 },
+    dialogSub: { fontFamily: FONTS.body, fontSize: 13, color: C.muted, margin: 0 },
+    field: { display: "flex", flexDirection: "column", gap: 6 },
+    fieldLabel: { fontFamily: FONTS.mono, fontSize: 10, letterSpacing: "0.14em", textTransform: "uppercase", color: C.faint },
+    input: {
+      height: 42, padding: "0 12px", borderRadius: 10, border: `0.5px solid ${C.borderMid}`,
+      background: C.surface, color: C.txt, fontFamily: FONTS.body, fontSize: 14, outline: "none",
+    },
+    formError: { fontFamily: FONTS.body, fontSize: 12, color: "#E5484D", margin: 0 },
+    primaryBtn: {
+      height: 42, borderRadius: 10, border: "none", background: C.pink, color: "#fff",
+      fontFamily: FONTS.body, fontSize: 14, fontWeight: 700, cursor: "pointer",
+    },
+    ghostBtn: {
+      height: 42, borderRadius: 10, border: `0.5px solid ${C.border}`, background: "transparent",
+      color: C.muted, fontFamily: FONTS.body, fontSize: 14, cursor: "pointer",
+    },
+    dialogRow: { display: "flex", gap: 10 },
+    radioRow: { display: "flex", gap: 8 },
+    radioBtn: {
+      flex: 1, height: 38, borderRadius: 10, border: `0.5px solid ${C.border}`, background: C.surface,
+      color: C.muted, fontFamily: FONTS.body, fontSize: 13, cursor: "pointer",
+    },
+    radioBtnActive: { border: "0.5px solid rgba(194,0,110,0.45)", background: "rgba(194,0,110,0.1)", color: C.pink, fontWeight: 700 },
+    inlineNote: { fontFamily: FONTS.body, fontSize: 13, color: C.faint, margin: "4px 0 0" },
     main: {
       flex: 1, minHeight: 0, padding: m ? "20px 16px 28px" : "28px 28px 28px",
       maxWidth: 1440, margin: "0 auto",
@@ -644,6 +727,15 @@ export default function LandingPage() {
   const [query, setQuery]     = useState("");
   const [activeSection, setActiveSection] = useState("all");
   const [favs, setFavs]       = useState(loadFavs);
+  const favsRef = useRef(favs);
+  // Central sign-on: { user, links, prefs } once signed in, null otherwise
+  const [session, setSession]     = useState(null);
+  const sessionRef = useRef(null);
+  const [authReady, setAuthReady] = useState(!authEnabled);
+  const [loginOpen, setLoginOpen]   = useState(false);
+  const [secretOpen, setSecretOpen] = useState(false);
+  const [menuOpen, setMenuOpen]     = useState(false);
+  const [adminOpen, setAdminOpen]   = useState(false);
   const [isDark, setIsDark]   = useState(() => {
     if (typeof window === "undefined") return true;
     try {
@@ -681,12 +773,76 @@ export default function LandingPage() {
   // Favourites follow the same search + section filter as everything else
   const favApps = useMemo(() => visible.filter((a) => favs.includes(a.key)), [visible, favs]);
 
+  useEffect(() => { favsRef.current = favs; }, [favs]);
+  useEffect(() => { sessionRef.current = session; }, [session]);
+
   const toggleFav = useCallback((key) => {
-    setFavs((prev) => {
-      const next = prev.includes(key) ? prev.filter((k) => k !== key) : [...prev, key];
-      try { localStorage.setItem(FAV_KEY, JSON.stringify(next)); } catch { /* private mode */ }
-      return next;
-    });
+    const prev = favsRef.current;
+    const next = prev.includes(key) ? prev.filter((k) => k !== key) : [...prev, key];
+    favsRef.current = next;
+    setFavs(next);
+    try { localStorage.setItem(FAV_KEY, JSON.stringify(next)); } catch { /* private mode */ }
+    if (sessionRef.current) authApi.savePrefs({ favourites: next }).catch(() => {});
+  }, []);
+
+  // ── Central sign-on ──────────────────────────────────────────────────────────
+  const applySession = useCallback((data) => {
+    if (!data?.ok) return;
+    setSession(data);
+    const serverFavs = Array.isArray(data.prefs?.favourites)
+      ? data.prefs.favourites.filter((k) => APPS.some((a) => a.key === k))
+      : [];
+    if (serverFavs.length) {
+      favsRef.current = serverFavs;
+      setFavs(serverFavs);
+      try { localStorage.setItem(FAV_KEY, JSON.stringify(serverFavs)); } catch { /* private mode */ }
+    } else if (favsRef.current.length) {
+      // First sign-in from this browser: carry its favourites over to the account
+      authApi.savePrefs({ favourites: favsRef.current }).catch(() => {});
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!authEnabled) return undefined;
+    let cancelled = false;
+    authApi.me()
+      .then((data) => { if (!cancelled) applySession(data); })
+      .catch(() => { /* not signed in */ })
+      .finally(() => { if (!cancelled) setAuthReady(true); });
+    return () => { cancelled = true; };
+  }, [applySession]);
+
+  useEffect(() => {
+    if (!menuOpen) return undefined;
+    const close = () => setMenuOpen(false);
+    window.addEventListener("click", close);
+    return () => window.removeEventListener("click", close);
+  }, [menuOpen]);
+
+  const signOut = useCallback(async () => {
+    setMenuOpen(false);
+    setAdminOpen(false);
+    try { await authApi.logout(); } catch { /* cookie may already be gone */ }
+    setSession(null);
+  }, []);
+
+  const linkedKeys = useMemo(() => new Set((session?.links || []).map((l) => l.app)), [session]);
+  const linkedApps = useMemo(() => visible.filter((a) => linkedKeys.has(a.key)), [visible, linkedKeys]);
+  const recentApps = useMemo(() => {
+    const recents = session?.prefs?.recents || [];
+    return recents.map((r) => visible.find((a) => a.key === r.app)).filter(Boolean).slice(0, 8);
+  }, [session, visible]);
+
+  // Remember which app was opened; keepalive lets the save finish while the page navigates away
+  const recordOpen = useCallback((key) => {
+    const current = sessionRef.current;
+    if (!current) return;
+    const next = [
+      { app: key, at: new Date().toISOString() },
+      ...(current.prefs?.recents || []).filter((r) => r.app !== key),
+    ].slice(0, 10);
+    setSession((s) => (s ? { ...s, prefs: { ...s.prefs, recents: next } } : s));
+    authApi.savePrefs({ recents: next }, true).catch(() => {});
   }, []);
 
   const toggleTheme = () => {
@@ -888,6 +1044,46 @@ export default function LandingPage() {
                   <div style={styles.dateTag}>{today()}</div>
                 </>
               )}
+              {authEnabled && authReady && (
+                <>
+                  <div style={styles.navDivider} />
+                  {session ? (
+                    <div style={{ position: "relative" }}>
+                      <button
+                        type="button"
+                        style={styles.userChip}
+                        onClick={() => setMenuOpen((open) => !open)}
+                        aria-haspopup="menu"
+                        aria-expanded={menuOpen}
+                        title={session.user.name}
+                      >
+                        <span style={styles.userAvatar}>{initials(session.user.name)}</span>
+                        {!isMobile && <span>{session.user.name.split(" ")[0]}</span>}
+                      </button>
+                      {menuOpen && (
+                        <div style={styles.userMenu} role="menu" onClick={(e) => e.stopPropagation()}>
+                          <div style={styles.userMenuMeta}>{session.user.centralId} · {session.user.role}</div>
+                          {session.user.role === "admin" && (
+                            <button type="button" role="menuitem" style={styles.userMenuItem} onClick={() => { setMenuOpen(false); setAdminOpen(true); }}>
+                              People &amp; app links
+                            </button>
+                          )}
+                          <button type="button" role="menuitem" style={styles.userMenuItem} onClick={() => { setMenuOpen(false); setSecretOpen(true); }}>
+                            Change PIN / password
+                          </button>
+                          <button type="button" role="menuitem" style={styles.userMenuItem} onClick={signOut}>
+                            Sign out
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  ) : (
+                    <button type="button" style={{ ...styles.navBtn, ...styles.navBtnAccent }} onClick={() => setLoginOpen(true)}>
+                      Sign in
+                    </button>
+                  )}
+                </>
+              )}
               <div style={styles.navDivider} />
               <button
                 onClick={toggleTheme}
@@ -902,7 +1098,29 @@ export default function LandingPage() {
           </div>
         </header>
 
+        {loginOpen && (
+          <LoginDialog
+            styles={styles}
+            onClose={() => setLoginOpen(false)}
+            onSuccess={(data) => { applySession(data); setLoginOpen(false); }}
+          />
+        )}
+        {secretOpen && session && (
+          <SecretDialog
+            styles={styles}
+            currentType={session.user.secretType}
+            onClose={() => setSecretOpen(false)}
+            onSaved={(type) => {
+              setSession((s) => (s ? { ...s, user: { ...s.user, secretType: type } } : s));
+              setSecretOpen(false);
+            }}
+          />
+        )}
+
         {/* Main */}
+        {adminOpen && session?.user?.role === "admin" ? (
+          <AdminPanel C={C} fonts={FONTS} styles={styles} apps={APPS} isMobile={isMobile} onClose={() => setAdminOpen(false)} />
+        ) : (
         <main style={styles.main}>
           <div style={styles.hero}>
             <div style={styles.heroLeft}>
@@ -959,6 +1177,38 @@ export default function LandingPage() {
 
           {visible.length > 0 ? (
             <>
+              {session && (linkedApps.length > 0 || (!q && activeSection === "all")) && (
+                <section style={styles.sectionBlock} aria-label="Your apps">
+                  <div style={styles.groupRow}>
+                    <span style={styles.groupLabel}>Your apps</span>
+                    <div style={styles.sectionLine} />
+                    <span style={styles.sectionCount}>{linkedApps.length} linked</span>
+                  </div>
+                  {linkedApps.length > 0 ? (
+                    <div style={styles.cards}>
+                      {linkedApps.map((app, i) => (
+                        <AppCard key={app.key} app={app} delay={i * 60} styles={styles} tilt={fancy} isFav={favs.includes(app.key)} onToggleFav={toggleFav} onOpen={recordOpen} />
+                      ))}
+                    </div>
+                  ) : (
+                    <p style={styles.inlineNote}>No apps are linked to your ID yet. Ask the admin to link your accounts.</p>
+                  )}
+                </section>
+              )}
+              {session && recentApps.length > 0 && (
+                <section style={styles.sectionBlock} aria-label="Recent">
+                  <div style={styles.groupRow}>
+                    <span style={styles.groupLabel}>Recent</span>
+                    <div style={styles.sectionLine} />
+                    <span style={styles.sectionCount}>{recentApps.length} {recentApps.length === 1 ? "app" : "apps"}</span>
+                  </div>
+                  <div style={styles.cards}>
+                    {recentApps.map((app, i) => (
+                      <AppCard key={app.key} app={app} delay={i * 60} styles={styles} tilt={fancy} isFav={favs.includes(app.key)} onToggleFav={toggleFav} onOpen={recordOpen} />
+                    ))}
+                  </div>
+                </section>
+              )}
               {favApps.length > 0 && (
                 <section style={styles.sectionBlock} aria-label="Favourites">
                   <div style={styles.groupRow}>
@@ -968,7 +1218,7 @@ export default function LandingPage() {
                   </div>
                   <div style={styles.cards}>
                     {favApps.map((app, i) => (
-                      <AppCard key={app.key} app={app} delay={i * 60} styles={styles} tilt={fancy} isFav onToggleFav={toggleFav} />
+                      <AppCard key={app.key} app={app} delay={i * 60} styles={styles} tilt={fancy} isFav onToggleFav={toggleFav} onOpen={recordOpen} />
                     ))}
                   </div>
                 </section>
@@ -985,7 +1235,7 @@ export default function LandingPage() {
                     </div>
                     <div style={styles.cards}>
                       {apps.map((app) => (
-                        <AppCard key={app.key} app={app} delay={visible.indexOf(app) * 60} styles={styles} tilt={fancy} isFav={favs.includes(app.key)} onToggleFav={toggleFav} />
+                        <AppCard key={app.key} app={app} delay={visible.indexOf(app) * 60} styles={styles} tilt={fancy} isFav={favs.includes(app.key)} onToggleFav={toggleFav} onOpen={recordOpen} />
                       ))}
                     </div>
                   </section>
@@ -1000,6 +1250,7 @@ export default function LandingPage() {
             </div>
           )}
         </main>
+        )}
 
         {/* Footer */}
         <footer style={styles.footer}>
@@ -1061,8 +1312,136 @@ function SearchBox({ inputRef, query, setQuery, styles, showHint = false }) {
   );
 }
 
+/* ─── Sign-in dialog ─────────────────────────────────────────────────────────── */
+function useEscape(onClose) {
+  useEffect(() => {
+    const onKey = (e) => { if (e.key === "Escape") onClose(); };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [onClose]);
+}
+
+function LoginDialog({ styles, onClose, onSuccess }) {
+  const [centralId, setCentralId] = useState("");
+  const [secret, setSecret] = useState("");
+  const [error, setError] = useState("");
+  const [busy, setBusy] = useState(false);
+  const idRef = useRef(null);
+
+  useEffect(() => { idRef.current?.focus(); }, []);
+  useEscape(onClose);
+
+  const submit = async (e) => {
+    e.preventDefault();
+    if (busy) return;
+    setBusy(true);
+    setError("");
+    try {
+      const data = await authApi.login(centralId.trim(), secret);
+      onSuccess(data);
+    } catch (err) {
+      setError(err.message || "Sign-in failed");
+      setBusy(false);
+    }
+  };
+
+  return (
+    <div style={styles.overlay} onMouseDown={(e) => { if (e.target === e.currentTarget) onClose(); }}>
+      <form style={styles.dialog} onSubmit={submit} role="dialog" aria-modal="true" aria-labelledby="login-title">
+        <h2 id="login-title" style={styles.dialogTitle}>Sign in</h2>
+        <p style={styles.dialogSub}>One sign-in for every Centre Point Group app.</p>
+        <label style={styles.field}>
+          <span style={styles.fieldLabel}>Your ID</span>
+          <input ref={idRef} style={styles.input} value={centralId} onChange={(e) => setCentralId(e.target.value)} autoComplete="username" autoCapitalize="none" spellCheck={false} />
+        </label>
+        <label style={styles.field}>
+          <span style={styles.fieldLabel}>PIN or password</span>
+          <input style={styles.input} type="password" value={secret} onChange={(e) => setSecret(e.target.value)} autoComplete="current-password" />
+        </label>
+        {error && <p style={styles.formError} role="alert">{error}</p>}
+        <div style={styles.dialogRow}>
+          <button type="button" style={{ ...styles.ghostBtn, flex: 1 }} onClick={onClose}>Cancel</button>
+          <button type="submit" style={{ ...styles.primaryBtn, flex: 2, opacity: busy ? 0.7 : 1 }} disabled={busy}>
+            {busy ? "Signing in…" : "Sign in"}
+          </button>
+        </div>
+      </form>
+    </div>
+  );
+}
+
+/* ─── Change PIN / password dialog ───────────────────────────────────────────── */
+function SecretDialog({ styles, currentType, onClose, onSaved }) {
+  const [current, setCurrent] = useState("");
+  const [type, setType] = useState(currentType || "pin");
+  const [next, setNext] = useState("");
+  const [confirm, setConfirm] = useState("");
+  const [error, setError] = useState("");
+  const [busy, setBusy] = useState(false);
+
+  useEscape(onClose);
+
+  const submit = async (e) => {
+    e.preventDefault();
+    if (busy) return;
+    if (type === "pin" && !/^\d{6}$/.test(next)) return setError("PIN must be exactly six digits");
+    if (type === "password" && next.length < 8) return setError("Password must be at least eight characters");
+    if (next !== confirm) return setError("The two entries do not match");
+    setBusy(true);
+    setError("");
+    try {
+      await authApi.changeSecret(current, next, type);
+      onSaved(type);
+    } catch (err) {
+      setError(err.message || "Could not change it");
+      setBusy(false);
+    }
+    return undefined;
+  };
+
+  return (
+    <div style={styles.overlay} onMouseDown={(e) => { if (e.target === e.currentTarget) onClose(); }}>
+      <form style={styles.dialog} onSubmit={submit} role="dialog" aria-modal="true" aria-labelledby="secret-title">
+        <h2 id="secret-title" style={styles.dialogTitle}>Change PIN / password</h2>
+        <p style={styles.dialogSub}>You can switch between a six-digit PIN and a password at any time.</p>
+        <label style={styles.field}>
+          <span style={styles.fieldLabel}>Current {currentType === "password" ? "password" : "PIN"}</span>
+          <input style={styles.input} type="password" value={current} onChange={(e) => setCurrent(e.target.value)} autoComplete="current-password" />
+        </label>
+        <div style={styles.field}>
+          <span style={styles.fieldLabel}>Sign in with</span>
+          <div style={styles.radioRow} role="radiogroup">
+            {[["pin", "PIN (6 digits)"], ["password", "Password"]].map(([key, label]) => (
+              <button key={key} type="button" role="radio" aria-checked={type === key}
+                style={{ ...styles.radioBtn, ...(type === key ? styles.radioBtnActive : {}) }}
+                onClick={() => { setType(key); setNext(""); setConfirm(""); }}>
+                {label}
+              </button>
+            ))}
+          </div>
+        </div>
+        <label style={styles.field}>
+          <span style={styles.fieldLabel}>New {type === "pin" ? "PIN" : "password"}</span>
+          <input style={styles.input} type="password" value={next} onChange={(e) => setNext(e.target.value)} inputMode={type === "pin" ? "numeric" : undefined} autoComplete="new-password" />
+        </label>
+        <label style={styles.field}>
+          <span style={styles.fieldLabel}>Repeat it</span>
+          <input style={styles.input} type="password" value={confirm} onChange={(e) => setConfirm(e.target.value)} inputMode={type === "pin" ? "numeric" : undefined} autoComplete="new-password" />
+        </label>
+        {error && <p style={styles.formError} role="alert">{error}</p>}
+        <div style={styles.dialogRow}>
+          <button type="button" style={{ ...styles.ghostBtn, flex: 1 }} onClick={onClose}>Cancel</button>
+          <button type="submit" style={{ ...styles.primaryBtn, flex: 2, opacity: busy ? 0.7 : 1 }} disabled={busy}>
+            {busy ? "Saving…" : "Save"}
+          </button>
+        </div>
+      </form>
+    </div>
+  );
+}
+
 /* ─── AppCard ────────────────────────────────────────────────────────────────── */
-function AppCard({ app, delay, styles, tilt, isFav, onToggleFav }) {
+function AppCard({ app, delay, styles, tilt, isFav, onToggleFav, onOpen }) {
   const cardRef = useRef(null);
   const glowRef = useRef(null);
   const { accent, accentRgb } = app;
@@ -1108,6 +1487,7 @@ function AppCard({ app, delay, styles, tilt, isFav, onToggleFav }) {
         href={app.href}
         className="app-card-link"
         style={styles.cardLink}
+        onClick={() => onOpen?.(app.key)}
         aria-label={`Open ${app.label} — ${app.desc}`}
       >
         <div style={styles.cardHead}>

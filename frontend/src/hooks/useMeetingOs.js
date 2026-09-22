@@ -18,6 +18,7 @@ import {
   toDateLabel,
   uid,
 } from '../lib/meetingOs'
+import { resolveSsoToken, ssoEnabled, ssoLogout } from '../lib/sso'
 
 export function useMeetingOs(navigate, page) {
   const initialUser = (() => {
@@ -29,6 +30,8 @@ export function useMeetingOs(navigate, page) {
   })()
   const [user, setUser] = useState(initialUser)
   const [authed, setAuthed] = useState(Boolean(initialUser))
+  // True while we ask the portal whether this visitor is already signed in
+  const [ssoChecking, setSsoChecking] = useState(() => !initialUser && ssoEnabled())
   const [pin, setPin] = useState('')
   const [toast, setToast] = useState('')
   const [query, setQuery] = useState('')
@@ -129,6 +132,30 @@ export function useMeetingOs(navigate, page) {
       mounted = false
     }
   }, [authed, isAdmin, user?.id])
+
+  // Central sign-on: when the portal cookie is present, skip the PIN screen.
+  // PIN login stays available when this finds nothing.
+  useEffect(() => {
+    // ssoChecking starts true only when there is no local session and SSO is configured
+    if (!ssoChecking) return undefined
+    let cancelled = false
+    ;(async () => {
+      const token = await resolveSsoToken()
+      if (!cancelled && token) {
+        const result = await apiPost({ action: 'sso_login', token })
+        if (!cancelled && result?.ok && result.user) {
+          sessionStorage.setItem('mo_user', JSON.stringify(result.user))
+          setUser(result.user)
+          setAuthed(true)
+        }
+      }
+      if (!cancelled) setSsoChecking(false)
+    })()
+    return () => {
+      cancelled = true
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   const tasksWithOverdue = useMemo(() => {
     const overdueDate = new Date().toISOString().slice(0, 10)
@@ -1201,6 +1228,7 @@ export function useMeetingOs(navigate, page) {
   }
 
   function logout() {
+    ssoLogout()
     sessionStorage.removeItem('mo_user')
     setUser(null)
     setAuthed(false)
@@ -1214,6 +1242,7 @@ export function useMeetingOs(navigate, page) {
 
   return {
     authed,
+    ssoChecking,
     setAuthed,
     user,
     isAdmin,
