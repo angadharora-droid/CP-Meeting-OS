@@ -10,6 +10,7 @@ const Config = require('../models/Config');
 const { google } = require('googleapis');
 const { pushMeetingToCalendar, cancelCalendarEvent, pushEventDirectly } = require('../services/googleCalendar');
 const { sendCalendarInvites, sendCancellationNotices } = require('../services/calendarInvite');
+const { verifySsoToken } = require('../lib/ssoClient');
 
 const SAFE_USER_PROJECTION = { _id: 0, __v: 0, pin: 0, googleRefreshToken: 0 };
 
@@ -347,6 +348,20 @@ router.post('/', async (req, res) => {
       const user = await User.findOne({ pin }, SAFE_USER_PROJECTION).lean();
       if (!user) {
         return res.status(401).json({ ok: false, error: 'Incorrect PIN' });
+      }
+      return res.json({ ok: true, user });
+    }
+
+    // Central sign-on: the browser brings a hand-off token from the auth service,
+    // which tells us which Meeting OS user it belongs to. PIN login stays as-is.
+    if (action === 'sso_login') {
+      const verified = await verifySsoToken(String(req.body?.token || ''));
+      if (!verified) {
+        return res.status(401).json({ ok: false, error: 'SSO sign-in failed' });
+      }
+      const user = await User.findOne({ id: verified.localUserId }, SAFE_USER_PROJECTION).lean();
+      if (!user) {
+        return res.status(404).json({ ok: false, error: 'No Meeting OS account is linked to this login' });
       }
       return res.json({ ok: true, user });
     }

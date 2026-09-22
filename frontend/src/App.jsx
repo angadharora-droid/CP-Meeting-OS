@@ -359,6 +359,10 @@ function App() {
   }, [app])
 
   if (!app.authed) {
+    // Hold the PIN screen back for a moment while the portal sign-in is checked
+    if (app.ssoChecking) {
+      return <main className="min-h-screen" aria-busy="true" />
+    }
     return (
       <AuthScreen
         pin={app.pin}
