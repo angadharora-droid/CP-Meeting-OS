@@ -812,11 +812,21 @@ export default function LandingPage() {
     return () => { cancelled = true; };
   }, [applySession]);
 
+  // Close the user menu on a press outside it. Uses mousedown, not click: React
+  // flushes the effect during the opening click, so a click listener would
+  // catch that same click and shut the menu straight away.
+  const menuRef = useRef(null);
   useEffect(() => {
     if (!menuOpen) return undefined;
-    const close = () => setMenuOpen(false);
-    window.addEventListener("click", close);
-    return () => window.removeEventListener("click", close);
+    const onPress = (e) => {
+      if (menuRef.current && !menuRef.current.contains(e.target)) setMenuOpen(false);
+    };
+    document.addEventListener("mousedown", onPress);
+    document.addEventListener("touchstart", onPress);
+    return () => {
+      document.removeEventListener("mousedown", onPress);
+      document.removeEventListener("touchstart", onPress);
+    };
   }, [menuOpen]);
 
   const signOut = useCallback(async () => {
@@ -1048,7 +1058,7 @@ export default function LandingPage() {
                 <>
                   <div style={styles.navDivider} />
                   {session ? (
-                    <div style={{ position: "relative" }}>
+                    <div ref={menuRef} style={{ position: "relative" }}>
                       <button
                         type="button"
                         style={styles.userChip}
@@ -1061,7 +1071,7 @@ export default function LandingPage() {
                         {!isMobile && <span>{session.user.name.split(" ")[0]}</span>}
                       </button>
                       {menuOpen && (
-                        <div style={styles.userMenu} role="menu" onClick={(e) => e.stopPropagation()}>
+                        <div style={styles.userMenu} role="menu">
                           <div style={styles.userMenuMeta}>{session.user.centralId} · {session.user.role}</div>
                           {session.user.role === "admin" && (
                             <button type="button" role="menuitem" style={styles.userMenuItem} onClick={() => { setMenuOpen(false); setAdminOpen(true); }}>
