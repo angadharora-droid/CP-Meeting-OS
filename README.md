@@ -91,18 +91,20 @@ The React app proxies `/api` requests to the backend during development.
 
 ## Executive Scheduler link
 
-Executive Scheduler accounts can be linked to Meeting OS accounts (admin and managers only).
+Executive Scheduler creates meetings here from its own Meeting tab, and brings the action points
+assigned to its users into their inbox. Its server calls `/api/integrations/*`, which needs the
+header `X-Integration-Secret` to equal `MEETING_OS_SECRET` on this backend (404 while that is empty):
 
-- **Action points into its inbox.** The Scheduler's server reads the action points assigned to a
-  linked account (by its name, or by mobile number) from `GET /api/integrations/action-points`,
-  and the list of Meeting OS accounts from `GET /api/integrations/people`. Both are read-only
-  and need the header `X-Integration-Secret` to equal `MEETING_OS_SECRET` on the backend.
-  With `MEETING_OS_SECRET` empty they answer 404.
-- **New Meeting from a Scheduler task.** The Scheduler opens
-  `/new-meeting?title=&date=yyyy-mm-dd&time=HH:MM&minutes=&unit=` to fill the form. With
-  `embed=scheduler&parent=<scheduler origin>` added it shows the page inside its own dialog,
-  without Meeting OS's header and menus, and is told (`postMessage`, type `meeting-os:saved`)
-  when the meeting is saved. The portal sign-in works inside that dialog when the Scheduler is
-  served under `centrepointgroup.in`; otherwise the PIN screen shows there.
+- `GET /api/integrations/directory` — everyone who can call or attend a meeting (Meeting OS
+  accounts and the people registry, once each) and the meeting headers in use.
+- `POST /api/integrations/meetings` — saves a new meeting exactly as the New Meeting form does
+  (same fields, reference number, header matching) and sends the calendar invites the same way
+  (`services/meetingSync.js`). People added by hand get the invite too when they have an email.
+- `GET /api/integrations/action-points?name=&mobile=&since=` — open action points for one person,
+  by name (case and spaces ignored) or mobile (last ten digits). Read-only.
+
+New Meeting can also be opened prefilled with
+`/new-meeting?title=&date=yyyy-mm-dd&time=HH:MM&minutes=&unit=` (and shown without the header and
+menus inside another page with `embed=scheduler&parent=<origin>`).
 
 Set `MEETING_OS_SECRET` to the same long random value on this backend and on the Scheduler.
