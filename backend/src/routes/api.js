@@ -8,57 +8,13 @@ const PinResetRequest = require('../models/PinResetRequest');
 const User = require('../models/User');
 const Config = require('../models/Config');
 const { google } = require('googleapis');
-const { pushMeetingToCalendar, cancelCalendarEvent, pushEventDirectly } = require('../services/googleCalendar');
-const { sendCalendarInvites, sendCancellationNotices } = require('../services/calendarInvite');
+const { cancelCalendarEvent } = require('../services/googleCalendar');
+const { sendCancellationNotices } = require('../services/calendarInvite');
+const { syncMeetingToCalendars } = require('../services/meetingSync');
+const { listMeetingHeaders, resolveHeaderName } = require('../services/meetingHeaders');
 const { verifySsoToken } = require('../lib/ssoClient');
 
 const SAFE_USER_PROJECTION = { _id: 0, __v: 0, pin: 0, googleRefreshToken: 0 };
-
-async function syncMeetingToCalendars(meeting, meetingId) {
-  const inviteAttendees = (meeting.attendeeDetails || []).filter(
-    (a) => a.email && a.invite !== false,
-  );
-  if (!inviteAttendees.length) return;
-
-  const attendeeEmails = inviteAttendees.map((a) => a.email);
-
-  // Find managers who have connected their Google Calendar
-  const connectedUsers = await User.find(
-    { email: { $in: attendeeEmails }, googleCalendarConnected: true, googleRefreshToken: { $ne: '' } },
-    { email: 1, googleRefreshToken: 1 },
-  ).lean();
-
-  const tokenByEmail = {};
-  connectedUsers.forEach((u) => { tokenByEmail[u.email] = u.googleRefreshToken; });
-
-  // Push directly into each connected manager's calendar
-  const pushedDirectly = new Set();
-  for (const [email, token] of Object.entries(tokenByEmail)) {
-    try {
-      await pushEventDirectly(meeting, token);
-      pushedDirectly.add(email);
-    } catch (err) {
-      console.error(`Direct calendar push failed for ${email}:`, err.message);
-    }
-  }
-
-  // Also update the service-account event (for record-keeping), best-effort
-  try {
-    const googleEventId = await pushMeetingToCalendar(meeting);
-    if (googleEventId && !meeting.googleEventId) {
-      await require('../models/Meeting').updateOne({ meetingId }, { $set: { googleEventId } });
-    }
-  } catch (_) {}
-
-  // Send email invites to attendees who haven't connected
-  const needsEmail = {
-    ...meeting,
-    attendeeDetails: inviteAttendees.filter((a) => !pushedDirectly.has(a.email)),
-  };
-  if (needsEmail.attendeeDetails.length) {
-    await sendCalendarInvites(needsEmail);
-  }
-}
 
 const router = express.Router();
 const ADMIN_ID = 'admin';
@@ -120,56 +76,6 @@ async function getMeetingActor(req, meeting) {
 
 function escapeRegex(value) {
   return String(value || '').replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-}
-
-// The header list is the union of headers still referenced by a meeting and
-// headers that exist only as a record. Counts are always over every meeting,
-// never the caller's visible subset, so a manager never sees a header as empty
-// because of meetings they cannot read.
-async function listMeetingHeaders() {
-  const [stats, records] = await Promise.all([
-    Meeting.aggregate([
-      { $match: { meetingHeader: { $nin: ['', null] } } },
-      {
-        $group: {
-          _id: '$meetingHeader',
-          meetingCount: { $sum: 1 },
-          openCount: { $sum: { $cond: [{ $eq: ['$status', 'Open'] }, 1, 0] } },
-          latestDate: { $max: '$date' },
-        },
-      },
-    ]),
-    MeetingHeader.find({}, { _id: 0, name: 1 }).lean(),
-  ]);
-
-  const byName = new Map();
-  stats.forEach((row) => {
-    const name = String(row._id || '').trim();
-    if (!name) return;
-    byName.set(name, {
-      name,
-      meetingCount: row.meetingCount,
-      openCount: row.openCount,
-      latestDate: row.latestDate || '',
-    });
-  });
-  records.forEach((record) => {
-    const name = String(record.name || '').trim();
-    if (!name || byName.has(name)) return;
-    byName.set(name, { name, meetingCount: 0, openCount: 0, latestDate: '' });
-  });
-
-  return [...byName.values()].sort((a, b) => a.name.localeCompare(b.name));
-}
-
-// Resolves a typed name to the existing header it matches case-insensitively,
-// so "ops review" lands in "Ops Review" instead of forking a near-duplicate.
-async function resolveHeaderName(name) {
-  const clean = String(name || '').trim();
-  if (!clean) return '';
-  const headers = await listMeetingHeaders();
-  const match = headers.find((header) => header.name.toLowerCase() === clean.toLowerCase());
-  return match ? match.name : '';
 }
 
 async function countHeaderMeetings(name) {
