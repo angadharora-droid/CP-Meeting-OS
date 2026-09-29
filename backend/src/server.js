@@ -7,6 +7,7 @@ const { connectToMongo } = require('./db');
 const apiRouter = require('./routes/api');
 const authRouter = require('./routes/auth');
 const ssoRouter = require('./routes/sso');
+const integrationsRouter = require('./routes/integrations');
 
 const PORT = process.env.PORT ? Number(process.env.PORT) : 4000;
 const MONGO_URI = process.env.MONGO_URI;
@@ -78,6 +79,7 @@ async function start() {
 
   app.get('/health', (_req, res) => res.json({ ok: true }));
   app.use('/api/sso', ssoRouter);
+  app.use('/api/integrations', integrationsRouter);
   app.use('/api', apiRouter);
   app.use('/auth', authRouter);
 

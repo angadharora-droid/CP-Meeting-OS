@@ -19,6 +19,7 @@ import {
   uid,
 } from '../lib/meetingOs'
 import { resolveSsoToken, ssoEnabled, ssoLogout } from '../lib/sso'
+import { notifySchedulerSaved, schedulerPrefill } from '../lib/schedulerLink'
 
 export function useMeetingOs(navigate, page) {
   const initialUser = (() => {
@@ -46,7 +47,9 @@ export function useMeetingOs(navigate, page) {
 
   const [personForm, setPersonForm] = useState(blankPerson)
   const [managerForm, setManagerForm] = useState(blankManager)
-  const [meetingForm, setMeetingForm] = useState(blankMeeting)
+  // A Meeting task sent over from Executive Scheduler fills in its title, date, time, duration
+  // and unit; the caller and the rest are chosen here as usual.
+  const [meetingForm, setMeetingForm] = useState(() => ({ ...blankMeeting, ...schedulerPrefill() }))
   const [editingMeetingId, setEditingMeetingId] = useState('')
   const [meetingAttendeeIds, setMeetingAttendeeIds] = useState([])
   const [manualAttendees, setManualAttendees] = useState([])
@@ -171,6 +174,14 @@ export function useMeetingOs(navigate, page) {
       navigate('/dashboard', { replace: true })
     }
   }, [authed, navigate, page, validPages])
+
+  // The New Meeting form starts filled in from an Executive Scheduler task when one was sent in
+  // the address (see meetingForm above). Once signed in, the address is tidied up.
+  useEffect(() => {
+    if (authed && page === 'new-meeting' && new URLSearchParams(window.location.search).has('title')) {
+      navigate('/new-meeting', { replace: true })
+    }
+  }, [authed, navigate, page])
 
   const filteredMeetings = useMemo(() => {
     let list = [...meetings]
@@ -632,6 +643,7 @@ export function useMeetingOs(navigate, page) {
       showToast(result?.error || 'Could not save meeting')
       return
     }
+    if (!existingMeeting) notifySchedulerSaved(meeting)
 
     if (existingMeeting) {
       setMeetings((current) => current.map((item) => (
