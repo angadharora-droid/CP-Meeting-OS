@@ -88,3 +88,21 @@ The React app proxies `/api` requests to the backend during development.
   to the public Meeting OS backend URL, for example `https://your-meeting-os-backend.example.com`.
 - On the backend host, set `CORS_ORIGINS` to the browser origins allowed to call the API,
   for example `https://meetingos.centrepointgroup.in`.
+
+## Executive Scheduler link
+
+Executive Scheduler accounts can be linked to Meeting OS accounts (admin and managers only).
+
+- **Action points into its inbox.** The Scheduler's server reads the action points assigned to a
+  linked account (by its name, or by mobile number) from `GET /api/integrations/action-points`,
+  and the list of Meeting OS accounts from `GET /api/integrations/people`. Both are read-only
+  and need the header `X-Integration-Secret` to equal `MEETING_OS_SECRET` on the backend.
+  With `MEETING_OS_SECRET` empty they answer 404.
+- **New Meeting from a Scheduler task.** The Scheduler opens
+  `/new-meeting?title=&date=yyyy-mm-dd&time=HH:MM&minutes=&unit=` to fill the form. With
+  `embed=scheduler&parent=<scheduler origin>` added it shows the page inside its own dialog,
+  without Meeting OS's header and menus, and is told (`postMessage`, type `meeting-os:saved`)
+  when the meeting is saved. The portal sign-in works inside that dialog when the Scheduler is
+  served under `centrepointgroup.in`; otherwise the PIN screen shows there.
+
+Set `MEETING_OS_SECRET` to the same long random value on this backend and on the Scheduler.

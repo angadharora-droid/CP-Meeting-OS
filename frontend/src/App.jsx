@@ -3,6 +3,7 @@ import { useLocation, useNavigate } from 'react-router-dom'
 import AuthScreen from './components/AuthScreen'
 import SearchOverlay from './components/SearchOverlay'
 import { useMeetingOs } from './hooks/useMeetingOs'
+import { EMBEDDED } from './lib/schedulerLink'
 import BankPage from './pages/BankPage'
 import CloseMeetingPage from './pages/CloseMeetingPage'
 import DashboardPage from './pages/DashboardPage'
@@ -399,8 +400,8 @@ function App() {
   return (
     <div className="app-root min-h-dvh text-[#0F172A] text-sm">
 
-      {/* HEADER */}
-      <div className="sticky top-0 z-50 border-b border-slate-200/80 bg-white/85 px-3 py-2.5 backdrop-blur-xl sm:px-5">
+      {/* HEADER — left out, with the menus below, inside Executive Scheduler's dialog */}
+      <div className={`sticky top-0 z-50 border-b border-slate-200/80 bg-white/85 px-3 py-2.5 backdrop-blur-xl sm:px-5${EMBEDDED ? ' hidden' : ''}`}>
         <div className="mx-auto flex min-h-[54px] w-full max-w-[1280px] items-center justify-between gap-3">
         <button
           className="flex items-center gap-3 rounded-xl px-1.5 py-1 cursor-pointer hover:bg-slate-100 transition-colors"
@@ -447,7 +448,7 @@ function App() {
       </div>
 
       {/* NAV — desktop/tablet top tabs (mobile uses the bottom bar below) */}
-      <div className="hidden md:block sticky top-[75px] z-40 border-b border-slate-200/80 bg-white/80 backdrop-blur-xl">
+      <div className={`hidden ${EMBEDDED ? '' : 'md:block '}sticky top-[75px] z-40 border-b border-slate-200/80 bg-white/80 backdrop-blur-xl`}>
         <div className="mx-auto flex w-full max-w-[1280px] overflow-x-auto scrollbar-none px-2 sm:px-4">
         {navItems.map(({ key, label, badge }) => (
           <button
@@ -472,7 +473,7 @@ function App() {
       </div>
 
       {/* OVERDUE BANNER */}
-      {app.overdueCount > 0 && (
+      {app.overdueCount > 0 && !EMBEDDED && (
         <button
           className="w-full px-6 py-[9px] bg-red-50 border-b border-red-100 text-red-700 text-[11px] text-center hover:bg-red-100 transition-colors cursor-pointer tracking-[0.03em] font-medium"
           onClick={() => { app.setTaskFilter?.('Overdue'); navigate('/tracker') }}
@@ -567,7 +568,7 @@ function App() {
       )}
 
       {/* PAGE CONTENT — extra bottom padding on mobile clears the fixed bottom nav */}
-      <main className="w-full max-w-[1180px] mx-auto px-4 sm:px-6 lg:px-8 pt-5 sm:pt-6 pb-[calc(76px+env(safe-area-inset-bottom))] md:pb-12 animate-fade-in">
+      <main className={`w-full max-w-[1180px] mx-auto px-4 sm:px-6 lg:px-8 pt-5 sm:pt-6 animate-fade-in ${EMBEDDED ? 'pb-8' : 'pb-[calc(76px+env(safe-area-inset-bottom))] md:pb-12'}`}>
         {pageMap[page] || pageMap['new-meeting']}
       </main>
 
@@ -609,7 +610,7 @@ function App() {
 
       {/* MOBILE BOTTOM NAV — app-like tab bar, hidden on tablet/desktop */}
       <nav
-        className="md:hidden fixed inset-x-0 bottom-0 z-40 border-t border-slate-200/80 bg-white/90 backdrop-blur-xl pb-[env(safe-area-inset-bottom)]"
+        className={`${EMBEDDED ? 'hidden' : 'md:hidden'} fixed inset-x-0 bottom-0 z-40 border-t border-slate-200/80 bg-white/90 backdrop-blur-xl pb-[env(safe-area-inset-bottom)]`}
         aria-label="Primary"
       >
         <div className="mx-auto flex w-full max-w-[640px] items-stretch justify-around">
